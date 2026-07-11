@@ -995,7 +995,11 @@ document.addEventListener('keydown', e => {
 });
 
 // ===================== INIT =====================
-// Load marks from localStorage
+// 检测 file:// 协议，提示用 start.cmd
+if (location.protocol === 'file:') {
+  document.querySelector('.sub').innerHTML +=
+    ' <span style="color:#f9ab00;font-weight:700">⚠ 请运行 start.cmd 启动服务器</span>';
+}
 updateCacheStats();
 updateProgress();
 loadQuestion(1);
