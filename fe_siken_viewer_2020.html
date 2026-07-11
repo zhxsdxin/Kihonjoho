@@ -352,6 +352,27 @@ body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open h
   </div>
 </div>
 
+<!-- 草稿画板 -->
+<div id="scratchpad">
+  <div class="sp-header">
+    <span class="sp-title">✏ 草稿</span>
+    <button id="spClear">🗑 清除</button>
+    <button id="spClose">✕</button>
+  </div>
+  <canvas id="spCanvas"></canvas>
+  <div class="sp-tools">
+    <button class="color-dot active" data-color="#000" style="background:#000"></button>
+    <button class="color-dot" data-color="#e53935" style="background:#e53935"></button>
+    <button class="color-dot" data-color="#1a73e8" style="background:#1a73e8"></button>
+    <button class="color-dot" data-color="#34a853" style="background:#34a853"></button>
+    <button class="color-dot" data-color="#f9ab00" style="background:#f9ab00"></button>
+    <span style="margin:0 4px;color:var(--text-secondary)">|</span>
+    <button data-size="2" class="active">细</button>
+    <button data-size="5">中</button>
+    <button data-size="10">粗</button>
+  </div>
+</div>
+
 <script>
 // ===================== CONFIG =====================
 const TOTAL = 80;
@@ -615,6 +636,11 @@ function displayQuestion(num, data) {
   updateMarkUI();
   updateProgress();
   jumpInput.value = num;
+
+  // 恢复翻译状态
+  if (localStorage.getItem('lastTranslated') === '1' && !state.translated) {
+    translateBtn.click();
+  }
 }
 
 function showCelebration() {
@@ -758,6 +784,7 @@ translateBtn.addEventListener('click', async () => {
     state.translated = false;
     translateBtn.textContent = '中';
     translateBtn.classList.remove('active');
+    localStorage.setItem('lastTranslated', '0');
     return;
   }
 
@@ -772,6 +799,7 @@ translateBtn.addEventListener('click', async () => {
   state.translated = true;
   translateBtn.textContent = '日';
   translateBtn.classList.add('active');
+  localStorage.setItem('lastTranslated', '1');
 });
 
 // ===================== LOAD =====================
@@ -1144,26 +1172,6 @@ draftToggle.addEventListener('click', () => {
 
 window.addEventListener('resize', () => { if (scratchpad.classList.contains('open')) resizeCanvas(); });
 </script>
-<!-- 草稿画板 -->
-<div id="scratchpad">
-  <div class="sp-header">
-    <span class="sp-title">✏ 草稿</span>
-    <button id="spClear">🗑 清除</button>
-    <button id="spClose">✕</button>
-  </div>
-  <canvas id="spCanvas"></canvas>
-  <div class="sp-tools">
-    <button class="color-dot active" data-color="#000" style="background:#000"></button>
-    <button class="color-dot" data-color="#e53935" style="background:#e53935"></button>
-    <button class="color-dot" data-color="#1a73e8" style="background:#1a73e8"></button>
-    <button class="color-dot" data-color="#34a853" style="background:#34a853"></button>
-    <button class="color-dot" data-color="#f9ab00" style="background:#f9ab00"></button>
-    <span style="margin:0 4px;color:var(--text-secondary)">|</span>
-    <button data-size="2" class="active">细</button>
-    <button data-size="5">中</button>
-    <button data-size="10">粗</button>
-  </div>
-</div>
 
 </body>
 </html>
