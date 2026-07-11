@@ -280,8 +280,10 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 /* ===== FAB（移动端切换工具栏） ===== */
 #fabBtn { display: none; position: fixed; bottom: 90px; right: 16px; width: 48px; height: 48px; border-radius: 50%; border: none; background: var(--primary); color: #fff; font-size: 22px; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.3); z-index: 95; }
 @media (max-width: 900px) {
+  header h1, header .sub { display: none; }
+  header.menu-visible h1, header.menu-visible .sub { display: block; }
   .toolbar { display: none; }
-  .toolbar.toolbar-visible { display: flex; }
+  header.menu-visible .toolbar { display: flex; }
   #fabBtn { display: flex; align-items: center; justify-content: center; }
 }
 /* ===== 长按 / 滑动 ===== */
@@ -1259,8 +1261,11 @@ window.addEventListener('resize', () => { if (scratchpad.classList.contains('ope
 // ===================== FAB TOGGLE TOOLBAR =====================
 (function() {
   const fab = document.getElementById('fabBtn');
-  const tb = document.querySelector('.toolbar');
-  fab.addEventListener('click', () => { tb.classList.toggle('toolbar-visible'); fab.textContent = tb.classList.contains('toolbar-visible') ? '✕' : '☰'; });
+  const hdr = document.querySelector('header');
+  fab.addEventListener('click', () => {
+    hdr.classList.toggle('menu-visible');
+    fab.textContent = hdr.classList.contains('menu-visible') ? '✕' : '☰';
+  });
 })();
 </script>
 
