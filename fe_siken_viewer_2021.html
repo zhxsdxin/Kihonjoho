@@ -387,7 +387,7 @@ const PROXIES = [
 ];
 // 本地页面文件目录（download_all.ps1 下载后存放的路径）
 const PAGE_NAME = (window.location.pathname.split('/').pop().replace(/\.html$/, '') || 'questions');
-const LOCAL_PAGES_DIR = './pages_' + PAGE_NAME.replace(/^fe_siken_viewer_/, '') + '/';
+const LOCAL_PAGES_DIR = './' + PAGE_NAME + '/';
 const JSON_FILE = PAGE_NAME + '.json'; // 跟随 HTML 文件名
 
 // localStorage キー

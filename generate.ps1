@@ -12,8 +12,8 @@ $ErrorActionPreference = "Continue"
 $baseUrl = "https://www.fe-siken.com/kakomon/$Year/q"
 if (-not $JsonName) { $JsonName = "fe_siken_viewer_$($Year -replace '_','')" }
 $jsonName = ($JsonName -replace '\.json$', '') + '.json'
-$suffix = $JsonName -replace '^fe_siken_viewer_', '' -replace '\.json$', ''
-if (-not $OutputDir) { $OutputDir = "pages_$suffix" }
+$suffix = $JsonName -replace '\.json$', ''
+if (-not $OutputDir) { $OutputDir = $suffix }
 $pagesPath = Join-Path $PSScriptRoot $OutputDir
 
 # 1. 下载所有题目网页

@@ -6,7 +6,7 @@ param(
 )
 
 $baseUrl = "https://www.fe-siken.com/kakomon/$($Year)/q"
-if (-not $OutputDir) { $suffix = $Year -replace '_',''; $OutputDir = "pages_$suffix" }
+if (-not $OutputDir) { $suffix = $Year -replace '_',''; $OutputDir = "fe_siken_viewer_$suffix" }
 $outputPath = Join-Path $PSScriptRoot $OutputDir
 
 New-Item -ItemType Directory -Force -Path $outputPath | Out-Null
