@@ -300,6 +300,7 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
         <button id="markIncorrect" title="不正解">✗</button>
         <button id="markBookmark" title="ブックマーク">★</button>
         <button id="refreshBtn" title="再取得" style="font-size:14px;border-color:var(--text-secondary)">↻</button>
+        <button id="translateBtn" title="翻译" style="font-size:13px;border-color:var(--text-secondary)">译</button>
       </div>
     </div>
     <div class="loading" id="loadingIndicator">
@@ -364,6 +365,7 @@ const state = {
   autoNext: false,
   dark: localStorage.getItem(LS_DARK) === '1',
   shuffle: false,
+  translated: false,
   preloading: false,
 };
 
@@ -397,6 +399,7 @@ const markCorrect = $('markCorrect');
 const markIncorrect = $('markIncorrect');
 const markBookmark = $('markBookmark');
 const refreshBtn = $('refreshBtn');
+const translateBtn = $('translateBtn');
 const preloadBtn = $('preloadBtn');
 const preloadBarWrap = $('preloadBarWrap');
 const preloadBar = $('preloadBar');
@@ -687,6 +690,64 @@ refreshBtn.addEventListener('click', () => {
   localStorage.removeItem(getCacheKey(n));
   delete state.data[n];
   loadQuestion(n);
+});
+
+// ===================== TRANSLATE =====================
+const TRANS_API = 'https://translate.googleapis.com/translate_a/t?client=dict-chrome-ex&sl=ja&tl=zh-CN&q=';
+
+async function translateText(text) {
+  if (!text.trim()) return text;
+  try {
+    const res = await fetch(TRANS_API + encodeURIComponent(text.slice(0, 1800)));
+    if (!res.ok) return text;
+    const data = await res.json();
+    if (data && data[0]) return data[0];
+  } catch (e) { /* 失败静默 */ }
+  return text;
+}
+
+async function translateNode(node) {
+  // 跳过已经翻译过的节点、图片、脚本等
+  if (!node || node.nodeType === 8 || node.tagName === 'IMG' || node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
+  if (node.nodeType === 3) { // 文本节点
+    const t = node.nodeValue.trim();
+    if (t) node.nodeValue = node.nodeValue.replace(t, await translateText(t));
+    return;
+  }
+  // 遍历子节点
+  const children = [...node.childNodes];
+  for (const c of children) await translateNode(c);
+}
+
+let translateOriginal = {}; // 存原文
+
+translateBtn.addEventListener('click', async () => {
+  if (state.translated) {
+    // 切回原文
+    const d = state.data[state.current];
+    if (d) {
+      mondaiEl.innerHTML = d.mondai;
+      const lis = selectList.querySelectorAll('li');
+      d.selects.forEach((s, i) => { if (lis[i]) lis[i].querySelector('span:last-child').innerHTML = s.text; });
+      kaisetsuEl.innerHTML = d.kaisetsu;
+    }
+    state.translated = false;
+    translateBtn.textContent = '译';
+    translateBtn.classList.remove('active');
+    return;
+  }
+
+  translateBtn.textContent = '…';
+  await translateNode(mondaiEl);
+  const lis = selectList.querySelectorAll('li');
+  for (const li of lis) {
+    const span = li.querySelector('span:last-child');
+    if (span) await translateNode(span);
+  }
+  await translateNode(kaisetsuEl);
+  state.translated = true;
+  translateBtn.textContent = '中';
+  translateBtn.classList.add('active');
 });
 
 // ===================== LOAD =====================
