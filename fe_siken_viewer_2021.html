@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基本情報技術者 令和2年度 問題集（午前免除）</title>
+<style>
+:root {
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --text: #333;
+  --text-secondary: #666;
+  --border: #ddd;
+  --primary: #1a73e8;
+  --primary-hover: #1557b0;
+  --correct-bg: #e6f4ea;
+  --correct-text: #137333;
+  --incorrect-bg: #fce8e6;
+  --incorrect-text: #c5221f;
+  --bookmark-color: #f9ab00;
+  --header-bg: #1a237e;
+  --header-text: #fff;
+  --shadow: 0 1px 3px rgba(0,0,0,0.12);
+  --radius: 8px;
+  --choice-selected: #e8f0fe;
+  --choice-hover: #f1f3f4;
+}
+body.dark {
+  --bg: #1a1a2e;
+  --surface: #16213e;
+  --text: #e0e0e0;
+  --text-secondary: #aaa;
+  --border: #333;
+  --primary: #4fc3f7;
+  --primary-hover: #29b6f6;
+  --correct-bg: #1b4332;
+  --correct-text: #81c784;
+  --incorrect-bg: #4a1c1c;
+  --incorrect-text: #ef9a9a;
+  --bookmark-color: #ffd54f;
+  --header-bg: #0d1b2a;
+  --choice-selected: #1a2744;
+  --choice-hover: #1e2d4a;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  transition: background .2s, color .2s;
+}
+header {
+  background: var(--header-bg);
+  color: var(--header-text);
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+header h1 { font-size: 16px; font-weight: 700; }
+header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+.toolbar button, .toolbar select {
+  padding: 6px 14px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s;
+  font-family: inherit;
+}
+.toolbar button:hover { background: rgba(255,255,255,0.25); }
+.toolbar button.active { background: var(--primary); border-color: var(--primary); }
+.toolbar select option { color: #333; background: #fff; }
+.toolbar .spacer { flex: 1; }
+.toolbar .progress-text { font-size: 13px; opacity: .85; white-space: nowrap; }
+#preloadBtn { position: relative; }
+#preloadBtn.pulsing { animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+#preloadBarWrap {
+  width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px;
+  margin-top: 6px; overflow: hidden; display: none;
+}
+#preloadBar {
+  height: 100%; width: 0%; background: #4fc3f7; border-radius: 2px; transition: width .3s;
+}
+#cacheStats { font-size: 11px; opacity: .6; margin-left: 4px; }
+#app { max-width: 900px; margin: 0 auto; padding: 16px; }
+#questionArea {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 28px; margin-bottom: 16px; min-height: 300px; transition: background .2s;
+}
+.q-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; padding-bottom: 14px; border-bottom: 2px solid var(--border);
+}
+.q-number {
+  font-size: 22px; font-weight: 800; color: var(--primary);
+  background: var(--choice-selected); padding: 2px 14px; border-radius: 6px;
+  text-decoration: none; cursor: pointer;
+}
+.q-number:hover { opacity: .8; }
+.q-status { margin-left: auto; display: flex; gap: 6px; }
+.q-status button {
+  width: 36px; height: 36px; border: 2px solid var(--border); border-radius: 50%;
+  background: var(--surface); cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center; transition: all .15s;
+}
+.q-status button:hover { transform: scale(1.1); }
+.q-status button.mark-correct { border-color: var(--correct-text); background: var(--correct-bg); }
+.q-status button.mark-incorrect { border-color: var(--incorrect-text); background: var(--incorrect-bg); }
+.q-status button.mark-bookmark { border-color: var(--bookmark-color); color: var(--bookmark-color); }
+#mondai { font-size: 16px; padding: 12px 0; margin-bottom: 20px; }
+#mondai .ol { text-decoration: overline; }
+.selectList { list-style: none; margin: 16px 0; }
+.selectList li {
+  margin: 8px 0; display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px;
+  cursor: pointer; transition: all .15s;
+}
+.selectList li:hover { background: var(--choice-hover); }
+.selectList li.show-correct.correct-choice { background: var(--correct-bg); border-color: var(--correct-text); }
+.selectList li.show-correct.wrong-choice { background: var(--incorrect-bg); border-color: var(--incorrect-text); }
+.selectList li .choice-label { font-weight: 700; min-width: 24px; color: var(--primary); }
+.selectList li .frac, #kaisetsu .frac {
+  display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.15;
+}
+.selectList li .frac > span, #kaisetsu .frac > span {
+  display: flex; justify-content: center; align-items: flex-end;
+  padding: 1px 6px; border-bottom: 2px solid var(--text); min-width: 1.5em;
+}
+.selectList li .frac sup, #kaisetsu .frac sup { font-size: 10px; }
+.answer-section, .explanation-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.answer-section h3, .explanation-section h3 { font-size: 14px; margin-bottom: 8px; color: var(--text-secondary); }
+#answerChar { font-size: 24px; font-weight: 800; color: var(--correct-text); display: none; }
+.answer-section.visible #answerChar { display: inline; }
+#kaisetsu { font-size: 14px; line-height: 1.9; display: none; }
+.explanation-section.visible #kaisetsu { display: block; }
+#kaisetsu .ol { text-decoration: overline; }
+#kaisetsu img { max-width: 100%; height: auto; border-radius: 4px; margin: 8px 0; }
+#kaisetsu ul { padding-left: 24px; margin: 8px 0; }
+#kaisetsu li { margin: 4px 0; }
+#kaisetsu .lia { list-style: none; } #kaisetsu .lia::before { content: "ア "; font-weight: 700; }
+#kaisetsu .lii { list-style: none; } #kaisetsu .lii::before { content: "イ "; font-weight: 700; }
+#kaisetsu .liu { list-style: none; } #kaisetsu .liu::before { content: "ウ "; font-weight: 700; }
+#kaisetsu .lie { list-style: none; } #kaisetsu .lie::before { content: "エ "; font-weight: 700; }
+#kaisetsu dl { margin: 8px 0; } #kaisetsu dt { font-weight: 700; margin-top: 10px; } #kaisetsu dd { margin-left: 16px; }
+.info-row { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-secondary); }
+.info-row a { color: var(--primary); text-decoration: none; } .info-row a:hover { text-decoration: underline; }
+.btm-nav { display: flex; gap: 10px; margin-top: 20px; align-items: center; flex-wrap: wrap; }
+.btm-nav button {
+  padding: 8px 20px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+  font-family: inherit; transition: all .15s; box-shadow: var(--shadow);
+}
+.btm-nav button:hover { background: var(--choice-hover); }
+.btm-nav button:disabled { opacity: .4; cursor: default; }
+.btm-nav .page-jump { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.btm-nav .page-jump input {
+  width: 60px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px;
+  text-align: center; font-size: 14px; font-family: inherit; background: var(--surface); color: var(--text);
+}
+.btm-nav .page-jump span { font-size: 13px; color: var(--text-secondary); }
+#questionGrid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 6px; margin-top: 12px; max-height: 200px; overflow-y: auto;
+}
+#questionGrid button {
+  aspect-ratio: 1; border: 1px solid var(--border); border-radius: 4px;
+  background: var(--surface); color: var(--text); font-size: 13px;
+  cursor: pointer; transition: all .1s; font-family: inherit;
+}
+#questionGrid button:hover { outline: 2px solid var(--primary); outline-offset: -2px; }
+#questionGrid button.current { border-color: var(--primary); background: var(--choice-selected); font-weight: 700; }
+#questionGrid button.status-correct { background: var(--correct-bg); border-color: var(--correct-text); color: var(--correct-text); }
+#questionGrid button.status-incorrect { background: var(--incorrect-bg); border-color: var(--incorrect-text); color: var(--incorrect-text); }
+#questionGrid button.status-bookmark { color: var(--bookmark-color); font-weight: 700; }
+#questionGrid button.cached { opacity: 1; } #questionGrid button.uncached { opacity: .45; }
+
+/* 草稿画板 */
+#scratchpad { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: #fff; box-shadow: -2px 0 12px rgba(0,0,0,.15); z-index: 100; transition: right .25s; display: flex; flex-direction: column; }
+body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,.4); }
+#scratchpad.open { right: 0; }
+body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open header { margin-right: 300px; transition: margin-right .25s; }
+#scratchpad .sp-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+#scratchpad .sp-header button { border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); padding: 4px 10px; font-size: 12px; cursor: pointer; font-family: inherit; }
+#scratchpad .sp-header .sp-title { font-size: 14px; font-weight: 600; margin-right: auto; }
+#scratchpad canvas { flex: 1; cursor: crosshair; touch-action: none; background: #fff; }
+#scratchpad .sp-tools { display: flex; gap: 6px; padding: 8px 12px; border-top: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; align-items: center; }
+#scratchpad .sp-tools button { border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); padding: 4px 8px; font-size: 12px; cursor: pointer; font-family: inherit; }
+#scratchpad .sp-tools .color-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; }
+#scratchpad .sp-tools .color-dot.active { border-color: var(--primary); }
+.loading { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+.loading .spinner {
+  width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--primary);
+  border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-msg { text-align: center; padding: 40px 20px; color: var(--incorrect-text); }
+.error-msg .retry-btn { margin-top: 12px; padding: 8px 24px; border: none; border-radius: 4px; background: var(--primary); color: #fff; cursor: pointer; font-size: 14px; font-family: inherit; }
+
+#celebration {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(26,115,232,0.12) 0%, transparent 65%);
+  transition: opacity .15s;
+}
+#celebration.show { opacity: 1; }
+#celebration .inner {
+  text-align: center; transform: translateY(0);
+}
+#celebration .text {
+  font-size: clamp(40px, 10vw, 80px); font-weight: 900;
+  font-family: 'Hiragino Sans', 'Noto Sans JP', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #f9ab00, #ea4335, #1a73e8, #34a853);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+  animation: popIn .55s cubic-bezier(.34,1.56,.64,1) forwards;
+  transform-origin: center;
+}
+@keyframes popIn {
+  0% { transform: scale(0.2) rotate(-12deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+#celebration .sub {
+  font-size: clamp(15px, 3vw, 28px); margin-top: 16px;
+  font-family: 'Hiragino Sans', 'Noto Sans JP', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-weight: 600; color: var(--text-secondary);
+  animation: fadeUp .6s .25s both;
+}
+@keyframes fadeUp {
+  0% { transform: translateY(30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-5vh) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(1080deg) scale(0.3); opacity: 0; }
+}
+.confetti {
+  position: fixed; top: 0; z-index: 9998; pointer-events: none;
+  border-radius: 3px; animation: confetti-fall 3s ease-in forwards;
+}
+#dropOverlay {
+  position: fixed; inset: 0; z-index: 10000; pointer-events: none;
+  background: rgba(26,115,232,0.08);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s;
+}
+#dropOverlay.show { opacity: 1; pointer-events: auto; }
+#dropOverlay .dropText {
+  font-size: 28px; font-weight: 700; color: var(--primary);
+  background: var(--surface); padding: 24px 48px; border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+  border: 3px dashed var(--primary);
+}
+@media (max-width: 600px) {
+  #app { padding: 8px; } #questionArea { padding: 16px; } .q-number { font-size: 18px; }
+  .toolbar { gap: 4px; } .toolbar button, .toolbar select { font-size: 12px; padding: 4px 10px; }
+  .btm-nav .page-jump { margin-left: 0; width: 100%; justify-content: center; }
+  body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open header { margin-right: 0; }
+  #scratchpad { width: 260px; right: -280px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>基本情報技術者 令和3年度（午前免除）</h1>
+  <div class="sub">全80問 — 解答・解説付き <span id="cacheStats"></span> <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / D草稿 / Space解答</span></div>
+  <div class="toolbar">
+    <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
+    <select id="filterSelect">
+      <option value="all">すべて</option>
+      <option value="unanswered">未回答</option>
+      <option value="correct">正解</option>
+      <option value="incorrect">不正解</option>
+      <option value="bookmark">ブックマーク</option>
+    </select>
+    <button id="randomBtn" title="随机 (R)">🎲 ランダム</button>
+    <button id="shuffleToggle" title="打乱 (S)">🔀 打順</button>
+    <button id="gridToggle" title="一覧 (G)">📋 一覧</button>
+    <button id="draftToggle" title="草稿 (D)">✏ 草稿</button>
+    <span class="spacer"></span>
+    <span class="progress-text" id="progressText">0/80</span>
+    <button id="preloadBtn" title="一括取得 (P)">⬇ 一括取得</button>
+    <button id="exportBtn" title="导出缓存 (E)">📤</button>
+    <button id="exportFullBtn" title="导出全量数据">📦</button>
+    <button id="importBtn" title="导入缓存 (I)">📥</button>
+    <input type="file" id="importFile" accept=".json" style="display:none">
+  </div>
+  <div id="preloadBarWrap"><div id="preloadBar"></div></div>
+  <div id="questionGrid" style="display:none"></div>
+</header>
+
+<div id="app">
+  <div id="questionArea">
+    <div class="q-header">
+      <a class="q-number" id="qNumber" href="#" target="_blank" title="原題を開く">問1</a>
+      <div class="q-status">
+        <button id="markCorrect" title="正解 (C)">✓</button>
+        <button id="markIncorrect" title="不正解 (X)">✗</button>
+        <button id="markBookmark" title="ブックマーク (B)">★</button>
+        <button id="translateBtn" title="日中切替 (T)" style="font-size:13px;border-color:var(--text-secondary)">中</button>
+      </div>
+    </div>
+    <div class="loading" id="loadingIndicator">
+      <div class="spinner"></div>
+      <div>読み込み中...</div>
+    </div>
+    <div id="questionContent" style="display:none">
+      <div id="mondai"></div>
+      <ul class="selectList" id="selectList"></ul>
+      <div class="answer-section" id="answerSection">
+        <h3>正解</h3>
+        <span id="answerChar"></span>
+        <button id="showAnswerBtn" title="表示/收起 (Space)">正解を表示する</button>
+      </div>
+      <div class="explanation-section" id="explanationSection">
+        <h3>解説</h3>
+        <div id="kaisetsu"></div>
+      </div>
+      <div class="info-row" id="infoRow"></div>
+    </div>
+  </div>
+
+  <div id="celebration"><div class="inner"><div class="text">腻害捏，BoBo~！</div><div class="sub">🎉 一次就答对了</div></div></div>
+  <div class="btm-nav">
+    <button id="prevBtn" title="←">◀ 前</button>
+    <button id="nextBtn" title="→">次 ▶</button>
+    <button id="autoNextBtn" title="自動送り">▶ 自動</button>
+    <div class="page-jump">
+      <span>問</span>
+      <input type="number" id="jumpInput" min="1" max="80" value="1">
+      <button id="jumpBtn">Go</button>
+    </div>
+  </div>
+</div>
+
+<!-- 草稿画板 -->
+<div id="scratchpad">
+  <div class="sp-header">
+    <span class="sp-title">✏ 草稿</span>
+    <button id="spClear">🗑 清除</button>
+    <button id="spClose">✕</button>
+  </div>
+  <canvas id="spCanvas"></canvas>
+  <div class="sp-tools">
+    <button class="color-dot active" data-color="#000" style="background:#000"></button>
+    <button class="color-dot" data-color="#e53935" style="background:#e53935"></button>
+    <button class="color-dot" data-color="#1a73e8" style="background:#1a73e8"></button>
+    <button class="color-dot" data-color="#34a853" style="background:#34a853"></button>
+    <button class="color-dot" data-color="#f9ab00" style="background:#f9ab00"></button>
+    <span style="margin:0 4px;color:var(--text-secondary)">|</span>
+    <button data-size="2" class="active">细</button>
+    <button data-size="5">中</button>
+    <button data-size="10">粗</button>
+  </div>
+</div>
+
+<script>
+// ===================== CONFIG =====================
+const TOTAL = 80;
+const BASE_URL = 'https://www.fe-siken.com/kakomon/03_menjo/q';
+
+// 複数のCORSプロキシを試行（上から順にフォールバック）
+const PROXIES = [
+  'https://api.allorigins.win/raw?url=',
+  'https://proxy.killcors.com/?url=',
+  'https://api.cors.lol/?url=',
+];
+// 本地页面文件目录（download_all.ps1 下载后存放的路径）
+const LOCAL_PAGES_DIR = './pages/';
+
+// localStorage キー
+const LS_CACHE_PREFIX = 'fe2021_cache_';
+const LS_MARKS = 'fe2021_marks';
+const LS_DARK = 'fe2021_dark';
+const CACHE_VERSION = 2; // 缓存数据格式版本，改代码后加1让旧缓存失效
+const JSON_FILE = (window.location.pathname.split('/').pop().replace(/\.html$/, '') || 'questions') + '.json'; // 跟随 HTML 文件名
+
+// ===================== STATE =====================
+const state = {
+  current: 1,
+  data: {},          // { [qNum]: parsed question object }
+  marks: JSON.parse(localStorage.getItem(LS_MARKS) || '{}'),
+  filter: 'all',
+  autoNext: false,
+  dark: localStorage.getItem(LS_DARK) === '1',
+  shuffle: false,
+  translated: false,
+  preloading: false,
+};
+
+const chars = ['ア', 'イ', 'ウ', 'エ', 'オ'];
+
+// ===================== DOM REFS =====================
+const $ = id => document.getElementById(id);
+const loadingEl = $('loadingIndicator');
+const contentEl = $('questionContent');
+const qNumber = $('qNumber');
+const mondaiEl = $('mondai');
+const selectList = $('selectList');
+const answerChar = $('answerChar');
+const showAnswerBtn = $('showAnswerBtn');
+const answerSection = $('answerSection');
+const kaisetsuEl = $('kaisetsu');
+const explanationSection = $('explanationSection');
+const infoRow = $('infoRow');
+const prevBtn = $('prevBtn');
+const nextBtn = $('nextBtn');
+const autoNextBtn = $('autoNextBtn');
+const jumpInput = $('jumpInput');
+const jumpBtn = $('jumpBtn');
+const themeToggle = $('themeToggle');
+const filterSelect = $('filterSelect');
+const randomBtn = $('randomBtn');
+const gridToggle = $('gridToggle');
+const questionGrid = $('questionGrid');
+const progressText = $('progressText');
+const markCorrect = $('markCorrect');
+const markIncorrect = $('markIncorrect');
+const markBookmark = $('markBookmark');
+
+const translateBtn = $('translateBtn');
+const preloadBtn = $('preloadBtn');
+const preloadBarWrap = $('preloadBarWrap');
+const preloadBar = $('preloadBar');
+const cacheStats = $('cacheStats');
+const shuffleToggle = $('shuffleToggle');
+const draftToggle = $('draftToggle');
+
+// ===================== THEME =====================
+function applyTheme() {
+  document.body.classList.toggle('dark', state.dark);
+  themeToggle.textContent = state.dark ? '☀️ ライト' : '🌙 ダーク';
+  localStorage.setItem(LS_DARK, state.dark ? '1' : '0');
+}
+themeToggle.addEventListener('click', () => { state.dark = !state.dark; applyTheme(); });
+applyTheme();
+
+// ===================== LOCALSTORAGE CACHE =====================
+function getCacheKey(num) { return LS_CACHE_PREFIX + num; }
+
+function isCached(num) {
+  const raw = localStorage.getItem(getCacheKey(num));
+  if (!raw) return false;
+  try { return JSON.parse(raw)._v === CACHE_VERSION; } catch (e) { return false; }
+}
+function loadFromCache(num) {
+  const raw = localStorage.getItem(getCacheKey(num));
+  if (raw) {
+    try {
+      const obj = JSON.parse(raw);
+      if (obj._v === CACHE_VERSION) {
+        state.data[num] = obj;
+        return true;
+      }
+    } catch (e) { /* corrupt, re-fetch */ }
+  }
+  return false;
+}
+
+function saveToCache(num) {
+  if (state.data[num]) {
+    state.data[num]._v = CACHE_VERSION;
+    localStorage.setItem(getCacheKey(num), JSON.stringify(state.data[num]));
+  }
+}
+
+function updateCacheStats() {
+  let cached = 0;
+  for (let i = 1; i <= TOTAL; i++) {
+    if (isCached(i)) cached++;
+  }
+  cacheStats.textContent = cached > 0 ? `(キャッシュ: ${cached}/${TOTAL})` : '';
+  updateGrid();
+}
+
+function saveMarks() {
+  localStorage.setItem(LS_MARKS, JSON.stringify(state.marks));
+}
+
+// ===================== PROGRESS / GRID =====================
+function updateProgress() {
+  const answered = Object.keys(state.marks).filter(k => state.marks[k] !== null).length;
+  progressText.textContent = `${answered}/${TOTAL}`;
+  updateGrid();
+}
+
+function updateGrid() {
+  if (questionGrid.style.display === 'none') return;
+  questionGrid.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.dataset.num = i;
+    const inData = !!state.data[i];
+    const inCache = isCached(i);
+    btn.classList.add(inData || inCache ? 'cached' : 'uncached');
+    if (i === state.current) btn.classList.add('current');
+    const m = state.marks[i];
+    if (m === 'correct') btn.classList.add('status-correct');
+    else if (m === 'incorrect') btn.classList.add('status-incorrect');
+    else if (m === 'bookmark') btn.classList.add('status-bookmark');
+    btn.addEventListener('click', () => loadQuestion(i));
+    questionGrid.appendChild(btn);
+  }
+}
+
+// ===================== FETCH with local file priority =====================
+async function tryLocalFile(num) {
+  try {
+    const res = await fetch(LOCAL_PAGES_DIR + 'q' + num + '.html', { signal: AbortSignal.timeout(2000) });
+    if (res.ok) return await res.text();
+  } catch (e) { /* 不存在 */ }
+  return null;
+}
+async function fetchWithProxy(url, proxyUrl) {
+  const fullUrl = proxyUrl + url;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 6000);
+  try {
+    const res = await fetch(fullUrl, { signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function fetchQuestionHTML(num) {
+  // 优先读本地文件（速度最快，无 CORS 问题）
+  try {
+    const localRes = await fetch(LOCAL_PAGES_DIR + 'q' + num + '.html', { signal: AbortSignal.timeout(3000) });
+    if (localRes.ok) return await localRes.text();
+  } catch (e) { /* 本地不存在，走代理 */ }
+
+  const url = BASE_URL + num + '.html';
+  const errors = [];
+
+  for (const proxy of PROXIES) {
+    try {
+      return await fetchWithProxy(url, proxy);
+    } catch (e) {
+      errors.push(`${proxy}: ${e.message}`);
+    }
+  }
+
+  // 最後にプロキシ無しを試す（CORSがあるのでほぼ失敗する）
+  try {
+    const res = await fetch(url, { mode: 'cors', signal: AbortSignal.timeout(8000) });
+    if (res.ok) return await res.text();
+  } catch (e) {
+    errors.push(`direct: ${e.message}`);
+  }
+
+  throw new Error(`全プロキシ失敗\n${errors.join('\n')}`);
+}
+
+// ===================== PARSE =====================
+function parseHTML(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+
+  const mondai = doc.querySelector('#mondai');
+  if (!mondai) throw new Error('問題文が見つかりません');
+
+  const fixImages = (html) => html.replace(/src="(?!https?:\/\/)([^"]+)"/g, (m, src) => {
+    return 'src="' + (src.startsWith('/') ? 'https://www.fe-siken.com' : 'https://www.fe-siken.com/kakomon/03_menjo/') + src + '"';
+  });
+  const mondaiHTML = fixImages(mondai.innerHTML);
+
+  const selects = [];
+  const items = doc.querySelectorAll('.selectList li');
+  items.forEach((li, i) => {
+    const btn = li.querySelector('.selectBtn');
+    const isCorrect = btn && btn.id === 't';
+    const text = li.innerHTML.replace(/<button[^>]*>.*?<\/button>/, '').trim();
+    selects.push({ label: chars[i] || '', text, isCorrect });
+  });
+
+  const answerEl = doc.querySelector('#answerChar');
+  const answer = answerEl ? answerEl.textContent.trim() : '';
+
+  const kaisetsu = doc.querySelector('#kaisetsu');
+  let kaisetsuHTML = '';
+  if (kaisetsu) kaisetsuHTML = fixImages(kaisetsu.innerHTML);
+
+  let infoHTML = '';
+  const h3s = doc.querySelectorAll('#mainCol h3');
+  h3s.forEach(h3 => {
+    const next = h3.nextElementSibling;
+    if (next && next.tagName === 'DIV' && !next.classList.contains('answerBox') && h3.textContent.includes('分類')) {
+      infoHTML += '<strong>分類:</strong> ' + next.innerHTML;
+    }
+  });
+
+  return { mondai: mondaiHTML, selects, answer, kaisetsu: kaisetsuHTML, info: infoHTML };
+}
+
+// ===================== DISPLAY =====================
+function displayQuestion(num, data) {
+  mondaiEl.innerHTML = data.mondai;
+
+  selectList.innerHTML = '';
+  const items = state.shuffle ? [...data.selects].sort(() => Math.random() - 0.5) : data.selects;
+  items.forEach((s) => {
+    const origIdx = data.selects.indexOf(s);
+    const li = document.createElement('li');
+    li.dataset.origIdx = origIdx;
+    li.innerHTML = '<span class="choice-label">' + s.label + '</span><span>' + s.text + '</span>';
+    li.addEventListener('click', () => handleChoiceClick(num, origIdx));
+    selectList.appendChild(li);
+  });
+
+  answerChar.textContent = data.answer;
+  answerSection.classList.remove('visible');
+  kaisetsuEl.innerHTML = data.kaisetsu;
+  explanationSection.classList.remove('visible');
+  infoRow.innerHTML = data.info;
+
+  updateMarkUI();
+  updateProgress();
+  jumpInput.value = num;
+
+  // 恢复翻译状态
+  if (localStorage.getItem('lastTranslated') === '1' && !state.translated) {
+    translateBtn.click();
+  }
+}
+
+function showCelebration() {
+  const el = $('celebration');
+  el.classList.add('show');
+  const colors = ['#f94144','#f3722c','#f8961e','#f9c74f','#90be6d','#43aa8b','#577590','#277da1','#f72585','#b5179e'];
+  const shapes = ['50%','2px','0'];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.top = '-10px';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    const size = 6 + Math.random() * 10;
+    c.style.width = size + 'px';
+    c.style.height = size * (0.4 + Math.random() * 0.8) + 'px';
+    c.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
+    c.style.animationDuration = (2 + Math.random() * 2.5) + 's';
+    c.style.animationDelay = Math.random() * 1.2 + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 5500);
+  }
+  setTimeout(() => { el.classList.remove('show'); }, 1800);
+}
+
+function handleChoiceClick(num, index) {
+  const data = state.data[num];
+  if (!data) return;
+  const selected = data.selects[index];
+  if (!selected) return;
+
+  const firstTry = !answerSection.classList.contains('visible');
+  showAnswerInternal(num, index);
+
+  if (firstTry && selected.isCorrect) showCelebration();
+
+  const prev = state.marks[num];
+  state.marks[num] = selected.isCorrect
+    ? (prev === 'correct' ? null : 'correct')
+    : (prev === 'incorrect' ? null : 'incorrect');
+  updateMarkUI();
+  updateProgress();
+  saveMarks();
+
+  if (state.autoNext && num < TOTAL) {
+    setTimeout(() => loadQuestion(num + 1), 600);
+  }
+}
+
+function showAnswerInternal(num, selectedIndex) {
+  const data = state.data[num];
+  if (!data) return;
+  answerSection.classList.add('visible');
+  explanationSection.classList.add('visible');
+  const lis = selectList.querySelectorAll('li');
+  lis.forEach((li) => {
+    li.classList.remove('show-correct', 'correct-choice', 'wrong-choice');
+    li.classList.add('show-correct');
+    const origIdx = parseInt(li.dataset.origIdx);
+    const isCorrect = data.selects[origIdx] && data.selects[origIdx].isCorrect;
+    if (isCorrect) li.classList.add('correct-choice');
+    if (selectedIndex !== undefined && origIdx === selectedIndex && !isCorrect) {
+      li.classList.add('wrong-choice');
+    }
+  });
+}
+
+showAnswerBtn.addEventListener('click', () => {
+  if (answerSection.classList.contains('visible')) {
+    answerSection.classList.remove('visible');
+    explanationSection.classList.remove('visible');
+  } else {
+    showAnswerInternal(state.current);
+  }
+});
+
+function updateMarkUI() {
+  const m = state.marks[state.current] || null;
+  [markCorrect, markIncorrect, markBookmark].forEach(b => b.className = '');
+  if (m === 'correct') markCorrect.classList.add('mark-correct');
+  else if (m === 'incorrect') markIncorrect.classList.add('mark-incorrect');
+  else if (m === 'bookmark') markBookmark.classList.add('mark-bookmark');
+}
+
+function toggleMark(type) {
+  const m = state.marks[state.current];
+  state.marks[state.current] = m === type ? null : type;
+  updateMarkUI();
+  updateProgress();
+  saveMarks();
+}
+markCorrect.addEventListener('click', () => toggleMark('correct'));
+markIncorrect.addEventListener('click', () => toggleMark('incorrect'));
+markBookmark.addEventListener('click', () => toggleMark('bookmark'));
+
+
+// ===================== TRANSLATE =====================
+const TRANS_API = 'https://translate.googleapis.com/translate_a/t?client=dict-chrome-ex&sl=ja&tl=zh-CN&q=';
+
+async function translateText(text) {
+  if (!text.trim()) return text;
+  // 保护数字、大写缩写不被翻译
+  const ph = [];
+  let t = text;
+  t = t.replace(/\b\d+(?:[.,]\d+)*\b|\b[A-Z]{2,}\b/g, m => { const i = ph.length; ph.push(m); return `__PH${i}__`; });
+  try {
+    const res = await fetch(TRANS_API + encodeURIComponent(t.slice(0, 1800)), { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return text;
+    const data = await res.json();
+    let r = data && data[0] ? data[0] : text;
+    ph.forEach((v, i) => { r = r.split(`__PH${i}__`).join(v); });
+    return r;
+  } catch (e) { /* 失败静默 */ }
+  return text;
+}
+
+async function translateNode(node) {
+  // 跳过已经翻译过的节点、图片、脚本等
+  if (!node || node.nodeType === 8 || node.tagName === 'IMG' || node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
+  if (node.nodeType === 3) { // 文本节点
+    const t = node.nodeValue.trim();
+    if (t) node.nodeValue = node.nodeValue.replace(t, await translateText(t));
+    return;
+  }
+  // 遍历子节点
+  const children = [...node.childNodes];
+  for (const c of children) await translateNode(c);
+}
+
+let translateOriginal = {}; // 存原文
+
+translateBtn.addEventListener('click', async () => {
+  const num = state.current;
+  const d = state.data[num];
+  if (!d) return;
+
+  if (state.translated) {
+    mondaiEl.innerHTML = d.mondai;
+    const lis = selectList.querySelectorAll('li');
+    d.selects.forEach((s, i) => { if (lis[i]) lis[i].querySelector('span:last-child').innerHTML = s.text; });
+    kaisetsuEl.innerHTML = d.kaisetsu;
+    state.translated = false;
+    translateBtn.textContent = '中';
+    translateBtn.classList.remove('active');
+    localStorage.setItem('lastTranslated', '0');
+    return;
+  }
+
+  // 有缓存翻译直接使用
+  if (d._tr) {
+    mondaiEl.innerHTML = d._tr.mondai;
+    const lis = selectList.querySelectorAll('li');
+    lis.forEach(li => { const o = li.dataset.origIdx; if (d._tr.sels && d._tr.sels[o]) li.querySelector('span:last-child').innerHTML = d._tr.sels[o]; });
+    kaisetsuEl.innerHTML = d._tr.kaisetsu;
+    state.translated = true;
+    translateBtn.textContent = '日';
+    translateBtn.classList.add('active');
+    localStorage.setItem('lastTranslated', '1');
+    return;
+  }
+
+  translateBtn.textContent = '…';
+  await translateNode(mondaiEl);
+  const lis = selectList.querySelectorAll('li');
+  for (const li of lis) {
+    const span = li.querySelector('span:last-child');
+    if (span) await translateNode(span);
+  }
+  await translateNode(kaisetsuEl);
+
+  // 保存翻译缓存（按原始索引存储）
+  const sels = {};
+  lis.forEach(li => { const s = li.querySelector('span:last-child'); if (s) sels[li.dataset.origIdx] = s.innerHTML; });
+  d._tr = { mondai: mondaiEl.innerHTML, sels, kaisetsu: kaisetsuEl.innerHTML };
+
+  state.translated = true;
+  translateBtn.textContent = '日';
+  translateBtn.classList.add('active');
+  localStorage.setItem('lastTranslated', '1');
+  saveToCache(num);
+});
+
+// ===================== LOAD =====================
+async function loadQuestion(num) {
+  if (num < 1 || num > TOTAL) return;
+  state.current = num;
+  qNumber.textContent = '問' + num;
+  qNumber.href = BASE_URL + num + '.html';
+  jumpInput.value = num;
+
+  if (state.data[num]) {
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'block';
+    displayQuestion(num, state.data[num]);
+    return;
+  }
+
+  // 尝试读本地 HTML（优先，解析最新）
+  const localHtml = await tryLocalFile(num);
+  if (localHtml) {
+    state.data[num] = parseHTML(localHtml);
+    saveToCache(num);
+    updateCacheStats();
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'block';
+    displayQuestion(num, state.data[num]);
+    return;
+  }
+
+  // 回退到 localStorage 缓存
+  if (loadFromCache(num)) {
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'block';
+    displayQuestion(num, state.data[num]);
+    return;
+  }
+
+  // 最后走代理
+  loadingEl.style.display = 'block';
+  contentEl.style.display = 'none';
+
+  try {
+    const html = await fetchQuestionHTML(num);
+    state.data[num] = parseHTML(html);
+    saveToCache(num);
+    updateCacheStats();
+  } catch (e) {
+    loadingEl.innerHTML =
+      '<div class="error-msg">' +
+      '<div>問' + num + ' の読み込みに失敗しました</div>' +
+      '<div style="font-size:13px;margin-top:6px;color:var(--text-secondary)">' + e.message.replace(/\n/g, '<br>') + '</div>' +
+      '<button class="retry-btn" onclick="loadQuestion(' + num + ')">再試行</button>' +
+      '</div>';
+    return;
+  }
+
+  loadingEl.style.display = 'none';
+  contentEl.style.display = 'block';
+  displayQuestion(num, state.data[num]);
+}
+
+// ===================== PRELOAD ALL =====================
+async function preloadAll() {
+  if (state.preloading) return;
+
+  // 只统计尚未缓存的题目
+  const todo = [];
+  for (let i = 1; i <= TOTAL; i++) {
+    if (state.data[i] || isCached(i)) {
+      if (!state.data[i]) loadFromCache(i);
+    } else {
+      todo.push(i);
+    }
+  }
+  if (todo.length === 0) {
+    updateCacheStats();
+    updateProgress();
+    return;
+  }
+
+  state.preloading = true;
+  preloadBtn.textContent = '⏳ 0/' + todo.length;
+  preloadBtn.classList.add('pulsing');
+  preloadBarWrap.style.display = 'block';
+  preloadBar.style.width = '0%';
+
+  const CONCURRENCY = 5;
+  let done = 0;
+  const fetchOne = async (i) => {
+    try {
+      const html = await fetchQuestionHTML(i);
+      state.data[i] = parseHTML(html);
+      saveToCache(i);
+    } catch (e) {
+      console.warn('問' + i + ' 失敗:', e.message);
+    }
+    done++;
+  };
+  const batches = [];
+  for (let i = 0; i < todo.length; i += CONCURRENCY) {
+    batches.push(todo.slice(i, i + CONCURRENCY).map(fetchOne));
+  }
+  for (const batch of batches) {
+    await Promise.all(batch);
+    preloadBtn.textContent = '⏳ ' + done + '/' + todo.length;
+    preloadBar.style.width = (done / todo.length * 100) + '%';
+  }
+
+  state.preloading = false;
+  preloadBtn.textContent = '⬇ 一括取得';
+  preloadBtn.classList.remove('pulsing');
+  preloadBar.style.width = '100%';
+  setTimeout(() => { preloadBarWrap.style.display = 'none'; }, 1500);
+
+  updateCacheStats();
+  updateProgress();
+
+  // 自动询问下载 questions.json
+  setTimeout(() => {
+    if (confirm('一括取得完成！是否下载 ' + JSON_FILE + ' 以便离线使用？（之后可删除 pages/ 文件夹）')) {
+      exportFullBtn.click();
+    }
+  }, 500);
+
+  // 現在の問題が未ロードだったらリロード
+  if (!state.data[state.current]) loadQuestion(state.current);
+}
+
+preloadBtn.addEventListener('click', preloadAll);
+
+// ===================== NAVIGATION =====================
+function getFilteredNums() {
+  const f = state.filter;
+  if (f === 'all') return Array.from({ length: TOTAL }, (_, i) => i + 1);
+  return Array.from({ length: TOTAL }, (_, i) => i + 1).filter(n => {
+    const m = state.marks[n];
+    if (f === 'unanswered') return !m;
+    if (f === 'correct') return m === 'correct';
+    if (f === 'incorrect') return m === 'incorrect';
+    if (f === 'bookmark') return m === 'bookmark';
+    return true;
+  });
+}
+
+prevBtn.addEventListener('click', () => {
+  const nums = getFilteredNums();
+  const idx = nums.indexOf(state.current);
+  if (idx > 0) loadQuestion(nums[idx - 1]);
+});
+nextBtn.addEventListener('click', () => {
+  const nums = getFilteredNums();
+  const idx = nums.indexOf(state.current);
+  if (idx < nums.length - 1) loadQuestion(nums[idx + 1]);
+});
+
+autoNextBtn.addEventListener('click', () => {
+  state.autoNext = !state.autoNext;
+  autoNextBtn.classList.toggle('active', state.autoNext);
+});
+
+jumpBtn.addEventListener('click', () => {
+  const v = parseInt(jumpInput.value);
+  if (v >= 1 && v <= TOTAL) loadQuestion(v);
+});
+jumpInput.addEventListener('keydown', e => { if (e.key === 'Enter') jumpBtn.click(); });
+
+randomBtn.addEventListener('click', () => {
+  const nums = getFilteredNums();
+  loadQuestion(nums[Math.floor(Math.random() * nums.length)]);
+});
+
+filterSelect.addEventListener('change', () => {
+  state.filter = filterSelect.value;
+  updateProgress();
+});
+
+gridToggle.addEventListener('click', () => {
+  const g = questionGrid;
+  g.style.display = g.style.display === 'none' ? 'grid' : 'none';
+  gridToggle.textContent = g.style.display === 'grid' ? '📋 閉じる' : '📋 一覧';
+  updateGrid();
+});
+
+shuffleToggle.addEventListener('click', () => {
+  state.shuffle = !state.shuffle;
+  shuffleToggle.classList.toggle('active', state.shuffle);
+  if (state.data[state.current]) displayQuestion(state.current, state.data[state.current]);
+});
+
+// ===================== EXPORT / IMPORT =====================
+const exportBtn = $('exportBtn');
+const importBtn = $('importBtn');
+const importFile = $('importFile');
+const exportFullBtn = $('exportFullBtn');
+
+exportFullBtn.addEventListener('click', () => {
+  const data = { version: 3, type: 'full', marks: state.marks, questions: {} };
+  for (let i = 1; i <= TOTAL; i++) {
+    if (state.data[i]) {
+      const q = { ...state.data[i] };
+      delete q._v;
+      data.questions[i] = q;
+    }
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = JSON_FILE;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+exportBtn.addEventListener('click', () => {
+  const data = { version: 1, exportedAt: new Date().toISOString(), questions: {}, marks: state.marks };
+  for (let i = 1; i <= TOTAL; i++) {
+    const raw = localStorage.getItem(getCacheKey(i));
+    if (raw) data.questions[i] = JSON.parse(raw);
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'fe2020_cache_' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+importBtn.addEventListener('click', () => importFile.click());
+
+function importFromData(data) {
+  if (data.type === 'full') {
+    for (const [num, q] of Object.entries(data.questions)) {
+      state.data[parseInt(num)] = q;
+    }
+    delete state.data[state.current];
+    updateCacheStats();
+    updateProgress();
+    loadQuestion(state.current);
+    alert('导入完成！已加载 ' + Object.keys(data.questions).length + ' 题数据，无需 HTML 文件');
+    return true;
+  }
+  if (!data.questions) { alert('无效的缓存文件'); return false; }
+  if (!data.marks) data.marks = {};
+  let count = 0;
+  for (const [num, q] of Object.entries(data.questions)) {
+    q._v = CACHE_VERSION;
+    localStorage.setItem(getCacheKey(parseInt(num)), JSON.stringify(q));
+    count++;
+  }
+  for (const [num, mark] of Object.entries(data.marks)) {
+    if (mark) state.marks[num] = mark;
+  }
+  saveMarks();
+  delete state.data[state.current];
+  if (loadFromCache(state.current)) {
+    updateCacheStats();
+    updateProgress();
+    displayQuestion(state.current, state.data[state.current]);
+  } else {
+    updateCacheStats();
+    updateProgress();
+    loadQuestion(state.current);
+  }
+  alert('导入完成！已导入 ' + count + ' 题缓存 + ' + Object.keys(data.marks).filter(k => data.marks[k]).length + ' 条答题记录');
+  return true;
+}
+
+importFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      importFromData(data);
+    } catch (err) {
+      alert('导入失败: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  importFile.value = '';
+});
+
+// ===================== DRAG & DROP =====================
+let dragCounter = 0;
+const dropOverlay = document.createElement('div');
+dropOverlay.id = 'dropOverlay';
+dropOverlay.innerHTML = '<div class="dropText">📥 松开导入缓存文件</div>';
+document.body.appendChild(dropOverlay);
+
+function handleDropFile(file) {
+  if (!file || !file.name.endsWith('.json')) { alert('请拖入 .json 缓存文件'); return; }
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data.questions) { alert('无效的缓存文件'); return; }
+      if (!data.marks) data.marks = {};
+      importFromData(data);
+    } catch (err) {
+      alert('导入失败: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+  document.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); });
+});
+document.addEventListener('dragenter', () => { dragCounter++; dropOverlay.classList.add('show'); });
+document.addEventListener('dragleave', () => { dragCounter--; if (dragCounter <= 0) { dragCounter = 0; dropOverlay.classList.remove('show'); } });
+document.addEventListener('drop', e => {
+  dropOverlay.classList.remove('show');
+  dragCounter = 0;
+  handleDropFile(e.dataTransfer.files[0]);
+});
+// 如果 overlay 挡住了事件，直接在 overlay 上也监听从它松手
+dropOverlay.addEventListener('drop', e => {
+  dropOverlay.classList.remove('show');
+  dragCounter = 0;
+  handleDropFile(e.dataTransfer.files[0]);
+});
+
+// ===================== KEYBOARD =====================
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === '1') { const li = selectList.querySelector('li:nth-child(1)'); if (li) li.click(); }
+  else if (e.key === '2') { const li = selectList.querySelector('li:nth-child(2)'); if (li) li.click(); }
+  else if (e.key === '3') { const li = selectList.querySelector('li:nth-child(3)'); if (li) li.click(); }
+  else if (e.key === '4') { const li = selectList.querySelector('li:nth-child(4)'); if (li) li.click(); }
+  else if (e.key === 'ArrowLeft') prevBtn.click();
+  else if (e.key === 'ArrowRight') nextBtn.click();
+  else if (e.key === ' ') { e.preventDefault(); showAnswerBtn.click(); }
+  else if (e.key === 's' || e.key === 'S') shuffleToggle.click();
+  else if (e.key === 'r' || e.key === 'R') randomBtn.click();
+  else if (e.key === 'g' || e.key === 'G') gridToggle.click();
+  else if (e.key === 'b' || e.key === 'B') markBookmark.click();
+  else if (e.key === 'c' || e.key === 'C') markCorrect.click();
+  else if (e.key === 'x' || e.key === 'X') markIncorrect.click();
+  else if (e.key === 't' || e.key === 'T') translateBtn.click();
+  else if (e.key === 'd' || e.key === 'D') draftToggle.click();
+  else if (e.key === 'p' || e.key === 'P') preloadBtn.click();
+  else if (e.key === 'e' || e.key === 'E') exportBtn.click();
+  else if (e.key === 'i' || e.key === 'I') importBtn.click();
+});
+
+// ===================== LOAD FULL DATA =====================
+async function loadFullData() {
+  try {
+    const res = await fetch(JSON_FILE, { signal: AbortSignal.timeout(2000) });
+    if (!res.ok) return false;
+    const data = await res.json();
+    if (data.type === 'full' && data.questions) {
+      for (const [num, q] of Object.entries(data.questions)) {
+        state.data[parseInt(num)] = q;
+      }
+      if (data.marks) {
+        for (const [num, mark] of Object.entries(data.marks)) {
+          if (mark) state.marks[num] = mark;
+        }
+        saveMarks();
+      }
+      updateCacheStats();
+      updateProgress();
+      return true;
+    }
+  } catch (e) { /* 不存在 */ }
+  return false;
+}
+
+// ===================== INIT =====================
+(async () => {
+  const loaded = await loadFullData();
+  updateCacheStats();
+  updateProgress();
+  loadQuestion(loaded ? state.current : 1);
+})();
+
+// ===================== 草稿画板 =====================
+const scratchpad = document.getElementById('scratchpad');
+const spCanvas = document.getElementById('spCanvas');
+const spCtx = spCanvas.getContext('2d');
+let spDrawing = false, spColor = '#000', spSize = 2;
+
+function resizeCanvas() {
+  spCanvas.width = spCanvas.clientWidth;
+  spCanvas.height = spCanvas.clientHeight;
+  spCtx.lineCap = 'round'; spCtx.lineJoin = 'round';
+}
+function spGetPos(e) {
+  const r = spCanvas.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return { x: t.clientX - r.left, y: t.clientY - r.top };
+}
+function spStart(e) { e.preventDefault(); spDrawing = true; const p = spGetPos(e); spCtx.beginPath(); spCtx.moveTo(p.x, p.y); }
+function spMove(e) { e.preventDefault(); if (!spDrawing) return; const p = spGetPos(e); spCtx.strokeStyle = spColor; spCtx.lineWidth = spSize; spCtx.lineTo(p.x, p.y); spCtx.stroke(); }
+function spEnd(e) { e.preventDefault(); spDrawing = false; }
+
+spCanvas.addEventListener('mousedown', spStart);
+spCanvas.addEventListener('mousemove', spMove);
+spCanvas.addEventListener('mouseup', spEnd);
+spCanvas.addEventListener('mouseleave', spEnd);
+spCanvas.addEventListener('touchstart', spStart, { passive: false });
+spCanvas.addEventListener('touchmove', spMove, { passive: false });
+spCanvas.addEventListener('touchend', spEnd, { passive: false });
+
+document.querySelectorAll('#scratchpad .color-dot').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#scratchpad .color-dot').forEach(d => d.classList.remove('active'));
+    b.classList.add('active'); spColor = b.dataset.color;
+  });
+});
+document.querySelectorAll('#scratchpad .sp-tools button[data-size]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#scratchpad .sp-tools button[data-size]').forEach(d => d.classList.remove('active'));
+    b.classList.add('active'); spSize = parseInt(b.dataset.size);
+  });
+});
+
+document.getElementById('spClear').addEventListener('click', () => {
+  spCtx.clearRect(0, 0, spCanvas.width, spCanvas.height);
+});
+document.getElementById('spClose').addEventListener('click', () => {
+  draftToggle.click();
+});
+
+draftToggle.addEventListener('click', () => {
+  const open = scratchpad.classList.toggle('open');
+  document.body.classList.toggle('scratchpad-open', open);
+  if (open) setTimeout(resizeCanvas, 260);
+});
+
+window.addEventListener('resize', () => { if (scratchpad.classList.contains('open')) resizeCanvas(); });
+</script>
+
+</body>
+</html>
