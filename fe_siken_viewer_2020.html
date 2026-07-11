@@ -393,6 +393,7 @@ const LS_CACHE_PREFIX = 'fe2020_cache_';
 const LS_MARKS = 'fe2020_marks';
 const LS_DARK = 'fe2020_dark';
 const CACHE_VERSION = 2; // 缓存数据格式版本，改代码后加1让旧缓存失效
+const JSON_FILE = (window.location.pathname.split('/').pop().replace(/\.html$/, '') || 'questions') + '.json'; // 跟随 HTML 文件名
 
 // ===================== STATE =====================
 const state = {
@@ -941,7 +942,7 @@ async function preloadAll() {
 
   // 自动询问下载 questions.json
   setTimeout(() => {
-    if (confirm('一括取得完成！是否下载 questions.json 以便离线使用？（之后可删除 pages/ 文件夹）')) {
+    if (confirm('一括取得完成！是否下载 ' + JSON_FILE + ' 以便离线使用？（之后可删除 pages/ 文件夹）')) {
       exportFullBtn.click();
     }
   }, 500);
@@ -1030,7 +1031,7 @@ exportFullBtn.addEventListener('click', () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'questions.json';
+  a.download = JSON_FILE;
   a.click();
   URL.revokeObjectURL(url);
 });
@@ -1172,7 +1173,7 @@ document.addEventListener('keydown', e => {
 // ===================== LOAD FULL DATA =====================
 async function loadFullData() {
   try {
-    const res = await fetch('questions.json', { signal: AbortSignal.timeout(2000) });
+    const res = await fetch(JSON_FILE, { signal: AbortSignal.timeout(2000) });
     if (!res.ok) return false;
     const data = await res.json();
     if (data.type === 'full' && data.questions) {

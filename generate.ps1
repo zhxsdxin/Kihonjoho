@@ -2,6 +2,7 @@ param(
     [string]$Year = "02_menjo",
     [int]$Count = 80,
     [string]$OutputDir = "pages",
+    [string]$JsonName = "",
     [int]$DelayMs = 200,
     [switch]$Push,
     [switch]$Clean
@@ -30,8 +31,8 @@ for ($i = 1; $i -le $Count; $i++) {
     }
 }
 
-# 2. 解析所有页面生成 questions.json
-Write-Host "`n=== 解析生成 questions.json ===" -ForegroundColor Cyan
+# 2. 解析所有页面生成 JSON
+Write-Host "`n=== 生成 JSON ===" -ForegroundColor Cyan
 $chars = @('ア','イ','ウ','エ','オ','カ','キ','ク','ケ','コ')
 
 $questions = [ordered]@{}
@@ -93,7 +94,10 @@ $jsonData = @{
     marks = @{}
     questions = $questions
 }
-$jsonPath = Join-Path $PSScriptRoot "questions.json"
+if (-not $JsonName) { $JsonName = "fe_siken_viewer_$($Year -replace '_','')" }
+$jsonName = $JsonName -replace '\.json$', '' + '.json'
+$jsonPath = Join-Path $PSScriptRoot $jsonName
+Write-Host "  输出: $jsonName" -ForegroundColor Cyan
 $jsonData | ConvertTo-Json -Depth 10 | Out-File $jsonPath -Encoding UTF8
 Write-Host "  已写入 $jsonPath" -ForegroundColor Green
 
@@ -120,7 +124,7 @@ if ($Push) {
         if ($status) {
             Write-Host "`n=== Git 推送 ===" -ForegroundColor Cyan
             git -C $PSScriptRoot add -A
-            git -C $PSScriptRoot commit -m "generate questions.json for $Year"
+            git -C $PSScriptRoot commit -m "generate $jsonName for $Year"
             git -C $PSScriptRoot push
             Write-Host "  推送完成" -ForegroundColor Green
         } else {
