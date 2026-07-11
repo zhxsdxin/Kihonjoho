@@ -267,7 +267,7 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 
 <header>
   <h1>基本情報技術者 令和2年度（午前免除）</h1>
-  <div class="sub">全80問 — 解答・解説付き <span id="cacheStats"></span> <span style="opacity:.5;font-size:11px">←→前次 / S打順 / R随机 / Space解答 / E导出 / I导入</span></div>
+  <div class="sub">全80問 — 解答・解説付き <span id="cacheStats"></span> <span style="opacity:.5;font-size:11px">←→前次 / S打順 / R随机 / T翻訳 / Space解答</span></div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
     <select id="filterSelect">
@@ -300,7 +300,7 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
         <button id="markIncorrect" title="不正解">✗</button>
         <button id="markBookmark" title="ブックマーク">★</button>
         <button id="refreshBtn" title="再取得" style="font-size:14px;border-color:var(--text-secondary)">↻</button>
-        <button id="translateBtn" title="翻译" style="font-size:13px;border-color:var(--text-secondary)">译</button>
+        <button id="translateBtn" title="日中切替 (T)" style="font-size:13px;border-color:var(--text-secondary)">日</button>
       </div>
     </div>
     <div class="loading" id="loadingIndicator">
@@ -723,7 +723,6 @@ let translateOriginal = {}; // 存原文
 
 translateBtn.addEventListener('click', async () => {
   if (state.translated) {
-    // 切回原文
     const d = state.data[state.current];
     if (d) {
       mondaiEl.innerHTML = d.mondai;
@@ -732,7 +731,7 @@ translateBtn.addEventListener('click', async () => {
       kaisetsuEl.innerHTML = d.kaisetsu;
     }
     state.translated = false;
-    translateBtn.textContent = '译';
+    translateBtn.textContent = '日';
     translateBtn.classList.remove('active');
     return;
   }
@@ -1050,6 +1049,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'b' || e.key === 'B') markBookmark.click();
   else if (e.key === 'c' || e.key === 'C') markCorrect.click();
   else if (e.key === 'x' || e.key === 'X') markIncorrect.click();
+  else if (e.key === 't' || e.key === 'T') translateBtn.click();
   else if (e.key === 'p' || e.key === 'P') preloadBtn.click();
   else if (e.key === 'e' || e.key === 'E') exportBtn.click();
   else if (e.key === 'i' || e.key === 'I') importBtn.click();
