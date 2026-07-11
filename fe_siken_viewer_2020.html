@@ -748,7 +748,7 @@ async function translateText(text) {
   let t = text;
   t = t.replace(/\b\d+(?:[.,]\d+)*\b|\b[A-Z]{2,}\b/g, m => { const i = ph.length; ph.push(m); return `__PH${i}__`; });
   try {
-    const res = await fetch(TRANS_API + encodeURIComponent(t.slice(0, 1800)));
+    const res = await fetch(TRANS_API + encodeURIComponent(t.slice(0, 1800)), { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return text;
     const data = await res.json();
     let r = data && data[0] ? data[0] : text;
@@ -774,18 +774,32 @@ async function translateNode(node) {
 let translateOriginal = {}; // 存原文
 
 translateBtn.addEventListener('click', async () => {
+  const num = state.current;
+  const d = state.data[num];
+  if (!d) return;
+
   if (state.translated) {
-    const d = state.data[state.current];
-    if (d) {
-      mondaiEl.innerHTML = d.mondai;
-      const lis = selectList.querySelectorAll('li');
-      d.selects.forEach((s, i) => { if (lis[i]) lis[i].querySelector('span:last-child').innerHTML = s.text; });
-      kaisetsuEl.innerHTML = d.kaisetsu;
-    }
+    mondaiEl.innerHTML = d.mondai;
+    const lis = selectList.querySelectorAll('li');
+    d.selects.forEach((s, i) => { if (lis[i]) lis[i].querySelector('span:last-child').innerHTML = s.text; });
+    kaisetsuEl.innerHTML = d.kaisetsu;
     state.translated = false;
     translateBtn.textContent = '中';
     translateBtn.classList.remove('active');
     localStorage.setItem('lastTranslated', '0');
+    return;
+  }
+
+  // 有缓存翻译直接使用
+  if (d._tr) {
+    mondaiEl.innerHTML = d._tr.mondai;
+    const lis = selectList.querySelectorAll('li');
+    lis.forEach(li => { const o = li.dataset.origIdx; if (d._tr.sels && d._tr.sels[o]) li.querySelector('span:last-child').innerHTML = d._tr.sels[o]; });
+    kaisetsuEl.innerHTML = d._tr.kaisetsu;
+    state.translated = true;
+    translateBtn.textContent = '日';
+    translateBtn.classList.add('active');
+    localStorage.setItem('lastTranslated', '1');
     return;
   }
 
@@ -797,10 +811,17 @@ translateBtn.addEventListener('click', async () => {
     if (span) await translateNode(span);
   }
   await translateNode(kaisetsuEl);
+
+  // 保存翻译缓存（按原始索引存储）
+  const sels = {};
+  lis.forEach(li => { const s = li.querySelector('span:last-child'); if (s) sels[li.dataset.origIdx] = s.innerHTML; });
+  d._tr = { mondai: mondaiEl.innerHTML, sels, kaisetsu: kaisetsuEl.innerHTML };
+
   state.translated = true;
   translateBtn.textContent = '日';
   translateBtn.classList.add('active');
   localStorage.setItem('lastTranslated', '1');
+  saveToCache(num);
 });
 
 // ===================== LOAD =====================
