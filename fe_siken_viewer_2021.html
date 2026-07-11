@@ -386,14 +386,15 @@ const PROXIES = [
   'https://api.cors.lol/?url=',
 ];
 // 本地页面文件目录（download_all.ps1 下载后存放的路径）
-const LOCAL_PAGES_DIR = './pages/';
+const PAGE_NAME = (window.location.pathname.split('/').pop().replace(/\.html$/, '') || 'questions');
+const LOCAL_PAGES_DIR = './pages_' + PAGE_NAME.replace(/^fe_siken_viewer_/, '') + '/';
+const JSON_FILE = PAGE_NAME + '.json'; // 跟随 HTML 文件名
 
 // localStorage キー
 const LS_CACHE_PREFIX = 'fe2021_cache_';
 const LS_MARKS = 'fe2021_marks';
 const LS_DARK = 'fe2021_dark';
 const CACHE_VERSION = 2; // 缓存数据格式版本，改代码后加1让旧缓存失效
-const JSON_FILE = (window.location.pathname.split('/').pop().replace(/\.html$/, '') || 'questions') + '.json'; // 跟随 HTML 文件名
 
 // ===================== STATE =====================
 const state = {

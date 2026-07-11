@@ -10,6 +10,10 @@ param(
 
 $ErrorActionPreference = "Continue"
 $baseUrl = "https://www.fe-siken.com/kakomon/$Year/q"
+if (-not $JsonName) { $JsonName = "fe_siken_viewer_$($Year -replace '_','')" }
+$jsonName = ($JsonName -replace '\.json$', '') + '.json'
+$suffix = $JsonName -replace '^fe_siken_viewer_', '' -replace '\.json$', ''
+if (-not $OutputDir) { $OutputDir = "pages_$suffix" }
 $pagesPath = Join-Path $PSScriptRoot $OutputDir
 
 # 1. 下载所有题目网页
@@ -94,8 +98,6 @@ $jsonData = @{
     marks = @{}
     questions = $questions
 }
-if (-not $JsonName) { $JsonName = "fe_siken_viewer_$($Year -replace '_','')" }
-$jsonName = ($JsonName -replace '\.json$', '') + '.json'
 $jsonPath = Join-Path $PSScriptRoot $jsonName
 Write-Host "  输出: $jsonName" -ForegroundColor Cyan
 $jsonData | ConvertTo-Json -Depth 10 | Out-File $jsonPath -Encoding UTF8
