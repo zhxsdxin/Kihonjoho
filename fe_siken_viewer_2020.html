@@ -345,8 +345,9 @@ const PROXIES = [
   'https://api.allorigins.win/raw?url=',
   'https://proxy.killcors.com/?url=',
   'https://api.cors.lol/?url=',
-  // お手元にローカルプロキシがある場合、先頭に追記してください
 ];
+// 本地页面文件目录（download_all.ps1 下载后存放的路径）
+const LOCAL_PAGES_DIR = './pages/';
 
 // localStorage キー
 const LS_CACHE_PREFIX = 'fe2020_cache_';
@@ -495,6 +496,12 @@ async function fetchWithProxy(url, proxyUrl) {
 }
 
 async function fetchQuestionHTML(num) {
+  // 优先读本地文件（速度最快，无 CORS 问题）
+  try {
+    const localRes = await fetch(LOCAL_PAGES_DIR + 'q' + num + '.html', { signal: AbortSignal.timeout(3000) });
+    if (localRes.ok) return await localRes.text();
+  } catch (e) { /* 本地不存在，走代理 */ }
+
   const url = BASE_URL + num + '.html';
   const errors = [];
 
