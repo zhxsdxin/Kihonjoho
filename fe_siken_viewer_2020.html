@@ -939,6 +939,13 @@ async function preloadAll() {
   updateCacheStats();
   updateProgress();
 
+  // 自动询问下载 questions.json
+  setTimeout(() => {
+    if (confirm('一括取得完成！是否下载 questions.json 以便离线使用？（之后可删除 pages/ 文件夹）')) {
+      exportFullBtn.click();
+    }
+  }, 500);
+
   // 現在の問題が未ロードだったらリロード
   if (!state.data[state.current]) loadQuestion(state.current);
 }
@@ -1011,9 +1018,13 @@ const importFile = $('importFile');
 const exportFullBtn = $('exportFullBtn');
 
 exportFullBtn.addEventListener('click', () => {
-  const data = { version: 2, type: 'full', questions: {} };
+  const data = { version: 3, type: 'full', marks: state.marks, questions: {} };
   for (let i = 1; i <= TOTAL; i++) {
-    if (state.data[i]) data.questions[i] = state.data[i];
+    if (state.data[i]) {
+      const q = { ...state.data[i] };
+      delete q._v;
+      data.questions[i] = q;
+    }
   }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1167,6 +1178,12 @@ async function loadFullData() {
     if (data.type === 'full' && data.questions) {
       for (const [num, q] of Object.entries(data.questions)) {
         state.data[parseInt(num)] = q;
+      }
+      if (data.marks) {
+        for (const [num, mark] of Object.entries(data.marks)) {
+          if (mark) state.marks[num] = mark;
+        }
+        saveMarks();
       }
       updateCacheStats();
       updateProgress();
