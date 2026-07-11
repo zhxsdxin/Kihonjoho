@@ -301,6 +301,7 @@ body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open h
     <span class="progress-text" id="progressText">0/80</span>
     <button id="preloadBtn" title="一括取得 (P)">⬇ 一括取得</button>
     <button id="exportBtn" title="导出缓存 (E)">📤</button>
+    <button id="exportFullBtn" title="导出全量数据">📦</button>
     <button id="importBtn" title="导入缓存 (I)">📥</button>
     <input type="file" id="importFile" accept=".json" style="display:none">
   </div>
@@ -986,6 +987,21 @@ shuffleToggle.addEventListener('click', () => {
 const exportBtn = $('exportBtn');
 const importBtn = $('importBtn');
 const importFile = $('importFile');
+const exportFullBtn = $('exportFullBtn');
+
+exportFullBtn.addEventListener('click', () => {
+  const data = { version: 2, type: 'full', questions: {} };
+  for (let i = 1; i <= TOTAL; i++) {
+    if (state.data[i]) data.questions[i] = state.data[i];
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'questions.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
 
 exportBtn.addEventListener('click', () => {
   const data = { version: 1, exportedAt: new Date().toISOString(), questions: {}, marks: state.marks };
@@ -1005,6 +1021,17 @@ exportBtn.addEventListener('click', () => {
 importBtn.addEventListener('click', () => importFile.click());
 
 function importFromData(data) {
+  if (data.type === 'full') {
+    for (const [num, q] of Object.entries(data.questions)) {
+      state.data[parseInt(num)] = q;
+    }
+    delete state.data[state.current];
+    updateCacheStats();
+    updateProgress();
+    loadQuestion(state.current);
+    alert('导入完成！已加载 ' + Object.keys(data.questions).length + ' 题数据，无需 HTML 文件');
+    return true;
+  }
   if (!data.questions) { alert('无效的缓存文件'); return false; }
   if (!data.marks) data.marks = {};
   let count = 0;
@@ -1110,11 +1137,31 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'i' || e.key === 'I') importBtn.click();
 });
 
+// ===================== LOAD FULL DATA =====================
+async function loadFullData() {
+  try {
+    const res = await fetch('questions.json', { signal: AbortSignal.timeout(2000) });
+    if (!res.ok) return false;
+    const data = await res.json();
+    if (data.type === 'full' && data.questions) {
+      for (const [num, q] of Object.entries(data.questions)) {
+        state.data[parseInt(num)] = q;
+      }
+      updateCacheStats();
+      updateProgress();
+      return true;
+    }
+  } catch (e) { /* 不存在 */ }
+  return false;
+}
+
 // ===================== INIT =====================
-// 检测 file:// 协议，提示用 start.cmd
-updateCacheStats();
-updateProgress();
-loadQuestion(1);
+(async () => {
+  const loaded = await loadFullData();
+  updateCacheStats();
+  updateProgress();
+  loadQuestion(loaded ? state.current : 1);
+})();
 
 // ===================== 草稿画板 =====================
 const scratchpad = document.getElementById('scratchpad');
