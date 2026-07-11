@@ -481,7 +481,14 @@ function updateGrid() {
   }
 }
 
-// ===================== FETCH with proxy fallback =====================
+// ===================== FETCH with local file priority =====================
+async function tryLocalFile(num) {
+  try {
+    const res = await fetch(LOCAL_PAGES_DIR + 'q' + num + '.html', { signal: AbortSignal.timeout(2000) });
+    if (res.ok) return await res.text();
+  } catch (e) { /* 不存在 */ }
+  return null;
+}
 async function fetchWithProxy(url, proxyUrl) {
   const fullUrl = proxyUrl + url;
   const controller = new AbortController();
@@ -686,12 +693,10 @@ refreshBtn.addEventListener('click', () => {
 async function loadQuestion(num) {
   if (num < 1 || num > TOTAL) return;
   state.current = num;
-  // 先更新标题，让用户能立刻点击跳转
   qNumber.textContent = '問' + num;
   qNumber.href = BASE_URL + num + '.html';
   jumpInput.value = num;
 
-  // Already parsed in memory
   if (state.data[num]) {
     loadingEl.style.display = 'none';
     contentEl.style.display = 'block';
@@ -699,7 +704,19 @@ async function loadQuestion(num) {
     return;
   }
 
-  // Try localStorage cache first
+  // 尝试读本地 HTML（优先，解析最新）
+  const localHtml = await tryLocalFile(num);
+  if (localHtml) {
+    state.data[num] = parseHTML(localHtml);
+    saveToCache(num);
+    updateCacheStats();
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'block';
+    displayQuestion(num, state.data[num]);
+    return;
+  }
+
+  // 回退到 localStorage 缓存
   if (loadFromCache(num)) {
     loadingEl.style.display = 'none';
     contentEl.style.display = 'block';
@@ -707,6 +724,7 @@ async function loadQuestion(num) {
     return;
   }
 
+  // 最后走代理
   loadingEl.style.display = 'block';
   contentEl.style.display = 'none';
 
