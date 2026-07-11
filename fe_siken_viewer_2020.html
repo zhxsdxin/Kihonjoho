@@ -187,6 +187,20 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 #questionGrid button.status-incorrect { background: var(--incorrect-bg); border-color: var(--incorrect-text); color: var(--incorrect-text); }
 #questionGrid button.status-bookmark { color: var(--bookmark-color); font-weight: 700; }
 #questionGrid button.cached { opacity: 1; } #questionGrid button.uncached { opacity: .45; }
+
+/* 草稿画板 */
+#scratchpad { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: #fff; box-shadow: -2px 0 12px rgba(0,0,0,.15); z-index: 100; transition: right .25s; display: flex; flex-direction: column; }
+body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,.4); }
+#scratchpad.open { right: 0; }
+body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open header { margin-right: 300px; transition: margin-right .25s; }
+#scratchpad .sp-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+#scratchpad .sp-header button { border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); padding: 4px 10px; font-size: 12px; cursor: pointer; font-family: inherit; }
+#scratchpad .sp-header .sp-title { font-size: 14px; font-weight: 600; margin-right: auto; }
+#scratchpad canvas { flex: 1; cursor: crosshair; touch-action: none; background: #fff; }
+#scratchpad .sp-tools { display: flex; gap: 6px; padding: 8px 12px; border-top: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; align-items: center; }
+#scratchpad .sp-tools button { border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); padding: 4px 8px; font-size: 12px; cursor: pointer; font-family: inherit; }
+#scratchpad .sp-tools .color-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; }
+#scratchpad .sp-tools .color-dot.active { border-color: var(--primary); }
 .loading { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 .loading .spinner {
   width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--primary);
@@ -260,6 +274,8 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
   #app { padding: 8px; } #questionArea { padding: 16px; } .q-number { font-size: 18px; }
   .toolbar { gap: 4px; } .toolbar button, .toolbar select { font-size: 12px; padding: 4px 10px; }
   .btm-nav .page-jump { margin-left: 0; width: 100%; justify-content: center; }
+  body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open header { margin-right: 0; }
+  #scratchpad { width: 260px; right: -280px; }
 }
 </style>
 </head>
@@ -267,7 +283,7 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 
 <header>
   <h1>基本情報技術者 令和2年度（午前免除）</h1>
-  <div class="sub">全80問 — 解答・解説付き <span id="cacheStats"></span> <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / Space解答</span></div>
+  <div class="sub">全80問 — 解答・解説付き <span id="cacheStats"></span> <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / D草稿 / Space解答</span></div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
     <select id="filterSelect">
@@ -280,6 +296,7 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
     <button id="randomBtn" title="随机 (R)">🎲 ランダム</button>
     <button id="shuffleToggle" title="打乱 (S)">🔀 打順</button>
     <button id="gridToggle" title="一覧 (G)">📋 一覧</button>
+    <button id="draftToggle" title="草稿 (D)">✏ 草稿</button>
     <span class="spacer"></span>
     <span class="progress-text" id="progressText">0/80</span>
     <button id="preloadBtn" title="一括取得 (P)">⬇ 一括取得</button>
@@ -404,6 +421,7 @@ const preloadBarWrap = $('preloadBarWrap');
 const preloadBar = $('preloadBar');
 const cacheStats = $('cacheStats');
 const shuffleToggle = $('shuffleToggle');
+const draftToggle = $('draftToggle');
 
 // ===================== THEME =====================
 function applyTheme() {
@@ -664,7 +682,14 @@ function showAnswerInternal(num, selectedIndex) {
   });
 }
 
-showAnswerBtn.addEventListener('click', () => showAnswerInternal(state.current));
+showAnswerBtn.addEventListener('click', () => {
+  if (answerSection.classList.contains('visible')) {
+    answerSection.classList.remove('visible');
+    explanationSection.classList.remove('visible');
+  } else {
+    showAnswerInternal(state.current);
+  }
+});
 
 function updateMarkUI() {
   const m = state.marks[state.current] || null;
@@ -1043,7 +1068,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === '4') { const li = selectList.querySelector('li:nth-child(4)'); if (li) li.click(); }
   else if (e.key === 'ArrowLeft') prevBtn.click();
   else if (e.key === 'ArrowRight') nextBtn.click();
-  else if (e.key === ' ') { e.preventDefault(); if (answerSection.classList.contains('visible')) { answerSection.classList.remove('visible'); explanationSection.classList.remove('visible'); } else showAnswerBtn.click(); }
+  else if (e.key === ' ') { e.preventDefault(); showAnswerBtn.click(); }
   else if (e.key === 's' || e.key === 'S') shuffleToggle.click();
   else if (e.key === 'r' || e.key === 'R') randomBtn.click();
   else if (e.key === 'g' || e.key === 'G') gridToggle.click();
@@ -1051,6 +1076,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'c' || e.key === 'C') markCorrect.click();
   else if (e.key === 'x' || e.key === 'X') markIncorrect.click();
   else if (e.key === 't' || e.key === 'T') translateBtn.click();
+  else if (e.key === 'd' || e.key === 'D') draftToggle.click();
   else if (e.key === 'p' || e.key === 'P') preloadBtn.click();
   else if (e.key === 'e' || e.key === 'E') exportBtn.click();
   else if (e.key === 'i' || e.key === 'I') importBtn.click();
@@ -1061,6 +1087,83 @@ document.addEventListener('keydown', e => {
 updateCacheStats();
 updateProgress();
 loadQuestion(1);
+
+// ===================== 草稿画板 =====================
+const scratchpad = document.getElementById('scratchpad');
+const spCanvas = document.getElementById('spCanvas');
+const spCtx = spCanvas.getContext('2d');
+let spDrawing = false, spColor = '#000', spSize = 2;
+
+function resizeCanvas() {
+  spCanvas.width = spCanvas.clientWidth;
+  spCanvas.height = spCanvas.clientHeight;
+  spCtx.lineCap = 'round'; spCtx.lineJoin = 'round';
+}
+function spGetPos(e) {
+  const r = spCanvas.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return { x: t.clientX - r.left, y: t.clientY - r.top };
+}
+function spStart(e) { e.preventDefault(); spDrawing = true; const p = spGetPos(e); spCtx.beginPath(); spCtx.moveTo(p.x, p.y); }
+function spMove(e) { e.preventDefault(); if (!spDrawing) return; const p = spGetPos(e); spCtx.strokeStyle = spColor; spCtx.lineWidth = spSize; spCtx.lineTo(p.x, p.y); spCtx.stroke(); }
+function spEnd(e) { e.preventDefault(); spDrawing = false; }
+
+spCanvas.addEventListener('mousedown', spStart);
+spCanvas.addEventListener('mousemove', spMove);
+spCanvas.addEventListener('mouseup', spEnd);
+spCanvas.addEventListener('mouseleave', spEnd);
+spCanvas.addEventListener('touchstart', spStart, { passive: false });
+spCanvas.addEventListener('touchmove', spMove, { passive: false });
+spCanvas.addEventListener('touchend', spEnd, { passive: false });
+
+document.querySelectorAll('#scratchpad .color-dot').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#scratchpad .color-dot').forEach(d => d.classList.remove('active'));
+    b.classList.add('active'); spColor = b.dataset.color;
+  });
+});
+document.querySelectorAll('#scratchpad .sp-tools button[data-size]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#scratchpad .sp-tools button[data-size]').forEach(d => d.classList.remove('active'));
+    b.classList.add('active'); spSize = parseInt(b.dataset.size);
+  });
+});
+
+document.getElementById('spClear').addEventListener('click', () => {
+  spCtx.clearRect(0, 0, spCanvas.width, spCanvas.height);
+});
+document.getElementById('spClose').addEventListener('click', () => {
+  draftToggle.click();
+});
+
+draftToggle.addEventListener('click', () => {
+  const open = scratchpad.classList.toggle('open');
+  document.body.classList.toggle('scratchpad-open', open);
+  if (open) setTimeout(resizeCanvas, 260);
+});
+
+window.addEventListener('resize', () => { if (scratchpad.classList.contains('open')) resizeCanvas(); });
 </script>
+<!-- 草稿画板 -->
+<div id="scratchpad">
+  <div class="sp-header">
+    <span class="sp-title">✏ 草稿</span>
+    <button id="spClear">🗑 清除</button>
+    <button id="spClose">✕</button>
+  </div>
+  <canvas id="spCanvas"></canvas>
+  <div class="sp-tools">
+    <button class="color-dot active" data-color="#000" style="background:#000"></button>
+    <button class="color-dot" data-color="#e53935" style="background:#e53935"></button>
+    <button class="color-dot" data-color="#1a73e8" style="background:#1a73e8"></button>
+    <button class="color-dot" data-color="#34a853" style="background:#34a853"></button>
+    <button class="color-dot" data-color="#f9ab00" style="background:#f9ab00"></button>
+    <span style="margin:0 4px;color:var(--text-secondary)">|</span>
+    <button data-size="2" class="active">细</button>
+    <button data-size="5">中</button>
+    <button data-size="10">粗</button>
+  </div>
+</div>
+
 </body>
 </html>
