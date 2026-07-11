@@ -1,23 +1,31 @@
-$baseUrl = "https://www.fe-siken.com/kakomon/02_menjo/q"
-$outputDir = Join-Path $PSScriptRoot "pages"
+param(
+    [string]$Year = "02_menjo",
+    [int]$Count = 80,
+    [string]$OutputDir = "pages",
+    [int]$DelayMs = 200
+)
 
-New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
+$baseUrl = "https://www.fe-siken.com/kakomon/$($Year)/q"
+$outputPath = Join-Path $PSScriptRoot $OutputDir
 
-Write-Host "下载 q1.html ~ q80.html 到 $outputDir ..." -ForegroundColor Cyan
+New-Item -ItemType Directory -Force -Path $outputPath | Out-Null
 
-for ($i = 1; $i -le 80; $i++) {
+Write-Host "下载 $Year q1.html ~ q$Count.html 到 $outputPath ..." -ForegroundColor Cyan
+
+for ($i = 1; $i -le $Count; $i++) {
     $url = "$baseUrl$i.html"
-    $file = Join-Path $outputDir "q$i.html"
+    $file = Join-Path $outputPath "q$i.html"
     try {
         Invoke-WebRequest -Uri $url -OutFile $file -ErrorAction Stop
-        Write-Host "  [$i/80] ✓ q$i.html" -ForegroundColor Green
+        Write-Host "  [$i/$Count] $file" -ForegroundColor Green
     } catch {
-        Write-Host "  [$i/80] ✗ q$i.html 失败: $_" -ForegroundColor Red
+        Write-Host "  [$i/$Count] q$i.html 失败: $_" -ForegroundColor Red
     }
-    Start-Sleep -Milliseconds 200
+    if ($DelayMs -gt 0) { Start-Sleep -Milliseconds $DelayMs }
 }
 
-Write-Host "全部下载完成！文件在: $outputDir" -ForegroundColor Cyan
-Write-Host "然后修改 fe_siken_viewer_2020.html 中的:" -ForegroundColor Yellow
-Write-Host "  const PROXY = '';" -ForegroundColor White
-Write-Host "  const PROXY_LOCAL = './pages/';" -ForegroundColor White
+Write-Host "全部下载完成！" -ForegroundColor Cyan
+Write-Host "然后在 HTML 中修改:" -ForegroundColor Yellow
+Write-Host "  TOTAL = $Count" -ForegroundColor White
+Write-Host "  BASE_URL = 'https://www.fe-siken.com/kakomon/$Year/q'" -ForegroundColor White
+Write-Host "  LS_CACHE_PREFIX = 'fe$($Year -replace '_','')_'" -ForegroundColor White
