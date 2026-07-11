@@ -39,6 +39,33 @@ for ($i = 1; $i -le $Count; $i++) {
 Write-Host "`n=== 生成 JSON ===" -ForegroundColor Cyan
 $chars = @('ア','イ','ウ','エ','オ','カ','キ','ク','ケ','コ')
 
+function Fix-Url($text) {
+    $text = [regex]::Replace($text, '(src|href)="(?!https?://)([^"]+)"', {
+        param($m)
+        $attr = $m.Groups[1].Value
+        $url = $m.Groups[2].Value
+        $prefix = if ($url.StartsWith('/')) { 'https://www.fe-siken.com' } else { "https://www.fe-siken.com/kakomon/$Year/" }
+        return "$attr=`"$prefix$url`""
+    })
+    return $text
+}
+
+function ExtractContent($html, $openPattern) {
+    $m = [regex]::Match($html, $openPattern)
+    if (-not $m.Success) { return "" }
+    $start = $m.Index + $m.Length + 1
+    if ($start -le 0) { return "" }
+    $depth = 1; $i = $start
+    while ($depth -gt 0 -and $i -lt $html.Length) {
+        $di = $html.IndexOf('</div>', $i)
+        $oi = $html.IndexOf('<div ', $i)
+        if ($oi -ge 0 -and $oi -lt $di) { $depth++; $i = $oi + 5 }
+        elseif ($di -ge 0) { $depth--; $i = $di + 6 }
+        else { break }
+    }
+    return $html.Substring($start, $i - $start - 6)
+}
+
 $questions = [ordered]@{}
 for ($i = 1; $i -le $Count; $i++) {
     $file = Join-Path $pagesPath "q$i.html"
@@ -48,37 +75,67 @@ for ($i = 1; $i -le $Count; $i++) {
     }
     $html = Get-Content $file -Raw -Encoding UTF8
 
-    # 提取 #mondai 内容
-    if ($html -match '<div\s+id="mondai"[^>]*>(.*?)</div>\s*') {
-        $mondai = $matches[1]
+    # 提取 #mondai 内容（ansbg 标记结束）
+    $m = [regex]::Match($html, '<div\s+id="mondai"[^>]*>')
+    if ($m.Success) {
+        $ms = $m.Index + $m.Length
+        $me = $html.IndexOf('<div class="ansbg"', $ms)
+        if ($me -gt $ms) {
+            $mondaiRaw = $html.Substring($ms, $me - $ms).Trim()
+            $mondaiRaw = $mondaiRaw -replace '</div>\s*$', ''
+            $mondai = Fix-Url $mondaiRaw
+        } else { $mondai = "" }
     } else { $mondai = "" }
 
     # 提取选项
     $selects = @()
-    if ($html -match '<ul\s+class="selectList[^"]*"[^>]*>(.*?)</ul>') {
-        $listHtml = $matches[1]
-        # 分割每个 <li>
+    $sm = [regex]::Match($html, '<ul\s+class="selectList[^"]*"[^>]*>(.*?)</ul>')
+    if ($sm.Success) {
+        $listHtml = $sm.Groups[1].Value
         $liMatches = [regex]::Matches($listHtml, '<li>(.*?)</li>')
-        $idx = 0
         foreach ($liMatch in $liMatches) {
             $liContent = $liMatch.Groups[1].Value
-            $isCorrect = $liContent -match 'id="t"'
-            $text = $liContent -replace '<button[^>]*>.*?</button>', ''
-            $selects += @{ label = if ($idx -lt $chars.Count) { $chars[$idx] } else { "" }; text = $text.Trim(); isCorrect = $isCorrect }
-            $idx++
+            # 提取按钮
+            $btns = [regex]::Matches($liContent, '<button[^>]*>(.*?)</button>')
+            if ($btns.Count -gt 1) {
+                # 多个按钮在同一个 <li>（如 Q12 图片选择题）
+                $pre = $liContent -replace '(<button[^>]*>.*?</button>\s*)+', ''
+                $pre = Fix-Url $pre.Trim()
+                foreach ($btn in $btns) {
+                    $btnText = $btn.Groups[1].Value.Trim()
+                    $btnFull = $btn.Groups[0].Value
+                    $isCorrect = $btnFull -match 'id="t"'
+                    $selects += @{ label = $btnText; text = $pre.Trim(); isCorrect = $isCorrect }
+                }
+            } else {
+                $isCorrect = $liContent -match 'id="t"'
+                $text = $liContent -replace '<button[^>]*>.*?</button>', ''
+                $text = Fix-Url $text.Trim()
+                $idx = $selects.Count
+                $selects += @{ label = if ($idx -lt $chars.Count) { $chars[$idx] } else { "" }; text = $text; isCorrect = $isCorrect }
+            }
         }
     }
 
     # 提取正解
-    $answer = if ($html -match '<span\s+id="answerChar"[^>]*>(.*?)</span>') { $matches[1].Trim() } else { "" }
+    $am = [regex]::Match($html, '<span\s+id="answerChar"[^>]*>(.*?)</span>')
+    $answer = if ($am.Success) { $am.Groups[1].Value.Trim() } else { "" }
 
-    # 提取 #kaisetsu 内容
-    $kaisetsu = if ($html -match '<div[^>]*\sid="kaisetsu"[^>]*>(.*?)</div>\s*<div\s+class="social-btn') { $matches[1] } else { "" }
+    # 提取 #kaisetsu 内容（social-btn 标记结束）
+    $km = [regex]::Match($html, '<div[^>]*\sid="kaisetsu"[^>]*>')
+    if ($km.Success) {
+        $ks = $km.Index + $km.Length
+        $ke = $html.IndexOf('social-btn', $ks)
+        if ($ke -gt $ks) {
+            $ke = $html.LastIndexOf('</div>', $ke)
+            $kaisetsu = Fix-Url $html.Substring($ks, $ke - $ks).Trim()
+        } else { $kaisetsu = "" }
+    } else { $kaisetsu = "" }
 
     # 提取分类
     $info = ""
     if ($html -match '<h3>分類\s*:</h3>\s*<div>(.*?)</div>') {
-        $info = "<strong>分類:</strong> $($matches[1])"
+        $info = Fix-Url "<strong>分類:</strong> $($matches[1])"
     }
 
     $questions["$i"] = @{

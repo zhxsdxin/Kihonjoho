@@ -49,7 +49,7 @@ body {
   color: var(--text);
   line-height: 1.7;
   min-height: 100vh;
-  transition: background .2s, color .2s;
+  transition: background .2s, color .2s, padding-right .25s;
 }
 header {
   background: var(--header-bg);
@@ -60,7 +60,14 @@ header {
   z-index: 100;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
-header h1 { font-size: 16px; font-weight: 700; }
+header h1 { font-size: 16px; font-weight: 700; display: inline; }
+header .hdr-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.timer { font-size: 18px; font-variant-numeric: tabular-nums; white-space: nowrap; margin-left: auto; background: #2e7d32; padding: 4px 14px; border-radius: 8px; cursor: pointer; user-select: none; }
+.timer.t-yellow { background: #f9a825; color: #1a1a1a; }
+.timer.t-orange { background: #e65100; }
+.timer.t-red { background: #b71c1c; color: #fff; }
+#yearSelect { font-size: 12px; padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff; cursor: pointer; font-family: inherit; }
+#yearSelect option { color: #333; background: #fff; }
 header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 .toolbar {
   display: flex;
@@ -81,21 +88,11 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
   font-family: inherit;
 }
 .toolbar button:hover { background: rgba(255,255,255,0.25); }
-.toolbar button.active { background: var(--primary); border-color: var(--primary); }
+#translateBtn.force { border-color: #e65100 !important; color: #ff9800; }
 .toolbar select option { color: #333; background: #fff; }
 .toolbar .spacer { flex: 1; }
 .toolbar .progress-text { font-size: 13px; opacity: .85; white-space: nowrap; }
-#preloadBtn { position: relative; }
-#preloadBtn.pulsing { animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
-#preloadBarWrap {
-  width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px;
-  margin-top: 6px; overflow: hidden; display: none;
-}
-#preloadBar {
-  height: 100%; width: 0%; background: #4fc3f7; border-radius: 2px; transition: width .3s;
-}
-#cacheStats { font-size: 11px; opacity: .6; margin-left: 4px; }
+/* preload 相关样式已移除 */
 #app { max-width: 900px; margin: 0 auto; padding: 16px; }
 #questionArea {
   background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
@@ -164,6 +161,7 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 }
 .btm-nav button:hover { background: var(--choice-hover); }
 .btm-nav button:disabled { opacity: .4; cursor: default; }
+.btm-nav button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 .btm-nav .page-jump { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .btm-nav .page-jump input {
   width: 60px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px;
@@ -187,11 +185,12 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 #questionGrid button.cached { opacity: 1; } #questionGrid button.uncached { opacity: .45; }
 
 /* 草稿画板 */
-#scratchpad { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: #fff; box-shadow: -2px 0 12px rgba(0,0,0,.15); z-index: 100; transition: right .25s; display: flex; flex-direction: column; }
+#scratchpad { position: fixed; top: 0; right: 0; width: 300px; height: 100%; background: #fff; box-shadow: -2px 0 12px rgba(0,0,0,.15); z-index: 100; display: flex; flex-direction: column; transition: transform .25s; transform: translateX(100%); }
 body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,.4); }
-#scratchpad.open { right: 0; }
-body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open header { margin-right: 300px; transition: margin-right .25s; }
-#scratchpad .sp-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+#scratchpad.open { transform: translateX(0); }
+#scratchpad .sp-drag-handle { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; cursor: ew-resize; background: transparent; z-index: 101; }
+#scratchpad .sp-drag-handle:hover, #scratchpad .sp-drag-handle:active { background: var(--primary); }
+#scratchpad .sp-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; padding-left: 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 #scratchpad .sp-header button { border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); padding: 4px 10px; font-size: 12px; cursor: pointer; font-family: inherit; }
 #scratchpad .sp-header .sp-title { font-size: 14px; font-weight: 600; margin-right: auto; }
 #scratchpad canvas { flex: 1; cursor: crosshair; touch-action: none; background: #fff; }
@@ -272,16 +271,19 @@ body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open h
   #app { padding: 8px; } #questionArea { padding: 16px; } .q-number { font-size: 18px; }
   .toolbar { gap: 4px; } .toolbar button, .toolbar select { font-size: 12px; padding: 4px 10px; }
   .btm-nav .page-jump { margin-left: 0; width: 100%; justify-content: center; }
-  body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open header { margin-right: 0; }
-  #scratchpad { width: 260px; right: -280px; }
+  #scratchpad { width: 260px; }
 }
 </style>
 </head>
 <body>
 
 <header>
+  <div class="hdr-row">
   <h1>基本情報技術者 令和2年度（午前免除）</h1>
-  <div class="sub">全80問 — 解答・解説付き <span id="cacheStats"></span> <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / D草稿 / Space解答</span></div>
+  <select id="yearSelect"></select>
+  <span class="timer" id="timer">01:30:00</span>
+  </div>
+  <div class="sub">全80問 — 解答・解説付き <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / D草稿 / M暗記 / N自動 / Space解答 / A全 U未 C正 W误</span></div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
     <select id="filterSelect">
@@ -295,16 +297,13 @@ body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open h
     <button id="shuffleToggle" title="打乱 (S)">🔀 打順</button>
     <button id="gridToggle" title="一覧 (G)">📋 一覧</button>
     <button id="draftToggle" title="草稿 (D)">✏ 草稿</button>
+    <button id="memorizeBtn" title="背题模式 (M)">📖 暗記</button>
     <span class="spacer"></span>
     <span class="progress-text" id="progressText">0/80</span>
-    <button id="preloadBtn" title="一括取得 (P)">⬇ 一括取得</button>
-    <button id="exportBtn" title="导出缓存 (E)">📤</button>
-    <button id="exportFullBtn" title="导出全量数据">📦</button>
-    <button id="dlScriptBtn" title="下载本地脚本">📜</button>
-    <button id="importBtn" title="导入缓存 (I)">📥</button>
+    <button id="exportBtn" title="导出数据 (E)">📤</button>
+    <button id="importBtn" title="导入数据 (I)">📥</button>
     <input type="file" id="importFile" accept=".json" style="display:none">
   </div>
-  <div id="preloadBarWrap"><div id="preloadBar"></div></div>
   <div id="questionGrid" style="display:none"></div>
 </header>
 
@@ -337,11 +336,11 @@ body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open h
     </div>
   </div>
 
-  <div id="celebration"><div class="inner"><div class="text">腻害捏，BoBo~！</div><div class="sub">🎉 一次就答对了</div></div></div>
+  <div id="celebration"><div class="inner"><div class="text">腻害捏，BoBo~！</div><div class="sub">🎉 答对惹</div></div></div>
   <div class="btm-nav">
-    <button id="prevBtn" title="←">◀ 前</button>
-    <button id="nextBtn" title="→">次 ▶</button>
-    <button id="autoNextBtn" title="自動送り">▶ 自動</button>
+    <button id="prevBtn" title="← (←)">◀ 前</button>
+    <button id="nextBtn" title="→ (→)">次 ▶</button>
+    <button id="autoNextBtn" title="自動送り (N)">▶ 自動</button>
     <div class="page-jump">
       <span>問</span>
       <input type="number" id="jumpInput" min="1" max="80" value="1">
@@ -352,6 +351,7 @@ body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open h
 
 <!-- 草稿画板 -->
 <div id="scratchpad">
+  <div class="sp-drag-handle" id="spDragHandle"></div>
   <div class="sp-header">
     <span class="sp-title">✏ 草稿</span>
     <button id="spClear">🗑 清除</button>
@@ -376,22 +376,15 @@ body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open h
 const TOTAL = 80;
 const BASE_URL = 'https://www.fe-siken.com/kakomon/02_menjo/q';
 
-// 複数のCORSプロキシを試行（上から順にフォールバック）
-const PROXIES = [
-  'https://api.allorigins.win/raw?url=',
-  'https://proxy.killcors.com/?url=',
-  'https://api.cors.lol/?url=',
-];
-// 本地页面文件目录（download_all.ps1 下载后存放的路径）
+// 本地页面文件目录
 const PAGE_NAME = (window.location.pathname.split('/').pop().replace(/\.html$/, '') || 'questions');
 const LOCAL_PAGES_DIR = './' + PAGE_NAME + '/';
-const JSON_FILE = PAGE_NAME + '.json'; // 跟随 HTML 文件名
+const JSON_FILE = PAGE_NAME + '.json';
 
 // localStorage キー
-const LS_CACHE_PREFIX = 'fe2020_cache_';
+const LS_TRANS = 'fe2020_trans_';
 const LS_MARKS = 'fe2020_marks';
 const LS_DARK = 'fe2020_dark';
-const CACHE_VERSION = 2; // 缓存数据格式版本，改代码后加1让旧缓存失效
 
 // ===================== STATE =====================
 const state = {
@@ -402,8 +395,8 @@ const state = {
   autoNext: false,
   dark: localStorage.getItem(LS_DARK) === '1',
   shuffle: false,
-  translated: false,
-  preloading: false,
+  translated: 0,  // 0=中 1=日(缓存) 2=⟳(强制API)
+  memorize: false,
 };
 
 const chars = ['ア', 'イ', 'ウ', 'エ', 'オ'];
@@ -434,12 +427,9 @@ const questionGrid = $('questionGrid');
 const progressText = $('progressText');
 const markBookmark = $('markBookmark');
 const translateBtn = $('translateBtn');
-const preloadBtn = $('preloadBtn');
-const preloadBarWrap = $('preloadBarWrap');
-const preloadBar = $('preloadBar');
-const cacheStats = $('cacheStats');
 const shuffleToggle = $('shuffleToggle');
 const draftToggle = $('draftToggle');
+const memorizeBtn = $('memorizeBtn');
 
 // ===================== THEME =====================
 function applyTheme() {
@@ -450,42 +440,23 @@ function applyTheme() {
 themeToggle.addEventListener('click', () => { state.dark = !state.dark; applyTheme(); });
 applyTheme();
 
-// ===================== LOCALSTORAGE CACHE =====================
-function getCacheKey(num) { return LS_CACHE_PREFIX + num; }
+// ===================== TRANSLATION CACHE =====================
+function getTransKey(num) { return LS_TRANS + num; }
 
-function isCached(num) {
-  const raw = localStorage.getItem(getCacheKey(num));
-  if (!raw) return false;
-  try { return JSON.parse(raw)._v === CACHE_VERSION; } catch (e) { return false; }
-}
-function loadFromCache(num) {
-  const raw = localStorage.getItem(getCacheKey(num));
+function loadTransFromCache(num) {
+  const raw = localStorage.getItem(getTransKey(num));
   if (raw) {
     try {
-      const obj = JSON.parse(raw);
-      if (obj._v === CACHE_VERSION) {
-        state.data[num] = obj;
-        return true;
-      }
-    } catch (e) { /* corrupt, re-fetch */ }
+      const tr = JSON.parse(raw);
+      if (state.data[num]) state.data[num]._tr = tr;
+      return true;
+    } catch (e) { /* ignore */ }
   }
   return false;
 }
 
-function saveToCache(num) {
-  if (state.data[num]) {
-    state.data[num]._v = CACHE_VERSION;
-    localStorage.setItem(getCacheKey(num), JSON.stringify(state.data[num]));
-  }
-}
-
-function updateCacheStats() {
-  let cached = 0;
-  for (let i = 1; i <= TOTAL; i++) {
-    if (isCached(i)) cached++;
-  }
-  cacheStats.textContent = cached > 0 ? `(キャッシュ: ${cached}/${TOTAL})` : '';
-  updateGrid();
+function saveTransToCache(num, tr) {
+  localStorage.setItem(getTransKey(num), JSON.stringify(tr));
 }
 
 function saveMarks() {
@@ -506,9 +477,8 @@ function updateGrid() {
     const btn = document.createElement('button');
     btn.textContent = i;
     btn.dataset.num = i;
-    const inData = !!state.data[i];
-    const inCache = isCached(i);
-    btn.classList.add(inData || inCache ? 'cached' : 'uncached');
+    if (state.data[i]) btn.classList.add('cached');
+    else btn.classList.add('uncached');
     if (i === state.current) btn.classList.add('current');
     const m = state.marks[i];
     if (m === 'correct') btn.classList.add('status-correct');
@@ -519,7 +489,7 @@ function updateGrid() {
   }
 }
 
-// ===================== FETCH with local file priority =====================
+// ===================== LOCAL FILE LOADER =====================
 async function tryLocalFile(num) {
   try {
     const res = await fetch(LOCAL_PAGES_DIR + 'q' + num + '.html', { signal: AbortSignal.timeout(2000) });
@@ -527,46 +497,16 @@ async function tryLocalFile(num) {
   } catch (e) { /* 不存在 */ }
   return null;
 }
-async function fetchWithProxy(url, proxyUrl) {
-  const fullUrl = proxyUrl + url;
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 6000);
-  try {
-    const res = await fetch(fullUrl, { signal: controller.signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.text();
-  } finally {
-    clearTimeout(timer);
-  }
-}
 
-async function fetchQuestionHTML(num) {
-  // 优先读本地文件（速度最快，无 CORS 问题）
-  try {
-    const localRes = await fetch(LOCAL_PAGES_DIR + 'q' + num + '.html', { signal: AbortSignal.timeout(3000) });
-    if (localRes.ok) return await localRes.text();
-  } catch (e) { /* 本地不存在，走代理 */ }
-
-  const url = BASE_URL + num + '.html';
-  const errors = [];
-
-  for (const proxy of PROXIES) {
-    try {
-      return await fetchWithProxy(url, proxy);
-    } catch (e) {
-      errors.push(`${proxy}: ${e.message}`);
-    }
-  }
-
-  // 最後にプロキシ無しを試す（CORSがあるのでほぼ失敗する）
-  try {
-    const res = await fetch(url, { mode: 'cors', signal: AbortSignal.timeout(8000) });
-    if (res.ok) return await res.text();
-  } catch (e) {
-    errors.push(`direct: ${e.message}`);
-  }
-
-  throw new Error(`全プロキシ失敗\n${errors.join('\n')}`);
+// ===================== IMAGE FIX =====================
+function fixImages(html) {
+  return html
+    .replace(/src="(?!https?:\/\/)([^"]+)"/g, (m, src) => {
+      return 'src="' + (src.startsWith('/') ? 'https://www.fe-siken.com' : BASE_URL.replace(/q$/, '')) + src + '"';
+    })
+    .replace(/href="(?!https?:\/\/)([^"]+)"/g, (m, href) => {
+      return 'href="' + (href.startsWith('/') ? 'https://www.fe-siken.com' : BASE_URL.replace(/q$/, '')) + href + '"';
+    });
 }
 
 // ===================== PARSE =====================
@@ -576,9 +516,6 @@ function parseHTML(html) {
   const mondai = doc.querySelector('#mondai');
   if (!mondai) throw new Error('問題文が見つかりません');
 
-  const fixImages = (html) => html.replace(/src="(?!https?:\/\/)([^"]+)"/g, (m, src) => {
-    return 'src="' + (src.startsWith('/') ? 'https://www.fe-siken.com' : 'https://www.fe-siken.com/kakomon/02_menjo/') + src + '"';
-  });
   const mondaiHTML = fixImages(mondai.innerHTML);
 
   const selects = [];
@@ -611,32 +548,48 @@ function parseHTML(html) {
 
 // ===================== DISPLAY =====================
 function displayQuestion(num, data) {
-  mondaiEl.innerHTML = data.mondai;
+  window.scrollTo(0, 0);
+  mondaiEl.innerHTML = fixImages(data.mondai);
 
   selectList.innerHTML = '';
-  const items = state.shuffle ? [...data.selects].sort(() => Math.random() - 0.5) : data.selects;
-  items.forEach((s) => {
-    const origIdx = data.selects.indexOf(s);
+  answerChar.textContent = data.answer;
+  let items = data.selects;
+  let perm;
+  const allSameText = data.selects.length > 1 && data.selects.every(s => s.text === data.selects[0].text);
+  if (state.shuffle && !allSameText) {
+    const n = data.selects.length;
+    perm = [...Array(n).keys()].sort(() => Math.random() - 0.5);
+    items = perm.map((srcIdx, i) => ({ ...data.selects[srcIdx], label: chars[i] }));
+    const correctOrig = data.selects.findIndex(s => s.isCorrect);
+    answerChar.textContent = chars[perm.indexOf(correctOrig)];
+  }
+  items.forEach((s, i) => {
+    const origIdx = perm ? perm[i] : data.selects.indexOf(s);
     const li = document.createElement('li');
     li.dataset.origIdx = origIdx;
-    li.innerHTML = '<span class="choice-label">' + s.label + '</span><span>' + s.text + '</span>';
+    li.innerHTML = '<span class="choice-label">' + s.label + '</span><span>' + fixImages(s.text) + '</span>';
     li.addEventListener('click', () => handleChoiceClick(num, origIdx));
     selectList.appendChild(li);
   });
 
-  answerChar.textContent = data.answer;
   answerSection.classList.remove('visible');
-  kaisetsuEl.innerHTML = data.kaisetsu;
+  kaisetsuEl.innerHTML = fixImages(data.kaisetsu);
   explanationSection.classList.remove('visible');
-  infoRow.innerHTML = data.info;
+  if (state.memorize) { answerSection.classList.add('visible'); explanationSection.classList.add('visible'); }
+  infoRow.innerHTML = fixImages(data.info);
 
   updateMarkUI();
+  state.translated = 0;
+  translateBtn.textContent = '中';
+  translateBtn.classList.remove('active', 'force');
   updateProgress();
   jumpInput.value = num;
 
   // 恢复翻译状态
-  if (localStorage.getItem('lastTranslated') === '1' && !state.translated) {
-    translateBtn.click();
+  if (localStorage.getItem('lastTranslated') !== '0') {
+    if (data._tr || loadTransFromCache(num)) {
+      translateBtn.click();
+    }
   }
 }
 
@@ -706,7 +659,10 @@ function showAnswerInternal(num, selectedIndex) {
 }
 
 showAnswerBtn.addEventListener('click', () => {
-  if (answerSection.classList.contains('visible')) {
+  if (state.memorize) {
+    answerSection.classList.toggle('visible');
+    explanationSection.classList.toggle('visible');
+  } else if (answerSection.classList.contains('visible')) {
     answerSection.classList.remove('visible');
     explanationSection.classList.remove('visible');
   } else {
@@ -770,30 +726,52 @@ translateBtn.addEventListener('click', async () => {
   const d = state.data[num];
   if (!d) return;
 
-  if (state.translated) {
-    mondaiEl.innerHTML = d.mondai;
-    const lis = selectList.querySelectorAll('li');
-    d.selects.forEach((s, i) => { if (lis[i]) lis[i].querySelector('span:last-child').innerHTML = s.text; });
-    kaisetsuEl.innerHTML = d.kaisetsu;
-    state.translated = false;
-    translateBtn.textContent = '中';
-    translateBtn.classList.remove('active');
-    localStorage.setItem('lastTranslated', '0');
-    return;
-  }
-
-  // 有缓存翻译直接使用
-  if (d._tr) {
+  const applyTr = (stateVal) => {
     mondaiEl.innerHTML = d._tr.mondai;
     const lis = selectList.querySelectorAll('li');
     lis.forEach(li => { const o = li.dataset.origIdx; if (d._tr.sels && d._tr.sels[o]) li.querySelector('span:last-child').innerHTML = d._tr.sels[o]; });
     kaisetsuEl.innerHTML = d._tr.kaisetsu;
-    state.translated = true;
-    translateBtn.textContent = '日';
+    state.translated = stateVal;
+    translateBtn.textContent = stateVal === 2 ? '⟳' : '日';
     translateBtn.classList.add('active');
-    localStorage.setItem('lastTranslated', '1');
+    if (stateVal === 2) translateBtn.classList.add('force');
+    else translateBtn.classList.remove('force');
+    localStorage.setItem('lastTranslated', '' + stateVal);
+  };
+
+  // ⟳ 模式: 返回关闭
+  if (state.translated === 2) {
+    mondaiEl.innerHTML = d.mondai;
+    const lis = selectList.querySelectorAll('li');
+    d.selects.forEach((s, i) => { if (lis[i]) lis[i].querySelector('span:last-child').innerHTML = s.text; });
+    kaisetsuEl.innerHTML = d.kaisetsu;
+    state.translated = 0;
+    translateBtn.textContent = '中';
+    translateBtn.classList.remove('active', 'force');
     return;
   }
+
+  // 日模式 (缓存): 切换为强制API
+  if (state.translated === 1) {
+    translateBtn.textContent = '…';
+    await translateNode(mondaiEl);
+    const lis = selectList.querySelectorAll('li');
+    for (const li of lis) {
+      const span = li.querySelector('span:last-child');
+      if (span) await translateNode(span);
+    }
+    await translateNode(kaisetsuEl);
+    const sels = {};
+    lis.forEach(li => { const s = li.querySelector('span:last-child'); if (s) sels[li.dataset.origIdx] = s.innerHTML; });
+    d._tr = { mondai: mondaiEl.innerHTML, sels, kaisetsu: kaisetsuEl.innerHTML };
+    saveTransToCache(num, d._tr);
+    applyTr(2);
+    return;
+  }
+
+  // 关闭状态: 开启翻译
+  if (d._tr) { d._tr = { ...d._tr }; applyTr(1); return; }
+  if (loadTransFromCache(num)) { applyTr(1); return; }
 
   translateBtn.textContent = '…';
   await translateNode(mondaiEl);
@@ -804,16 +782,11 @@ translateBtn.addEventListener('click', async () => {
   }
   await translateNode(kaisetsuEl);
 
-  // 保存翻译缓存（按原始索引存储）
   const sels = {};
   lis.forEach(li => { const s = li.querySelector('span:last-child'); if (s) sels[li.dataset.origIdx] = s.innerHTML; });
   d._tr = { mondai: mondaiEl.innerHTML, sels, kaisetsu: kaisetsuEl.innerHTML };
-
-  state.translated = true;
-  translateBtn.textContent = '日';
-  translateBtn.classList.add('active');
-  localStorage.setItem('lastTranslated', '1');
-  saveToCache(num);
+  saveTransToCache(num, d._tr);
+  applyTr(1);
 });
 
 // ===================== LOAD =====================
@@ -831,118 +804,22 @@ async function loadQuestion(num) {
     return;
   }
 
-  // 尝试读本地 HTML（优先，解析最新）
+  // 从本地 HTML 文件读取
   const localHtml = await tryLocalFile(num);
   if (localHtml) {
     state.data[num] = parseHTML(localHtml);
-    saveToCache(num);
-    updateCacheStats();
     loadingEl.style.display = 'none';
     contentEl.style.display = 'block';
     displayQuestion(num, state.data[num]);
     return;
   }
 
-  // 回退到 localStorage 缓存
-  if (loadFromCache(num)) {
-    loadingEl.style.display = 'none';
-    contentEl.style.display = 'block';
-    displayQuestion(num, state.data[num]);
-    return;
-  }
-
-  // 最后走代理
-  loadingEl.style.display = 'block';
-  contentEl.style.display = 'none';
-
-  try {
-    const html = await fetchQuestionHTML(num);
-    state.data[num] = parseHTML(html);
-    saveToCache(num);
-    updateCacheStats();
-  } catch (e) {
-    loadingEl.innerHTML =
-      '<div class="error-msg">' +
-      '<div>問' + num + ' の読み込みに失敗しました</div>' +
-      '<div style="font-size:13px;margin-top:6px;color:var(--text-secondary)">' + e.message.replace(/\n/g, '<br>') + '</div>' +
-      '<button class="retry-btn" onclick="loadQuestion(' + num + ')">再試行</button>' +
-      '</div>';
-    return;
-  }
-
-  loadingEl.style.display = 'none';
-  contentEl.style.display = 'block';
-  displayQuestion(num, state.data[num]);
+  loadingEl.innerHTML =
+    '<div class="error-msg">' +
+    '<div>問' + num + ' の読み込みに失敗しました</div>' +
+    '<div style="font-size:13px;margin-top:6px;color:var(--text-secondary)">本地文件 ' + LOCAL_PAGES_DIR + 'q' + num + '.html 不存在</div>' +
+    '</div>';
 }
-
-// ===================== PRELOAD ALL =====================
-async function preloadAll() {
-  if (state.preloading) return;
-
-  // 只统计尚未缓存的题目
-  const todo = [];
-  for (let i = 1; i <= TOTAL; i++) {
-    if (state.data[i] || isCached(i)) {
-      if (!state.data[i]) loadFromCache(i);
-    } else {
-      todo.push(i);
-    }
-  }
-  if (todo.length === 0) {
-    updateCacheStats();
-    updateProgress();
-    return;
-  }
-
-  state.preloading = true;
-  preloadBtn.textContent = '⏳ 0/' + todo.length;
-  preloadBtn.classList.add('pulsing');
-  preloadBarWrap.style.display = 'block';
-  preloadBar.style.width = '0%';
-
-  const CONCURRENCY = 5;
-  let done = 0;
-  const fetchOne = async (i) => {
-    try {
-      const html = await fetchQuestionHTML(i);
-      state.data[i] = parseHTML(html);
-      saveToCache(i);
-    } catch (e) {
-      console.warn('問' + i + ' 失敗:', e.message);
-    }
-    done++;
-  };
-  const batches = [];
-  for (let i = 0; i < todo.length; i += CONCURRENCY) {
-    batches.push(todo.slice(i, i + CONCURRENCY).map(fetchOne));
-  }
-  for (const batch of batches) {
-    await Promise.all(batch);
-    preloadBtn.textContent = '⏳ ' + done + '/' + todo.length;
-    preloadBar.style.width = (done / todo.length * 100) + '%';
-  }
-
-  state.preloading = false;
-  preloadBtn.textContent = '⬇ 一括取得';
-  preloadBtn.classList.remove('pulsing');
-  preloadBar.style.width = '100%';
-  setTimeout(() => { preloadBarWrap.style.display = 'none'; }, 1500);
-
-  updateCacheStats();
-  updateProgress();
-
-  // 自动询问下载 questions.json
-  setTimeout(() => {
-    if (confirm('一括取得完成！\n\n是否下载 ' + JSON_FILE + ' ？（可删除 HTML 文件）\n\n也可点 📜 按钮下载本地脚本，自动完成下载→JSON→git推送')) {
-      exportFullBtn.click();
-    }
-  }, 500);
-
-  // 現在の問題が未ロードだったらリロード
-  if (!state.data[state.current]) loadQuestion(state.current);
-}
-
-preloadBtn.addEventListener('click', preloadAll);
 
 // ===================== NAVIGATION =====================
 function getFilteredNums() {
@@ -1003,55 +880,36 @@ shuffleToggle.addEventListener('click', () => {
   if (state.data[state.current]) displayQuestion(state.current, state.data[state.current]);
 });
 
+memorizeBtn.addEventListener('click', () => {
+  state.memorize = !state.memorize;
+  memorizeBtn.classList.toggle('active', state.memorize);
+  if (state.data[state.current]) {
+    if (state.memorize) { answerSection.classList.add('visible'); explanationSection.classList.add('visible'); }
+    else { answerSection.classList.remove('visible'); explanationSection.classList.remove('visible'); }
+  }
+});
+
 // ===================== EXPORT / IMPORT =====================
 const exportBtn = $('exportBtn');
 const importBtn = $('importBtn');
 const importFile = $('importFile');
-const exportFullBtn = $('exportFullBtn');
-
-exportFullBtn.addEventListener('click', () => {
-  const data = { version: 3, type: 'full', marks: state.marks, questions: {} };
-  for (let i = 1; i <= TOTAL; i++) {
-    if (state.data[i]) {
-      const q = { ...state.data[i] };
-      delete q._v;
-      data.questions[i] = q;
-    }
-  }
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = JSON_FILE;
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-const YEAR_FROM_URL = BASE_URL.match(/kakomon\/([^/]+)\/q/)?.[1] || '02_menjo';
-dlScriptBtn.addEventListener('click', () => {
-  const script = `# ${PAGE_NAME} 本地脚本 - 下载→生成JSON→推送
-.\\generate.ps1 -Year "${YEAR_FROM_URL}" -Count ${TOTAL} -JsonName "${PAGE_NAME}" -Push
-`;
-  const blob = new Blob([script], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'run_' + PAGE_NAME + '.ps1';
-  a.click();
-  URL.revokeObjectURL(url);
-});
 
 exportBtn.addEventListener('click', () => {
-  const data = { version: 1, exportedAt: new Date().toISOString(), questions: {}, marks: state.marks };
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    marks: state.marks,
+    translations: {}
+  };
   for (let i = 1; i <= TOTAL; i++) {
-    const raw = localStorage.getItem(getCacheKey(i));
-    if (raw) data.questions[i] = JSON.parse(raw);
+    const t = loadTransFromCache(i);
+    if (t) data.translations[i] = t;
   }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'fe2020_cache_' + new Date().toISOString().slice(0, 10) + '.json';
+  a.download = PAGE_NAME + '_backup_' + new Date().toISOString().slice(0, 10) + '.json';
   a.click();
   URL.revokeObjectURL(url);
 });
@@ -1059,40 +917,19 @@ exportBtn.addEventListener('click', () => {
 importBtn.addEventListener('click', () => importFile.click());
 
 function importFromData(data) {
-  if (data.type === 'full') {
-    for (const [num, q] of Object.entries(data.questions)) {
-      state.data[parseInt(num)] = q;
+  if (!data.marks && !data.translations) { alert('无效的备份文件'); return false; }
+  if (data.marks) {
+    Object.assign(state.marks, data.marks);
+    saveMarks();
+  }
+  if (data.translations) {
+    for (const [num, t] of Object.entries(data.translations)) {
+      saveTransToCache(parseInt(num), t);
     }
-    delete state.data[state.current];
-    updateCacheStats();
-    updateProgress();
-    loadQuestion(state.current);
-    alert('导入完成！已加载 ' + Object.keys(data.questions).length + ' 题数据，无需 HTML 文件');
-    return true;
   }
-  if (!data.questions) { alert('无效的缓存文件'); return false; }
-  if (!data.marks) data.marks = {};
-  let count = 0;
-  for (const [num, q] of Object.entries(data.questions)) {
-    q._v = CACHE_VERSION;
-    localStorage.setItem(getCacheKey(parseInt(num)), JSON.stringify(q));
-    count++;
-  }
-  for (const [num, mark] of Object.entries(data.marks)) {
-    if (mark) state.marks[num] = mark;
-  }
-  saveMarks();
-  delete state.data[state.current];
-  if (loadFromCache(state.current)) {
-    updateCacheStats();
-    updateProgress();
-    displayQuestion(state.current, state.data[state.current]);
-  } else {
-    updateCacheStats();
-    updateProgress();
-    loadQuestion(state.current);
-  }
-  alert('导入完成！已导入 ' + count + ' 题缓存 + ' + Object.keys(data.marks).filter(k => data.marks[k]).length + ' 条答题记录');
+  updateProgress();
+  if (state.data[state.current]) displayQuestion(state.current, state.data[state.current]);
+  alert('导入完成！已恢复 ' + Object.keys(data.marks || {}).filter(k => data.marks[k]).length + ' 条答题记录 + ' + Object.keys(data.translations || {}).length + ' 条翻译缓存');
   return true;
 }
 
@@ -1112,21 +949,32 @@ importFile.addEventListener('change', (e) => {
   importFile.value = '';
 });
 
+// ===================== CLIPBOARD PASTE IMPORT =====================
+document.addEventListener('paste', (e) => {
+  const text = (e.clipboardData || window.clipboardData).getData('text');
+  if (!text) return;
+  try {
+    const data = JSON.parse(text);
+    if (data.marks || data.translations) {
+      importFromData(data);
+    }
+  } catch (_) { /* 不是 JSON，忽略 */ }
+});
+
 // ===================== DRAG & DROP =====================
 let dragCounter = 0;
 const dropOverlay = document.createElement('div');
 dropOverlay.id = 'dropOverlay';
-dropOverlay.innerHTML = '<div class="dropText">📥 松开导入缓存文件</div>';
+dropOverlay.innerHTML = '<div class="dropText">📥 松开导入备份文件</div>';
 document.body.appendChild(dropOverlay);
 
 function handleDropFile(file) {
-  if (!file || !file.name.endsWith('.json')) { alert('请拖入 .json 缓存文件'); return; }
+  if (!file || !file.name.endsWith('.json')) { alert('请拖入 .json 备份文件'); return; }
   const reader = new FileReader();
   reader.onload = (ev) => {
     try {
       const data = JSON.parse(ev.target.result);
-      if (!data.questions) { alert('无效的缓存文件'); return; }
-      if (!data.marks) data.marks = {};
+      if (!data.marks && !data.translations) { alert('无效的备份文件'); return; }
       importFromData(data);
     } catch (err) {
       alert('导入失败: ' + err.message);
@@ -1145,7 +993,6 @@ document.addEventListener('drop', e => {
   dragCounter = 0;
   handleDropFile(e.dataTransfer.files[0]);
 });
-// 如果 overlay 挡住了事件，直接在 overlay 上也监听从它松手
 dropOverlay.addEventListener('drop', e => {
   dropOverlay.classList.remove('show');
   dragCounter = 0;
@@ -1168,9 +1015,14 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'b' || e.key === 'B') markBookmark.click();
   else if (e.key === 't' || e.key === 'T') translateBtn.click();
   else if (e.key === 'd' || e.key === 'D') draftToggle.click();
-  else if (e.key === 'p' || e.key === 'P') preloadBtn.click();
   else if (e.key === 'e' || e.key === 'E') exportBtn.click();
   else if (e.key === 'i' || e.key === 'I') importBtn.click();
+  else if (e.key === 'a' || e.key === 'A') { filterSelect.value = 'all'; filterSelect.dispatchEvent(new Event('change')); }
+  else if (e.key === 'u' || e.key === 'U') { filterSelect.value = 'unanswered'; filterSelect.dispatchEvent(new Event('change')); }
+  else if (e.key === 'c' || e.key === 'C') { filterSelect.value = 'correct'; filterSelect.dispatchEvent(new Event('change')); }
+  else if (e.key === 'w' || e.key === 'W') { filterSelect.value = 'incorrect'; filterSelect.dispatchEvent(new Event('change')); }
+  else if (e.key === 'm' || e.key === 'M') memorizeBtn.click();
+  else if (e.key === 'n' || e.key === 'N') autoNextBtn.click();
 });
 
 // ===================== LOAD FULL DATA =====================
@@ -1189,7 +1041,6 @@ async function loadFullData() {
         }
         saveMarks();
       }
-      updateCacheStats();
       updateProgress();
       return true;
     }
@@ -1200,10 +1051,79 @@ async function loadFullData() {
 // ===================== INIT =====================
 (async () => {
   const loaded = await loadFullData();
-  updateCacheStats();
   updateProgress();
   loadQuestion(loaded ? state.current : 1);
 })();
+
+// ===================== COUNTDOWN TIMER =====================
+const timerEl = document.getElementById('timer');
+const TIMER_SECS = 5400;
+const LS_TIMER = 'fe_timer_remain';
+let timerRemain = parseInt(localStorage.getItem(LS_TIMER)) || TIMER_SECS;
+let timerId = null, timerClicks = 0, clickTimer = null;
+
+function formatTime(s) {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function showTimer() { timerEl.textContent = formatTime(timerRemain); }
+function saveTimer() { localStorage.setItem(LS_TIMER, timerRemain); }
+function updateTimerColor() {
+  timerEl.classList.remove('t-yellow','t-orange','t-red');
+  if (timerRemain <= 600) timerEl.classList.add('t-red');
+  else if (timerRemain <= 1800) timerEl.classList.add('t-orange');
+  else if (timerRemain <= 3600) timerEl.classList.add('t-yellow');
+}
+function timerTick() {
+  if (timerRemain > 0) { timerRemain--; showTimer(); saveTimer(); updateTimerColor(); }
+  if (timerRemain === 0) { clearInterval(timerId); }
+}
+timerEl.addEventListener('click', () => {
+  timerClicks++;
+  if (timerClicks === 7) {
+    timerClicks = 0; clearTimeout(clickTimer);
+    const input = prompt('分钟数（例：90 = 1時間30分）:');
+    const m = parseInt(input);
+    if (!isNaN(m) && m > 0 && m <= 600) {
+      clearInterval(timerId); timerRemain = m * 60; showTimer(); saveTimer();
+      timerId = setInterval(timerTick, 1000); updateTimerColor();
+    }
+    return;
+  }
+  if (timerClicks === 6) {
+    timerClicks = 0; clearTimeout(clickTimer);
+    clearInterval(timerId); timerRemain = TIMER_SECS; showTimer(); saveTimer();
+    timerId = setInterval(timerTick, 1000); updateTimerColor();
+    return;
+  }
+  clearTimeout(clickTimer);
+  clickTimer = setTimeout(() => { timerClicks = 0; }, 2000);
+});
+showTimer();
+updateTimerColor();
+timerId = setInterval(timerTick, 1000);
+
+// ===================== YEAR SELECTOR =====================
+const YEARS = [
+  { label: '令和2年度', file: 'fe_siken_viewer_2020.html' },
+  { label: '令和3年度', file: 'fe_siken_viewer_2021.html' },
+];
+const yearSelect = document.getElementById('yearSelect');
+const is2021 = document.querySelector('h1').textContent.includes('令和3');
+YEARS.forEach((y, i) => {
+  const opt = document.createElement('option');
+  opt.value = y.file; opt.textContent = y.label;
+  if ((i === 1 && is2021) || (i === 0 && !is2021)) opt.selected = true;
+  yearSelect.appendChild(opt);
+});
+yearSelect.addEventListener('change', () => {
+  if (confirm(`切换到${yearSelect.options[yearSelect.selectedIndex].text}？`)) {
+    clearInterval(timerId); timerRemain = TIMER_SECS; saveTimer();
+    window.location.href = yearSelect.value;
+  } else {
+    yearSelect.selectedIndex = is2021 ? 1 : 0;
+  }
+});
 
 // ===================== 草稿画板 =====================
 const scratchpad = document.getElementById('scratchpad');
@@ -1256,8 +1176,26 @@ document.getElementById('spClose').addEventListener('click', () => {
 draftToggle.addEventListener('click', () => {
   const open = scratchpad.classList.toggle('open');
   document.body.classList.toggle('scratchpad-open', open);
-  if (open) setTimeout(resizeCanvas, 260);
+  if (open) {
+    const w = parseInt(scratchpad.style.width) || 300;
+    document.body.style.paddingRight = w + 'px';
+    setTimeout(resizeCanvas, 260);
+  } else {
+    document.body.style.paddingRight = '';
+  }
 });
+
+// ===================== 草稿画板拖拽调整宽度 =====================
+const spHandle = document.getElementById('spDragHandle');
+let spDragging = false;
+function setSpWidth(w) {
+  w = Math.min(Math.max(w, 150), window.innerWidth * 0.6);
+  scratchpad.style.width = w + 'px';
+  document.body.style.paddingRight = w + 'px';
+}
+spHandle.addEventListener('mousedown', (e) => { e.preventDefault(); spDragging = true; });
+document.addEventListener('mousemove', (e) => { if (spDragging) setSpWidth(window.innerWidth - e.clientX); });
+document.addEventListener('mouseup', () => { spDragging = false; });
 
 window.addEventListener('resize', () => { if (scratchpad.classList.contains('open')) resizeCanvas(); });
 </script>
