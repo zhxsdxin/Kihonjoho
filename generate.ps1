@@ -50,22 +50,6 @@ function Fix-Url($text) {
     return $text
 }
 
-function ExtractContent($html, $openPattern) {
-    $m = [regex]::Match($html, $openPattern)
-    if (-not $m.Success) { return "" }
-    $start = $m.Index + $m.Length + 1
-    if ($start -le 0) { return "" }
-    $depth = 1; $i = $start
-    while ($depth -gt 0 -and $i -lt $html.Length) {
-        $di = $html.IndexOf('</div>', $i)
-        $oi = $html.IndexOf('<div ', $i)
-        if ($oi -ge 0 -and $oi -lt $di) { $depth++; $i = $oi + 5 }
-        elseif ($di -ge 0) { $depth--; $i = $di + 6 }
-        else { break }
-    }
-    return $html.Substring($start, $i - $start - 6)
-}
-
 $questions = [ordered]@{}
 for ($i = 1; $i -le $Count; $i++) {
     $file = Join-Path $pagesPath "q$i.html"

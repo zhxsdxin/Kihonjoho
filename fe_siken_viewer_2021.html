@@ -88,7 +88,6 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
   font-family: inherit;
 }
 .toolbar button:hover { background: rgba(255,255,255,0.25); }
-#translateBtn.force { border-color: #e65100 !important; color: #ff9800; }
 .toolbar select option { color: #333; background: #fff; }
 .toolbar .spacer { flex: 1; }
 .toolbar .progress-text { font-size: 13px; opacity: .85; white-space: nowrap; }
@@ -270,22 +269,17 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 @media (max-width: 600px) {
   #app { padding: 8px; padding-bottom: 80px; } #questionArea { padding: 16px; } .q-number { font-size: 18px; }
   .toolbar { gap: 4px; } .toolbar button, .toolbar select { font-size: 12px; padding: 4px 10px; }
-  .btm-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); box-shadow: 0 -2px 10px rgba(0,0,0,0.15); padding: 10px 16px; margin: 0; z-index: 90; }
-  .btm-nav .page-jump { margin-left: 0; width: 100%; justify-content: center; }
+  .btm-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); box-shadow: 0 -2px 10px rgba(0,0,0,0.15); padding: 8px 12px; margin: 0; z-index: 90; flex-wrap: nowrap; }
+  .btm-nav .page-jump { margin-left: auto; width: auto; }
   #scratchpad { width: 260px; }
 }
-/* ===== FAB ===== */
-@media (min-width: 901px) { #fabMenu, #fabHint { display: none; } }
-#fabMenu { position: fixed; bottom: 90px; right: 16px; z-index: 95; display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 10px; }
-#fabMain { width: 52px; height: 52px; border-radius: 50%; border: none; background: var(--primary); color: #fff; font-size: 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.3); transition: transform .2s; display: flex; align-items: center; justify-content: center; }
-#fabMain.open { transform: rotate(45deg); }
-.fab-sub { display: none; flex-direction: column-reverse; gap: 8px; }
-#fabMenu.open .fab-sub { display: flex; }
-.fab-sub button { width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--surface); color: var(--text); font-size: 18px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; transition: background .15s; }
-.fab-sub button:hover { background: var(--choice-hover); }
-.fab-sub button.active { background: var(--primary); color: #fff; }
-#fabHint { position: fixed; bottom: 60px; right: 76px; background: var(--surface); color: var(--text-secondary); font-size: 12px; padding: 6px 12px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); opacity: 0; transition: opacity .3s; pointer-events: none; white-space: nowrap; z-index: 94; }
-#fabHint.show { opacity: 1; }
+/* ===== FAB（移动端切换工具栏） ===== */
+#fabBtn { display: none; position: fixed; bottom: 90px; right: 16px; width: 48px; height: 48px; border-radius: 50%; border: none; background: var(--primary); color: #fff; font-size: 22px; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.3); z-index: 95; }
+@media (max-width: 900px) {
+  .toolbar { display: none; }
+  .toolbar.toolbar-visible { display: flex; }
+  #fabBtn { display: flex; align-items: center; justify-content: center; }
+}
 /* ===== 长按 / 滑动 ===== */
 #questionArea { user-select: none; -webkit-user-select: none; }
 .swipe-hint { position: fixed; top: 50%; transform: translateY(-50%); font-size: 32px; opacity: 0; pointer-events: none; z-index: 100; transition: opacity .2s; }
@@ -302,7 +296,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   <select id="yearSelect"></select>
   <span class="timer" id="timer">01:30:00</span>
   </div>
-  <div class="sub">全80問 — 解答・解説付き <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / D草稿 / M暗記 / N自動 / Space解答 / A全 U未 C正 W误</span></div>
+  <div class="sub">全80問 — 解答・解説付き <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / F强制翻译 / D草稿 / M暗記 / N自動 / Space解答 / A全 U未 C正 W误</span></div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
     <select id="filterSelect">
@@ -333,6 +327,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <div class="q-status">
         <button id="markBookmark" title="ブックマーク (B)">★</button>
         <button id="translateBtn" title="日中切替 (T)" style="font-size:13px;border-color:var(--text-secondary)">中</button>
+        <button id="forceTransBtn" title="强制API翻译 (F)" style="display:none;font-size:13px;border-color:#e65100;color:#ff9800">⟳</button>
       </div>
     </div>
     <div class="loading" id="loadingIndicator">
@@ -390,6 +385,8 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   </div>
 </div>
 
+<button id="fabBtn" title="工具栏">☰</button>
+
 <script>
 // ===================== CONFIG =====================
 const TOTAL = 80;
@@ -442,6 +439,7 @@ const questionGrid = $('questionGrid');
 const progressText = $('progressText');
 const markBookmark = $('markBookmark');
 const translateBtn = $('translateBtn');
+const forceTransBtn = $('forceTransBtn');
 const shuffleToggle = $('shuffleToggle');
 const draftToggle = $('draftToggle');
 const memorizeBtn = $('memorizeBtn');
@@ -598,7 +596,7 @@ function displayQuestion(num, data) {
   jumpInput.value = num;
 
   // 恢复翻译状态
-  if (localStorage.getItem('lastTranslated') !== '0') {
+  if (localStorage.getItem('lastTranslated') === '1') {
     if (data._tr || loadTransFromCache(num)) {
       translateBtn.click();
     }
@@ -731,59 +729,28 @@ async function translateNode(node) {
   for (const c of children) await translateNode(c);
 }
 
-let translateOriginal = {}; // 存原文
+
 
 translateBtn.addEventListener('click', async () => {
   const num = state.current;
   const d = state.data[num];
   if (!d) return;
 
-  const applyTr = (stateVal) => {
-    mondaiEl.innerHTML = d._tr.mondai;
-    const lis = selectList.querySelectorAll('li');
-    lis.forEach(li => { const o = li.dataset.origIdx; if (d._tr.sels && d._tr.sels[o]) li.querySelector('span:last-child').innerHTML = d._tr.sels[o]; });
-    kaisetsuEl.innerHTML = d._tr.kaisetsu;
-    state.translated = stateVal;
-    translateBtn.textContent = stateVal === 2 ? '⟳' : '日';
-    translateBtn.classList.add('active');
-    if (stateVal === 2) translateBtn.classList.add('force');
-    else translateBtn.classList.remove('force');
-    localStorage.setItem('lastTranslated', '' + stateVal);
-  };
-
-  // ⟳ 模式: 返回关闭
-  if (state.translated === 2) {
+  if (state.translated) {
     mondaiEl.innerHTML = d.mondai;
     const lis = selectList.querySelectorAll('li');
     d.selects.forEach((s, i) => { if (lis[i]) lis[i].querySelector('span:last-child').innerHTML = s.text; });
     kaisetsuEl.innerHTML = d.kaisetsu;
     state.translated = 0;
     translateBtn.textContent = '中';
-    translateBtn.classList.remove('active', 'force');
+    translateBtn.classList.remove('active');
+    forceTransBtn.style.display = 'none';
+    localStorage.setItem('lastTranslated', '0');
     return;
   }
 
-  // 日模式 (缓存): 切换为强制API
-  if (state.translated === 1) {
-    translateBtn.textContent = '…';
-    await translateNode(mondaiEl);
-    const lis = selectList.querySelectorAll('li');
-    for (const li of lis) {
-      const span = li.querySelector('span:last-child');
-      if (span) await translateNode(span);
-    }
-    await translateNode(kaisetsuEl);
-    const sels = {};
-    lis.forEach(li => { const s = li.querySelector('span:last-child'); if (s) sels[li.dataset.origIdx] = s.innerHTML; });
-    d._tr = { mondai: mondaiEl.innerHTML, sels, kaisetsu: kaisetsuEl.innerHTML };
-    saveTransToCache(num, d._tr);
-    applyTr(2);
-    return;
-  }
-
-  // 关闭状态: 开启翻译
-  if (d._tr) { d._tr = { ...d._tr }; applyTr(1); return; }
-  if (loadTransFromCache(num)) { applyTr(1); return; }
+  if (d._tr) { applyTr(); return; }
+  if (loadTransFromCache(num)) { applyTr(); return; }
 
   translateBtn.textContent = '…';
   await translateNode(mondaiEl);
@@ -793,12 +760,43 @@ translateBtn.addEventListener('click', async () => {
     if (span) await translateNode(span);
   }
   await translateNode(kaisetsuEl);
-
   const sels = {};
   lis.forEach(li => { const s = li.querySelector('span:last-child'); if (s) sels[li.dataset.origIdx] = s.innerHTML; });
   d._tr = { mondai: mondaiEl.innerHTML, sels, kaisetsu: kaisetsuEl.innerHTML };
   saveTransToCache(num, d._tr);
-  applyTr(1);
+  applyTr();
+});
+
+function applyTr() {
+  const d = state.data[state.current];
+  mondaiEl.innerHTML = d._tr.mondai;
+  const lis = selectList.querySelectorAll('li');
+  lis.forEach(li => { const o = li.dataset.origIdx; if (d._tr.sels && d._tr.sels[o]) li.querySelector('span:last-child').innerHTML = d._tr.sels[o]; });
+  kaisetsuEl.innerHTML = d._tr.kaisetsu;
+  state.translated = 1;
+  translateBtn.textContent = '日';
+  translateBtn.classList.add('active');
+  forceTransBtn.style.display = 'inline-block';
+  localStorage.setItem('lastTranslated', '1');
+}
+
+forceTransBtn.addEventListener('click', async () => {
+  const num = state.current;
+  const d = state.data[num];
+  if (!d || !state.translated) return;
+  forceTransBtn.textContent = '…';
+  await translateNode(mondaiEl);
+  const lis = selectList.querySelectorAll('li');
+  for (const li of lis) {
+    const span = li.querySelector('span:last-child');
+    if (span) await translateNode(span);
+  }
+  await translateNode(kaisetsuEl);
+  const sels = {};
+  lis.forEach(li => { const s = li.querySelector('span:last-child'); if (s) sels[li.dataset.origIdx] = s.innerHTML; });
+  d._tr = { mondai: mondaiEl.innerHTML, sels, kaisetsu: kaisetsuEl.innerHTML };
+  saveTransToCache(num, d._tr);
+  applyTr();
 });
 
 // ===================== LOAD =====================
@@ -1035,6 +1033,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'w' || e.key === 'W') { filterSelect.value = 'incorrect'; filterSelect.dispatchEvent(new Event('change')); }
   else if (e.key === 'm' || e.key === 'M') memorizeBtn.click();
   else if (e.key === 'n' || e.key === 'N') autoNextBtn.click();
+  else if (e.key === 'f' || e.key === 'F') { if (state.translated) forceTransBtn.click(); }
 });
 
 // ===================== LOAD FULL DATA =====================
@@ -1244,36 +1243,13 @@ window.addEventListener('resize', () => { if (scratchpad.classList.contains('ope
   });
 })();
 
-// ===================== FAB MENU =====================
+// ===================== FAB TOGGLE TOOLBAR =====================
 (function() {
-  const menu = document.getElementById('fabMenu');
-  const main = document.getElementById('fabMain');
-  const hint = document.getElementById('fabHint');
-  main.addEventListener('click', () => {
-    menu.classList.toggle('open');
-    main.textContent = menu.classList.contains('open') ? '✕' : '＋';
-    hint.classList.remove('show');
-  });
-  menu.querySelectorAll('.fab-sub button').forEach(btn => {
-    btn.addEventListener('click', () => { const id = btn.dataset.target; if (id) document.getElementById(id).click(); });
-    btn.addEventListener('touchstart', () => { hint.textContent = btn.title; hint.classList.add('show'); });
-    btn.addEventListener('touchend', () => setTimeout(() => hint.classList.remove('show'), 800));
-  });
+  const fab = document.getElementById('fabBtn');
+  const tb = document.querySelector('.toolbar');
+  fab.addEventListener('click', () => { tb.classList.toggle('toolbar-visible'); fab.textContent = tb.classList.contains('toolbar-visible') ? '✕' : '☰'; });
 })();
 </script>
-
-<div id="fabMenu">
-  <button id="fabMain" title="メニュー">＋</button>
-  <span id="fabHint"></span>
-  <div class="fab-sub">
-    <button data-target="memorizeBtn" title="暗記">📖</button>
-    <button data-target="shuffleToggle" title="打乱">🔀</button>
-    <button data-target="randomBtn" title="随机">🎲</button>
-    <button data-target="translateBtn" title="翻译">🌐</button>
-    <button data-target="draftToggle" title="草稿">✏</button>
-    <button data-target="autoNextBtn" title="自動">▶</button>
-  </div>
-</div>
 
 </body>
 </html>
