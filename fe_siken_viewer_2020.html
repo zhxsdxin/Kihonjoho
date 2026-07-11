@@ -118,8 +118,6 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
   display: flex; align-items: center; justify-content: center; transition: all .15s;
 }
 .q-status button:hover { transform: scale(1.1); }
-.q-status button.mark-correct { border-color: var(--correct-text); background: var(--correct-bg); }
-.q-status button.mark-incorrect { border-color: var(--incorrect-text); background: var(--incorrect-bg); }
 .q-status button.mark-bookmark { border-color: var(--bookmark-color); color: var(--bookmark-color); }
 #mondai { font-size: 16px; padding: 12px 0; margin-bottom: 20px; }
 #mondai .ol { text-decoration: overline; }
@@ -315,8 +313,6 @@ body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open h
     <div class="q-header">
       <a class="q-number" id="qNumber" href="#" target="_blank" title="原題を開く">問1</a>
       <div class="q-status">
-        <button id="markCorrect" title="正解 (C)">✓</button>
-        <button id="markIncorrect" title="不正解 (X)">✗</button>
         <button id="markBookmark" title="ブックマーク (B)">★</button>
         <button id="translateBtn" title="日中切替 (T)" style="font-size:13px;border-color:var(--text-secondary)">中</button>
       </div>
@@ -436,10 +432,7 @@ const randomBtn = $('randomBtn');
 const gridToggle = $('gridToggle');
 const questionGrid = $('questionGrid');
 const progressText = $('progressText');
-const markCorrect = $('markCorrect');
-const markIncorrect = $('markIncorrect');
 const markBookmark = $('markBookmark');
-
 const translateBtn = $('translateBtn');
 const preloadBtn = $('preloadBtn');
 const preloadBarWrap = $('preloadBarWrap');
@@ -723,10 +716,8 @@ showAnswerBtn.addEventListener('click', () => {
 
 function updateMarkUI() {
   const m = state.marks[state.current] || null;
-  [markCorrect, markIncorrect, markBookmark].forEach(b => b.className = '');
-  if (m === 'correct') markCorrect.classList.add('mark-correct');
-  else if (m === 'incorrect') markIncorrect.classList.add('mark-incorrect');
-  else if (m === 'bookmark') markBookmark.classList.add('mark-bookmark');
+  markBookmark.className = '';
+  if (m === 'bookmark') markBookmark.classList.add('mark-bookmark');
 }
 
 function toggleMark(type) {
@@ -736,8 +727,6 @@ function toggleMark(type) {
   updateProgress();
   saveMarks();
 }
-markCorrect.addEventListener('click', () => toggleMark('correct'));
-markIncorrect.addEventListener('click', () => toggleMark('incorrect'));
 markBookmark.addEventListener('click', () => toggleMark('bookmark'));
 
 
@@ -1177,8 +1166,6 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'r' || e.key === 'R') randomBtn.click();
   else if (e.key === 'g' || e.key === 'G') gridToggle.click();
   else if (e.key === 'b' || e.key === 'B') markBookmark.click();
-  else if (e.key === 'c' || e.key === 'C') markCorrect.click();
-  else if (e.key === 'x' || e.key === 'X') markIncorrect.click();
   else if (e.key === 't' || e.key === 'T') translateBtn.click();
   else if (e.key === 'd' || e.key === 'D') draftToggle.click();
   else if (e.key === 'p' || e.key === 'P') preloadBtn.click();
