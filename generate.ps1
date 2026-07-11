@@ -95,7 +95,7 @@ $jsonData = @{
     questions = $questions
 }
 if (-not $JsonName) { $JsonName = "fe_siken_viewer_$($Year -replace '_','')" }
-$jsonName = $JsonName -replace '\.json$', '' + '.json'
+$jsonName = ($JsonName -replace '\.json$', '') + '.json'
 $jsonPath = Join-Path $PSScriptRoot $jsonName
 Write-Host "  输出: $jsonName" -ForegroundColor Cyan
 $jsonData | ConvertTo-Json -Depth 10 | Out-File $jsonPath -Encoding UTF8
@@ -110,17 +110,18 @@ if ($Clean) {
 
 # 4. Git 推送
 if ($Push) {
-    $gitPath = Get-Command "git" -ErrorAction SilentlyContinue
-    if (-not $gitPath) {
-        $gitPath = Get-ChildItem -Recurse -Filter "git.exe" -Path "C:\Program Files\Git" -ErrorAction SilentlyContinue | Select-Object -First 1
+    # 查找 git
+    $gitExe = Get-Command "git" -ErrorAction SilentlyContinue
+    if (-not $gitExe) {
+        $gitExe = Get-ChildItem -Filter "git.exe" -Path "C:\Program Files\Git\bin" -ErrorAction SilentlyContinue | Select-Object -First 1
     }
-    if ($gitPath) {
-        $gitDir = $gitPath.Source -replace '\\git\.exe$', ''
+    if ($gitExe) {
+        $gitDir = if ($gitExe.Source) { Split-Path $gitExe.Source } else { Split-Path $gitExe.FullName }
         $env:PATH = "$gitDir;$env:PATH"
     }
 
     try {
-        $status = git -C $PSScriptRoot status --porcelain
+        $status = git -C $PSScriptRoot status --porcelain 2>$null
         if ($status) {
             Write-Host "`n=== Git 推送 ===" -ForegroundColor Cyan
             git -C $PSScriptRoot add -A
