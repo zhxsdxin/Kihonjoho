@@ -302,6 +302,7 @@ body.scratchpad-open #app, body.scratchpad-open .btm-nav, body.scratchpad-open h
     <button id="preloadBtn" title="一括取得 (P)">⬇ 一括取得</button>
     <button id="exportBtn" title="导出缓存 (E)">📤</button>
     <button id="exportFullBtn" title="导出全量数据">📦</button>
+    <button id="dlScriptBtn" title="下载本地脚本">📜</button>
     <button id="importBtn" title="导入缓存 (I)">📥</button>
     <input type="file" id="importFile" accept=".json" style="display:none">
   </div>
@@ -943,7 +944,7 @@ async function preloadAll() {
 
   // 自动询问下载 questions.json
   setTimeout(() => {
-    if (confirm('一括取得完成！是否下载 ' + JSON_FILE + ' 以便离线使用？（之后可删除 pages/ 文件夹）')) {
+    if (confirm('一括取得完成！\n\n是否下载 ' + JSON_FILE + ' ？（可删除 HTML 文件）\n\n也可点 📜 按钮下载本地脚本，自动完成下载→JSON→git推送')) {
       exportFullBtn.click();
     }
   }, 500);
@@ -1033,6 +1034,20 @@ exportFullBtn.addEventListener('click', () => {
   const a = document.createElement('a');
   a.href = url;
   a.download = JSON_FILE;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+const YEAR_FROM_URL = BASE_URL.match(/kakomon\/([^/]+)\/q/)?.[1] || '02_menjo';
+dlScriptBtn.addEventListener('click', () => {
+  const script = `# ${PAGE_NAME} 本地脚本 - 下载→生成JSON→推送
+.\\generate.ps1 -Year "${YEAR_FROM_URL}" -Count ${TOTAL} -JsonName "${PAGE_NAME}" -Push
+`;
+  const blob = new Blob([script], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'run_' + PAGE_NAME + '.ps1';
   a.click();
   URL.revokeObjectURL(url);
 });
