@@ -1104,8 +1104,8 @@ function addLongPress(el, callback) {
   return true;
 }
 
-addLongPress(aiExplainBtn, () => { localStorage.removeItem(getAIKey(state.current)); callAIExplain(); });
-addLongPress(translateBtn, () => { localStorage.removeItem(getTransKey(state.current)); translateBtn.click(); });
+addLongPress(aiExplainBtn, () => { localStorage.removeItem(getAIKey(state.current)); aiExplainBtn._isLong = false; callAIExplain(); });
+addLongPress(translateBtn, () => { localStorage.removeItem(getTransKey(state.current)); translateBtn._isLong = false; translateBtn.click(); });
 
 // ===================== EXPORT / IMPORT =====================
 const exportBtn = $('exportBtn');
