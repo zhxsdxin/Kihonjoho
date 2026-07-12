@@ -1146,7 +1146,16 @@ function addLongPress(el, callback) {
 }
 
 addLongPress(aiExplainBtn, () => { localStorage.removeItem(getAIKey(state.current)); aiExplainBtn._isLong = false; callAIExplain(); });
-addLongPress(translateBtn, () => { localStorage.removeItem(getTransKey(state.current)); translateBtn._isLong = false; translateBtn.click(); });
+addLongPress(translateBtn, () => {
+  const d = state.data[state.current];
+  if (d) delete d._tr;
+  localStorage.removeItem(getTransKey(state.current));
+  state.translated = 0;
+  translateBtn.textContent = '中';
+  translateBtn.classList.remove('active');
+  translateBtn._isLong = false;
+  translateBtn.click();
+});
 
 // ===================== EXPORT / IMPORT =====================
 const exportBtn = $('exportBtn');
