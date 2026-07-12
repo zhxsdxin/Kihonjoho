@@ -117,6 +117,11 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
   display: flex; align-items: center; justify-content: center; transition: all .15s;
 }
 .q-status button:hover { transform: scale(1.1); }
+.q-status button.force-ready { position: relative; }
+.q-status button.force-ready::after {
+  content: '⟳'; position: absolute; bottom: -12px; font-size: 10px; color: #e65100;
+  pointer-events: none; line-height: 1;
+}
 .q-status button.mark-bookmark { border-color: var(--bookmark-color); color: var(--bookmark-color); }
 #mondai { font-size: 16px; padding: 12px 0; margin-bottom: 20px; }
 .ol { text-decoration: overline; }
@@ -620,6 +625,7 @@ function displayQuestion(num, data) {
   state.translated = 0;
   translateBtn.textContent = '中';
   translateBtn.classList.remove('active');
+  translateBtn.classList.remove('force-ready');
   updateProgress();
   jumpInput.value = num;
 
@@ -769,6 +775,7 @@ translateBtn.addEventListener('click', async () => {
     const lis = selectList.querySelectorAll('li');
     d.selects.forEach((s, i) => { if (lis[i]) lis[i].querySelector('span:last-child').innerHTML = s.text; });
     kaisetsuEl.innerHTML = d.kaisetsu;
+    translateBtn.classList.remove('force-ready');
     state.translated = 0;
     translateBtn.textContent = '中';
     translateBtn.classList.remove('active');
@@ -803,6 +810,7 @@ function applyTr() {
   state.translated = 1;
   translateBtn.textContent = '日';
   translateBtn.classList.add('active');
+  translateBtn.classList.add('force-ready');
   localStorage.setItem('lastTranslated', '1');
 }
 
@@ -976,6 +984,7 @@ function clearAI() {
   aiMondaiPanel.classList.remove('ai-visible');
   aiSummaryPanel.innerHTML = '';
   aiSummaryPanel.classList.remove('ai-visible');
+  aiExplainBtn.classList.remove('force-ready');
   selectList.querySelectorAll('.ai-select-panel').forEach(p => { p.innerHTML = ''; p.classList.remove('ai-visible'); });
 }
 
@@ -1012,6 +1021,7 @@ function renderAIData(aiData) {
   }
   if (aiData.mondai || aiData.selects || aiData.summary) {
     explanationSection.classList.add('visible');
+    aiExplainBtn.classList.add('force-ready');
   }
   if (window.MathJax) {
     const els = document.querySelectorAll('.ai-panel.ai-visible, .ai-select-panel.ai-visible');
@@ -1023,6 +1033,7 @@ function renderAIFallback(text) {
   aiMondaiPanel.innerHTML = escBR(text);
   aiMondaiPanel.classList.add('ai-visible');
   explanationSection.classList.add('visible');
+  aiExplainBtn.classList.add('force-ready');
   if (window.MathJax) MathJax.typesetPromise([aiMondaiPanel]);
 }
 
