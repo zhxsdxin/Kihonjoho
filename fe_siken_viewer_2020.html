@@ -158,9 +158,9 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 .ai-panel { margin: 8px 0; padding: 10px 14px; background: var(--choice-selected); border-radius: 6px; font-size: 13px; line-height: 1.7; display: none; border-left: 3px solid var(--primary); }
 .ai-panel.ai-visible { display: block; }
 #aiMondaiPanel { margin-bottom: 16px; }
-.ai-select-panel { display: none; margin-top: 6px; padding: 6px 10px; background: var(--choice-selected); border-radius: 4px; font-size: 12px; line-height: 1.6; border-left: 3px solid #34a853; }
+.ai-select-panel { display: none; margin-top: 6px; padding: 6px 10px; background: var(--choice-selected); border-radius: 4px; font-size: 12px; line-height: 1.6; border-left: 3px solid #34a853; flex-basis: 100%; }
 .ai-select-panel.ai-visible { display: block; }
-#aiSummaryPanel { margin-top: 12px; }
+#aiSummaryPanel { margin-top: 16px; border-left-color: var(--bookmark-color); }
 .ai-panel.loading-ai { text-align: center; color: var(--text-secondary); white-space: normal; }
 .btm-nav { display: flex; gap: 10px; margin-top: 20px; align-items: center; flex-wrap: wrap; }
 .btm-nav button {
@@ -355,6 +355,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <div id="mondai"></div>
       <div id="aiMondaiPanel" class="ai-panel"></div>
       <ul class="selectList" id="selectList"></ul>
+      <div id="aiSummaryPanel" class="ai-panel"></div>
       <div class="answer-section" id="answerSection">
         <h3>正解</h3>
         <span id="answerChar"></span>
@@ -363,7 +364,6 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <div class="explanation-section" id="explanationSection">
         <h3>解説</h3>
         <div id="kaisetsu"></div>
-        <div id="aiSummaryPanel" class="ai-panel"></div>
       </div>
       <div class="info-row" id="infoRow"></div>
     </div>
