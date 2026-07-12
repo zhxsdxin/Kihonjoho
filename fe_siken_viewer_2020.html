@@ -342,6 +342,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <div class="q-status">
         <button id="markBookmark" title="ブックマーク (B)">★</button>
         <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px;border-color:#34a853;color:#34a853">🤖</button>
+        <button id="forceAiBtn" title="强制重新解析 (F)" style="display:none;font-size:13px;border-color:#e65100;color:#ff9800">⟳</button>
         <button id="translateBtn" title="日中切替 (T)" style="font-size:13px;border-color:var(--text-secondary)">中</button>
         <button id="forceTransBtn" title="强制API翻译 (F)" style="display:none;font-size:13px;border-color:#e65100;color:#ff9800">⟳</button>
       </div>
@@ -466,6 +467,7 @@ const shuffleToggle = $('shuffleToggle');
 const draftToggle = $('draftToggle');
 const memorizeBtn = $('memorizeBtn');
 const aiExplainBtn = $('aiExplainBtn');
+const forceAiBtn = $('forceAiBtn');
 const aiMondaiPanel = $('aiMondaiPanel');
 const aiSummaryPanel = $('aiSummaryPanel');
 
@@ -623,6 +625,7 @@ function displayQuestion(num, data) {
   translateBtn.textContent = '中';
   translateBtn.classList.remove('active');
   forceTransBtn.style.display = 'none';
+  forceAiBtn.style.display = 'none';
   updateProgress();
   jumpInput.value = num;
 
@@ -951,6 +954,59 @@ function htmlToText(s) {
 
 function stripHTML(s) { return htmlToText(s); }
 
+async function callAIExplain() {
+  const num = state.current;
+  const d = state.data[num];
+  if (!d) return;
+  let apiKey = localStorage.getItem(AI_KEY);
+  if (!apiKey) {
+    apiKey = prompt('请输入 DeepSeek API Key（获取: https://platform.deepseek.com/api_keys）:');
+    if (!apiKey) return;
+    localStorage.setItem(AI_KEY, apiKey);
+  }
+  clearAI();
+  aiMondaiPanel.textContent = 'AI 正在解析中...';
+  aiMondaiPanel.classList.add('ai-visible', 'loading-ai');
+  explanationSection.classList.add('visible');
+  try {
+    const res = await fetch(AI_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [{ role: 'user', content: buildAIPrompt(num) }],
+        temperature: 0.7,
+        max_tokens: 4096
+      })
+    });
+    if (!res.ok) { const err = await res.text(); throw new Error('API 错误: ' + res.status + ' ' + err.slice(0, 200)); }
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || 'AI 返回为空，请重试';
+    const aiData = parseAIResponse(text);
+    if (aiData) {
+      renderAIData(aiData);
+      localStorage.setItem(getAIKey(num), JSON.stringify(aiData));
+    } else {
+      renderAIFallback(text);
+      localStorage.setItem(getAIKey(num), text);
+    }
+    aiMondaiPanel.classList.remove('loading-ai');
+    forceAiBtn.style.display = 'inline-block';
+  } catch (e) {
+    aiMondaiPanel.textContent = '解析失败: ' + e.message;
+    aiMondaiPanel.classList.remove('loading-ai');
+    if (e.message.includes('401') || e.message.includes('403') || e.message.includes('key')) { localStorage.removeItem(AI_KEY); }
+  }
+}
+
+function clearAI() {
+  aiMondaiPanel.innerHTML = '';
+  aiMondaiPanel.classList.remove('ai-visible');
+  aiSummaryPanel.innerHTML = '';
+  aiSummaryPanel.classList.remove('ai-visible');
+  selectList.querySelectorAll('.ai-select-panel').forEach(p => { p.innerHTML = ''; p.classList.remove('ai-visible'); });
+}
+
 function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 function escBR(s) { return esc(s).replace(/\n/g, '<br>'); }
 
@@ -1024,14 +1080,14 @@ aiExplainBtn.addEventListener('click', async () => {
     try { aiData = JSON.parse(builtin); } catch (e) {}
     if (aiData && (aiData.mondai || aiData.selects || aiData.summary)) {
       const vis = aiMondaiPanel.classList.toggle('ai-visible');
-      if (!vis || !aiMondaiPanel.innerHTML) renderAIData(aiData);
-      else { aiMondaiPanel.classList.remove('ai-visible'); aiSummaryPanel.classList.remove('ai-visible'); }
+      if (!vis || !aiMondaiPanel.innerHTML) { renderAIData(aiData); forceAiBtn.style.display = 'inline-block'; }
+      else { clearAI(); forceAiBtn.style.display = 'none'; }
       return;
     }
     if (builtin.length > 10) {
       const vis = aiMondaiPanel.classList.toggle('ai-visible');
-      if (!vis || !aiMondaiPanel.innerHTML) renderAIFallback(builtin);
-      else { aiMondaiPanel.classList.remove('ai-visible'); aiSummaryPanel.classList.remove('ai-visible'); }
+      if (!vis || !aiMondaiPanel.innerHTML) { renderAIFallback(builtin); forceAiBtn.style.display = 'inline-block'; }
+      else { clearAI(); forceAiBtn.style.display = 'none'; }
       return;
     }
   }
@@ -1041,55 +1097,21 @@ aiExplainBtn.addEventListener('click', async () => {
     let aiData = parseAIResponse(cached);
     if (aiData) {
       const vis = aiMondaiPanel.classList.toggle('ai-visible');
-      if (!vis || !aiMondaiPanel.innerHTML) renderAIData(aiData);
-      else { aiMondaiPanel.classList.remove('ai-visible'); aiSummaryPanel.classList.remove('ai-visible'); }
+      if (!vis || !aiMondaiPanel.innerHTML) { renderAIData(aiData); forceAiBtn.style.display = 'inline-block'; }
+      else { clearAI(); forceAiBtn.style.display = 'none'; }
     } else {
       const vis = aiMondaiPanel.classList.toggle('ai-visible');
-      if (!vis || !aiMondaiPanel.innerHTML) renderAIFallback(cached);
-      else { aiMondaiPanel.classList.remove('ai-visible'); aiSummaryPanel.classList.remove('ai-visible'); }
+      if (!vis || !aiMondaiPanel.innerHTML) { renderAIFallback(cached); forceAiBtn.style.display = 'inline-block'; }
+      else { clearAI(); forceAiBtn.style.display = 'none'; }
     }
     return;
   }
-  let apiKey = localStorage.getItem(AI_KEY);
-  if (!apiKey) {
-    apiKey = prompt('请输入 DeepSeek API Key（获取: https://platform.deepseek.com/api_keys）:');
-    if (!apiKey) return;
-    localStorage.setItem(AI_KEY, apiKey);
-  }
-  aiSummaryPanel.textContent = '';
-  aiMondaiPanel.textContent = 'AI 正在解析中...';
-  aiMondaiPanel.classList.add('ai-visible');
-  aiSummaryPanel.classList.remove('ai-visible');
-  aiMondaiPanel.classList.add('loading-ai');
-  explanationSection.classList.add('visible');
-  try {
-    const res = await fetch(AI_API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [{ role: 'user', content: buildAIPrompt(num) }],
-        temperature: 0.7,
-        max_tokens: 4096
-      })
-    });
-    if (!res.ok) { const err = await res.text(); throw new Error('API 错误: ' + res.status + ' ' + err.slice(0, 200)); }
-    const data = await res.json();
-    const text = data.choices?.[0]?.message?.content || 'AI 返回为空，请重试';
-    const aiData = parseAIResponse(text);
-    if (aiData) {
-      renderAIData(aiData);
-      localStorage.setItem(getAIKey(num), JSON.stringify(aiData));
-    } else {
-      renderAIFallback(text);
-      localStorage.setItem(getAIKey(num), text);
-    }
-    aiMondaiPanel.classList.remove('loading-ai');
-  } catch (e) {
-    aiMondaiPanel.textContent = '解析失败: ' + e.message;
-    aiMondaiPanel.classList.remove('loading-ai');
-    if (e.message.includes('401') || e.message.includes('403') || e.message.includes('key')) { localStorage.removeItem(AI_KEY); }
-  }
+  callAIExplain();
+});
+
+forceAiBtn.addEventListener('click', () => {
+  localStorage.removeItem(getAIKey(state.current));
+  callAIExplain();
 });
 
 // ===================== EXPORT / IMPORT =====================
@@ -1226,7 +1248,10 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'w' || e.key === 'W') { filterSelect.value = 'incorrect'; filterSelect.dispatchEvent(new Event('change')); }
   else if (e.key === 'm' || e.key === 'M') memorizeBtn.click();
   else if (e.key === 'n' || e.key === 'N') autoNextBtn.click();
-  else if (e.key === 'f' || e.key === 'F') { if (state.translated) forceTransBtn.click(); }
+  else if (e.key === 'f' || e.key === 'F') {
+    if (forceAiBtn.style.display !== 'none') forceAiBtn.click();
+    else if (state.translated) forceTransBtn.click();
+  }
   else if (e.key === 'x' || e.key === 'X') aiExplainBtn.click();
 });
 
