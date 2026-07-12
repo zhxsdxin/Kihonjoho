@@ -1131,15 +1131,16 @@ timerId = setInterval(timerTick, 1000);
 
 // ===================== YEAR SELECTOR =====================
 const YEARS = [
+  { label: '令和元年度', file: 'fe_siken_viewer_2019.html' },
   { label: '令和2年度', file: 'fe_siken_viewer_2020.html' },
   { label: '令和3年度', file: 'fe_siken_viewer_2021.html' },
 ];
 const yearSelect = document.getElementById('yearSelect');
-const is2021 = document.querySelector('h1').textContent.includes('令和3');
+const h1Text = document.querySelector('h1').textContent;
 YEARS.forEach((y, i) => {
   const opt = document.createElement('option');
   opt.value = y.file; opt.textContent = y.label;
-  if ((i === 1 && is2021) || (i === 0 && !is2021)) opt.selected = true;
+  if (h1Text.includes(y.label)) opt.selected = true;
   yearSelect.appendChild(opt);
 });
 yearSelect.addEventListener('change', () => {
@@ -1147,7 +1148,7 @@ yearSelect.addEventListener('change', () => {
     clearInterval(timerId); timerRemain = TIMER_SECS; saveTimer();
     window.location.href = yearSelect.value;
   } else {
-    yearSelect.selectedIndex = is2021 ? 1 : 0;
+    yearSelect.selectedIndex = [...yearSelect.options].findIndex(o => o.value === window.location.pathname.split('/').pop());
   }
 });
 
