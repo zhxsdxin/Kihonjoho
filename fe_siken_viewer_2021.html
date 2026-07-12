@@ -62,7 +62,8 @@ header {
 }
 header h1 { font-size: 16px; font-weight: 700; display: inline; }
 header .hdr-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.timer { font-size: 18px; font-variant-numeric: tabular-nums; white-space: nowrap; margin-left: auto; background: #2e7d32; padding: 4px 14px; border-radius: 8px; cursor: pointer; user-select: none; }
+.timer { font-size: 18px; font-variant-numeric: tabular-nums; white-space: nowrap; margin-left: auto; background: #2e7d32; padding: 4px 14px; border-radius: 8px; cursor: pointer; user-select: none; transition: all .2s; }
+.timer-hidden { font-size: 10px; padding: 2px 8px; border-radius: 50%; min-width: auto; }
 .timer.t-yellow { background: #f9a825; color: #1a1a1a; }
 .timer.t-orange { background: #e65100; }
 .timer.t-red { background: #b71c1c; color: #fff; }
@@ -1095,7 +1096,35 @@ function timerTick() {
   if (timerRemain > 0) { timerRemain--; showTimer(); saveTimer(); updateTimerColor(); }
   if (timerRemain === 0) { clearInterval(timerId); }
 }
+let timerPressStart = 0, timerLongPress = false, timerHidden = false;
+const TIMER_LONG_PRESS_MS = 600;
+
+function toggleTimerVisibility() {
+  timerHidden = !timerHidden;
+  timerEl.classList.toggle('timer-hidden', timerHidden);
+  timerEl.textContent = timerHidden ? '⏱' : formatTime(timerRemain);
+  localStorage.setItem('fe_timer_hidden', timerHidden ? '1' : '0');
+}
+if (localStorage.getItem('fe_timer_hidden') === '1') { timerHidden = true; timerEl.classList.add('timer-hidden'); timerEl.textContent = '⏱'; }
+
+function startLongPress() {
+  timerPressStart = Date.now(); timerLongPress = false;
+  setTimeout(() => {
+    if (timerPressStart && Date.now() - timerPressStart >= TIMER_LONG_PRESS_MS) {
+      timerLongPress = true; timerClicks = 0; clearTimeout(clickTimer); toggleTimerVisibility();
+    }
+  }, TIMER_LONG_PRESS_MS);
+}
+function cancelLongPress() { timerPressStart = 0; }
+timerEl.addEventListener('mousedown', startLongPress);
+timerEl.addEventListener('mouseup', cancelLongPress);
+timerEl.addEventListener('mouseleave', cancelLongPress);
+timerEl.addEventListener('touchstart', startLongPress, {passive: true});
+timerEl.addEventListener('touchend', cancelLongPress);
+timerEl.addEventListener('touchcancel', cancelLongPress);
+
 timerEl.addEventListener('click', () => {
+  if (timerLongPress) { timerLongPress = false; return; }
   timerClicks++;
   if (timerClicks === 7) {
     timerClicks = 0; clearTimeout(clickTimer);
