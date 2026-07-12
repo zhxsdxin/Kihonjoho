@@ -311,7 +311,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   <select id="yearSelect"></select>
   <span class="timer" id="timer">01:30:00</span>
   </div>
-  <div class="sub">全80問 — 解答・解説付き <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / F强制翻译 / D草稿 / M暗記 / N自動 / X AI講解 / Space解答 / A全 U未 C正 W误</span></div>
+  <div class="sub">全80問 — 解答・解説付き <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / F强制重译/解析 / D草稿 / M暗記 / N自動 / X AI講解 / 长按强制 / Space解答 / A全 U未 C正 W误</span></div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
     <select id="filterSelect">
@@ -341,10 +341,8 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <a class="q-number" id="qNumber" href="#" target="_blank" title="原題を開く">問1</a>
       <div class="q-status">
         <button id="markBookmark" title="ブックマーク (B)">★</button>
-        <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px;border-color:#34a853;color:#34a853">🤖</button>
-        <button id="forceAiBtn" title="强制重新解析 (F)" style="display:none;font-size:13px;border-color:#e65100;color:#ff9800">⟳</button>
-        <button id="translateBtn" title="日中切替 (T)" style="font-size:13px;border-color:var(--text-secondary)">中</button>
-        <button id="forceTransBtn" title="强制API翻译 (F)" style="display:none;font-size:13px;border-color:#e65100;color:#ff9800">⟳</button>
+        <button id="aiExplainBtn" title="AI中文讲解 (X) / 长按强制" style="font-size:13px;border-color:#34a853;color:#34a853">🤖</button>
+        <button id="translateBtn" title="日中切替 (T) / 长按强制" style="font-size:13px;border-color:var(--text-secondary)">中</button>
       </div>
     </div>
     <div class="loading" id="loadingIndicator">
@@ -462,12 +460,10 @@ const questionGrid = $('questionGrid');
 const progressText = $('progressText');
 const markBookmark = $('markBookmark');
 const translateBtn = $('translateBtn');
-const forceTransBtn = $('forceTransBtn');
 const shuffleToggle = $('shuffleToggle');
 const draftToggle = $('draftToggle');
 const memorizeBtn = $('memorizeBtn');
 const aiExplainBtn = $('aiExplainBtn');
-const forceAiBtn = $('forceAiBtn');
 const aiMondaiPanel = $('aiMondaiPanel');
 const aiSummaryPanel = $('aiSummaryPanel');
 
@@ -624,8 +620,6 @@ function displayQuestion(num, data) {
   state.translated = 0;
   translateBtn.textContent = '中';
   translateBtn.classList.remove('active');
-  forceTransBtn.style.display = 'none';
-  forceAiBtn.style.display = 'none';
   updateProgress();
   jumpInput.value = num;
 
@@ -778,7 +772,6 @@ translateBtn.addEventListener('click', async () => {
     state.translated = 0;
     translateBtn.textContent = '中';
     translateBtn.classList.remove('active');
-    forceTransBtn.style.display = 'none';
     localStorage.setItem('lastTranslated', '0');
     return;
   }
@@ -810,29 +803,9 @@ function applyTr() {
   state.translated = 1;
   translateBtn.textContent = '日';
   translateBtn.classList.add('active');
-  forceTransBtn.style.display = 'inline-block';
   localStorage.setItem('lastTranslated', '1');
 }
 
-
-forceTransBtn.addEventListener('click', async () => {
-  const num = state.current;
-  const d = state.data[num];
-  if (!d || !state.translated) return;
-  forceTransBtn.textContent = '…';
-  await translateNode(mondaiEl);
-  const lis = selectList.querySelectorAll('li');
-  for (const li of lis) {
-    const span = li.querySelector('span:last-child');
-    if (span) await translateNode(span);
-  }
-  await translateNode(kaisetsuEl);
-  const sels = {};
-  lis.forEach(li => { const s = li.querySelector('span:last-child'); if (s) sels[li.dataset.origIdx] = s.innerHTML; });
-  d._tr = { mondai: mondaiEl.innerHTML, sels, kaisetsu: kaisetsuEl.innerHTML };
-  saveTransToCache(num, d._tr);
-  applyTr();
-});
 
 // ===================== LOAD =====================
 async function loadQuestion(num) {
@@ -991,7 +964,6 @@ async function callAIExplain() {
       localStorage.setItem(getAIKey(num), text);
     }
     aiMondaiPanel.classList.remove('loading-ai');
-    forceAiBtn.style.display = 'inline-block';
   } catch (e) {
     aiMondaiPanel.textContent = '解析失败: ' + e.message;
     aiMondaiPanel.classList.remove('loading-ai');
@@ -1073,31 +1045,43 @@ aiExplainBtn.addEventListener('click', async () => {
   const num = state.current;
   const d = state.data[num];
   if (!d) return;
-  // 如果已展开则收起
-  if (aiMondaiPanel.classList.contains('ai-visible')) { clearAI(); forceAiBtn.style.display = 'none'; return; }
-  // 优先 JSON 预置
+  if (aiMondaiPanel.classList.contains('ai-visible')) { clearAI(); return; }
   const builtin = d.ai_explain || '';
   if (builtin) {
     let aiData;
     try { aiData = JSON.parse(builtin); } catch (e) {}
-    if (aiData && (aiData.mondai || aiData.selects || aiData.summary)) { renderAIData(aiData); forceAiBtn.style.display = 'inline-block'; return; }
-    if (builtin.length > 10) { renderAIFallback(builtin); forceAiBtn.style.display = 'inline-block'; return; }
+    if (aiData && (aiData.mondai || aiData.selects || aiData.summary)) { renderAIData(aiData); return; }
+    if (builtin.length > 10) { renderAIFallback(builtin); return; }
   }
-  // 其次 localStorage
   const cached = localStorage.getItem(getAIKey(num));
   if (cached) {
     let aiData = parseAIResponse(cached);
-    if (aiData) { renderAIData(aiData); forceAiBtn.style.display = 'inline-block'; }
-    else { renderAIFallback(cached); forceAiBtn.style.display = 'inline-block'; }
+    if (aiData) renderAIData(aiData);
+    else renderAIFallback(cached);
     return;
   }
   callAIExplain();
 });
 
-forceAiBtn.addEventListener('click', () => {
-  localStorage.removeItem(getAIKey(state.current));
-  callAIExplain();
-});
+// 长按触发强制解析/翻译
+function addLongPress(el, callback) {
+  let pressStart = 0, isLong = false;
+  function start() {
+    pressStart = Date.now(); isLong = false;
+    setTimeout(() => { if (pressStart && Date.now() - pressStart >= 600) { isLong = true; callback(); } }, 600);
+  }
+  function end() { pressStart = 0; if (isLong) return false; return true; }
+  el.addEventListener('mousedown', start);
+  el.addEventListener('mouseup', end);
+  el.addEventListener('mouseleave', end);
+  el.addEventListener('touchstart', start, {passive: true});
+  el.addEventListener('touchend', end);
+  el.addEventListener('touchcancel', end);
+  return true;
+}
+
+addLongPress(aiExplainBtn, () => { localStorage.removeItem(getAIKey(state.current)); callAIExplain(); });
+addLongPress(translateBtn, () => { localStorage.removeItem(getTransKey(state.current)); translateBtn.click(); });
 
 // ===================== EXPORT / IMPORT =====================
 const exportBtn = $('exportBtn');
@@ -1234,8 +1218,8 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'm' || e.key === 'M') memorizeBtn.click();
   else if (e.key === 'n' || e.key === 'N') autoNextBtn.click();
   else if (e.key === 'f' || e.key === 'F') {
-    if (forceAiBtn.style.display !== 'none') forceAiBtn.click();
-    else if (state.translated) forceTransBtn.click();
+    if (aiMondaiPanel.classList.contains('ai-visible')) { localStorage.removeItem(getAIKey(state.current)); callAIExplain(); }
+    else if (state.translated) { localStorage.removeItem(getTransKey(state.current)); translateBtn.click(); }
   }
   else if (e.key === 'x' || e.key === 'X') aiExplainBtn.click();
 });
