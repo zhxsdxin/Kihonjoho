@@ -930,21 +930,50 @@ const AI_API = 'https://generativelanguage.googleapis.com/v1beta/models/' + AI_M
 
 function getAIKey(num) { return 'fe2020_ai_' + num; }
 
+function stripHTML(s) { return (s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim(); }
+
+function extractImgURLs(html) {
+  const urls = [];
+  const re = /<img[^>]+src="([^"]+)"/g;
+  let m;
+  while ((m = re.exec(html || '')) !== null) urls.push(m[1]);
+  return urls;
+}
+
+async function fetchImgAsBase64(url) {
+  try {
+    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    if (blob.size > 1 * 1024 * 1024) return null; // skip >1MB
+    const mime = blob.type || 'image/png';
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result.split(',')[1]);
+      reader.readAsDataURL(blob);
+    });
+    return { mime_type: mime, data: base64 };
+  } catch (e) { return null; }
+}
+
 function buildAIPrompt(num) {
   const d = state.data[num];
   if (!d) return '';
-  const strip = s => (s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
   let prompt = '你是一位日本基本情報技術者考试的中文辅导老师。请用中文对以下题目进行详细解析，包括：\n';
   prompt += '1. 题目中文转述和考点分析\n';
-  prompt += '2. 每个选项逐一分析计算过程（不要直接说对错）\n';
-  prompt += '3. 解题思路和涉及的知识点\n\n';
-  prompt += '【题目】\n' + strip(d.mondai) + '\n\n【选项】\n';
-  d.selects.forEach(s => { prompt += s.label + ': ' + strip(s.text) + '\n'; });
+  prompt += '2. 每个选项逐一分析（不直接说对错）\n';
+  prompt += '3. 解题思路和涉及的知识点\n';
+  prompt += '4. 如有图片/图表，请解读其含义\n\n';
+  prompt += '【题目】\n' + stripHTML(d.mondai) + '\n\n【选项】\n';
+  d.selects.forEach(s => { prompt += s.label + ': ' + stripHTML(s.text) + '\n'; });
+  prompt += '\n【解説】\n' + stripHTML(d.kaisetsu) + '\n';
   return prompt;
 }
 
 aiExplainBtn.addEventListener('click', async () => {
   const num = state.current;
+  const d = state.data[num];
+  if (!d) return;
   const cached = localStorage.getItem(getAIKey(num));
   if (cached) {
     aiExplainPanel.textContent = cached;
@@ -962,12 +991,21 @@ aiExplainBtn.addEventListener('click', async () => {
   aiExplainPanel.classList.add('ai-visible', 'loading-ai');
   explanationSection.classList.add('visible');
   try {
-    const promptText = buildAIPrompt(num);
+    const parts = [];
+    const imgURLs = [...new Set([...extractImgURLs(d.mondai), ...extractImgURLs(d.kaisetsu)])];
+    if (imgURLs.length > 0) {
+      aiExplainPanel.textContent = 'AI 正在解析中（含图片识别）...';
+      for (const url of imgURLs) {
+        const imgData = await fetchImgAsBase64(url);
+        if (imgData) parts.push({ inline_data: imgData });
+      }
+    }
+    parts.push({ text: buildAIPrompt(num) });
     const res = await fetch(AI_API + '?key=' + apiKey, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: promptText }] }],
+        contents: [{ parts }],
         safetySettings: [{ category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' }, { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' }, { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' }, { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }]
       })
     });
