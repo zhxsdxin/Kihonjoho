@@ -22,6 +22,11 @@ def strip_html(s):
         t = re.sub(r'<sub>(.*?)</sub>', r'_{\1}', t, flags=re.I)
         t = re.sub(r'<img[^>]*>', '[図]', t, flags=re.I)
         t = t.replace('&fnof;', 'f')
+        t = re.sub(r'<li\s+class="li(\d+)">', r'<li>(\1) ', t, flags=re.I)
+        t = re.sub(r'<li\s+class="lia">', r'<li>ア ', t, flags=re.I)
+        t = re.sub(r'<li\s+class="lii">', r'<li>イ ', t, flags=re.I)
+        t = re.sub(r'<li\s+class="liu">', r'<li>ウ ', t, flags=re.I)
+        t = re.sub(r'<li\s+class="lie">', r'<li>エ ', t, flags=re.I)
         t = re.sub(r'<[^>]*>', '', t)
         return t
     s = inner(s)

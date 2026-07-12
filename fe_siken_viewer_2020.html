@@ -968,6 +968,12 @@ function htmlToText(s) {
   s = s.replace(/<sub>(.*?)<\/sub>/gi, (_, c) => '_{' + htmlToText(c) + '}');
   s = s.replace(/<img[^>]*>/gi, '[図]');
   s = s.replace(/&fnof;/gi, 'f');
+  // add step numbers from li class
+  s = s.replace(/<li\s+class="li(\d+)">/gi, (_, n) => '<li>(' + n + ') ');
+  s = s.replace(/<li\s+class="lia">/gi, '<li>ア ');
+  s = s.replace(/<li\s+class="lii">/gi, '<li>イ ');
+  s = s.replace(/<li\s+class="liu">/gi, '<li>ウ ');
+  s = s.replace(/<li\s+class="lie">/gi, '<li>エ ');
   s = s.replace(/<[^>]*>/g, '');
   return s.replace(/\s+/g, ' ').trim();
 }
