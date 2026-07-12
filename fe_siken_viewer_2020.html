@@ -958,6 +958,15 @@ aiExplainBtn.addEventListener('click', async () => {
   const num = state.current;
   const d = state.data[num];
   if (!d) return;
+  // 优先使用 JSON 预置的 ai_explain
+  const builtin = d.ai_explain;
+  if (builtin && builtin.length > 10) {
+    renderAIText(builtin);
+    aiExplainPanel.classList.toggle('ai-visible');
+    if (aiExplainPanel.classList.contains('ai-visible')) explanationSection.classList.add('visible');
+    return;
+  }
+  // 其次使用 localStorage 缓存
   const cached = localStorage.getItem(getAIKey(num));
   if (cached) {
     renderAIText(cached);
