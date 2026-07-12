@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>基本情報技術者 令和2年度 問題集（午前免除）</title>
+<title>基本情報技術者 令和3年度 問題集（午前免除）</title>
 <style>
 :root {
   --bg: #f5f5f5;
@@ -398,12 +398,16 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 // ===================== CONFIG =====================
 const TOTAL = 80;
 const BASE_URL = 'https://www.fe-siken.com/kakomon/03_menjo/q';
+
+// 本地页面文件目录
 const PAGE_NAME = (window.location.pathname.split('/').pop().replace(/\.html$/, '') || 'questions');
 const LOCAL_PAGES_DIR = './' + PAGE_NAME + '/';
 const JSON_FILE = PAGE_NAME + '.json';
+
+// localStorage キー
+const LS_TRANS = 'fe2021_trans_';
 const LS_MARKS = 'fe2021_marks';
 const LS_DARK = 'fe2021_dark';
-const LS_TRANS = 'fe2021_trans_';
 
 // ===================== STATE =====================
 const state = {
@@ -460,11 +464,9 @@ function applyTheme() {
 themeToggle.addEventListener('click', () => { state.dark = !state.dark; applyTheme(); });
 applyTheme();
 
-// ===================== LOCALSTORAGE =====================
+// ===================== TRANSLATION CACHE =====================
 function getTransKey(num) { return LS_TRANS + num; }
-function saveTransToCache(num, tr) {
-  localStorage.setItem(getTransKey(num), JSON.stringify(tr));
-}
+
 function loadTransFromCache(num) {
   const raw = localStorage.getItem(getTransKey(num));
   if (raw) {
@@ -472,10 +474,15 @@ function loadTransFromCache(num) {
       const tr = JSON.parse(raw);
       if (state.data[num]) state.data[num]._tr = tr;
       return true;
-    } catch (e) {}
+    } catch (e) { /* ignore */ }
   }
   return false;
 }
+
+function saveTransToCache(num, tr) {
+  localStorage.setItem(getTransKey(num), JSON.stringify(tr));
+}
+
 function saveMarks() {
   localStorage.setItem(LS_MARKS, JSON.stringify(state.marks));
 }
@@ -598,7 +605,8 @@ function displayQuestion(num, data) {
   updateMarkUI();
   state.translated = 0;
   translateBtn.textContent = '中';
-  translateBtn.classList.remove('active', 'force');
+  translateBtn.classList.remove('active');
+  forceTransBtn.style.display = 'none';
   updateProgress();
   jumpInput.value = num;
 
@@ -786,6 +794,7 @@ function applyTr() {
   forceTransBtn.style.display = 'inline-block';
   localStorage.setItem('lastTranslated', '1');
 }
+
 
 forceTransBtn.addEventListener('click', async () => {
   const num = state.current;
@@ -1272,14 +1281,14 @@ window.addEventListener('resize', () => { if (scratchpad.classList.contains('ope
   let lastTap = 0;
   const qa = document.getElementById('questionArea');
   qa.addEventListener('touchend', e => {
-    if (e.target.closest('ul#selectList') || e.target.closest('#showAnswerBtn')) return;
+    if (e.target.closest('ul#selectList') || e.target.closest('#showAnswerBtn')) return; // 不拦截选项点击/按钮
     const now = Date.now();
     if (now - lastTap < 300) { showAnswerBtn.click(); }
     lastTap = now;
   });
 })();
 
-// ===================== FAB TOGGLE MENU =====================
+// ===================== FAB TOGGLE TOOLBAR =====================
 (function() {
   const fab = document.getElementById('fabBtn');
   const hdr = document.querySelector('header');
