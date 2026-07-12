@@ -1084,7 +1084,7 @@ function formatTime(s) {
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 }
-function showTimer() { timerEl.textContent = formatTime(timerRemain); }
+function showTimer() { if (!timerHidden) timerEl.textContent = formatTime(timerRemain); }
 function saveTimer() { localStorage.setItem(LS_TIMER, timerRemain); }
 function updateTimerColor() {
   timerEl.classList.remove('t-yellow','t-orange','t-red');
