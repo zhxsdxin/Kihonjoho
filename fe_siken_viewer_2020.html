@@ -1040,10 +1040,21 @@ function escBR(s) { return esc(s).replace(/\n/g, '<br>'); }
 
 function parseAIResponse(text) {
   try {
-    // 尝试去掉 markdown 代码块
     let t = text.replace(/```(?:json)?\s*/g, '').replace(/```/g, '').trim();
     const m = t.match(/\{[\s\S]*\}/);
-    if (m) { const obj = JSON.parse(m[0]); if (obj.mondai || obj.selects || obj.summary) return obj; }
+    if (m) { const obj = JSON.parse(m[0]); if (obj.mondai || obj.selects || obj.summary) {
+      // 兼容旧版数字 key 转为标签 key
+      const labels = ['ア','イ','ウ','エ','オ','カ','キ','ク','ケ','コ'];
+      if (obj.selects) {
+        const newSelects = {};
+        for (const [k, v] of Object.entries(obj.selects)) {
+          const nk = labels[parseInt(k)] || k;
+          newSelects[nk] = v;
+        }
+        obj.selects = newSelects;
+      }
+      return obj;
+    }}
   } catch (e) { /* fallback */ }
   return null;
 }
@@ -1056,10 +1067,10 @@ function renderAIData(aiData) {
   if (aiData.selects) {
     const lis = selectList.querySelectorAll('li');
     lis.forEach(li => {
-      const idx = li.dataset.origIdx;
+      const label = li.querySelector('.choice-label')?.textContent?.trim() || '';
       const panel = li.querySelector('.ai-select-panel');
-      if (panel && aiData.selects[idx]) {
-        panel.innerHTML = escBR(aiData.selects[idx]);
+      if (panel && aiData.selects[label]) {
+        panel.innerHTML = escBR(aiData.selects[label]);
         panel.classList.add('ai-visible');
       }
     });
@@ -1094,11 +1105,11 @@ function buildAIPrompt(num) {
   let p = '你是一位日本基本情報技術者考试的中文辅导老师。请用中文解析以下题目。\n';
   p += '以 JSON 格式返回，字段：\n';
   p += '- "mondai": 题目中文转述与考点分析\n';
-  p += '- "selects": {"0": "对选项的分析", "1": "对选项的分析", ...} 每个选项逐一分析，key是选项的序号(0,1,2,3)\n';
+  p += '- "selects": {"ア": "选项ア的分析", "イ": "选项イ的分析", ...} key对应选项的日语标识\n';
   p += '- "summary": 整体解题思路与知识点总结\n';
   p += '数学公式用 \\(...\\) 或 \\[...\\] 包裹。只返回 JSON，不要额外文字。\n\n';
   p += '【题目】\n' + stripHTML(d.mondai) + '\n\n【选项】\n';
-  d.selects.forEach((s, i) => { p += i + ': ' + stripHTML(s.text) + '\n'; });
+  d.selects.forEach(s => { p += s.label + ': ' + stripHTML(s.text) + '\n'; });
   p += '\n【解説】\n' + stripHTML(d.kaisetsu) + '\n';
   return p;
 }
@@ -1113,7 +1124,10 @@ aiExplainBtn.addEventListener('click', async () => {
   if (builtin) {
     let aiData;
     try { aiData = JSON.parse(builtin); } catch (e) {}
-    if (aiData && (aiData.mondai || aiData.selects || aiData.summary)) { renderAIData(aiData); return; }
+    if (aiData && (aiData.mondai || aiData.selects || aiData.summary)) {
+      if (aiData.selects) { const labels = ['ア','イ','ウ','エ','オ','カ','キ','ク','ケ','コ']; const ns = {}; for (const [k, v] of Object.entries(aiData.selects)) ns[labels[parseInt(k)] || k] = v; aiData.selects = ns; }
+      renderAIData(aiData); return;
+    }
     if (builtin.length > 10) { renderAIFallback(builtin); return; }
   }
   const cached = localStorage.getItem(getAIKey(num));

@@ -36,12 +36,12 @@ def build_prompt(q):
     p = '你是一位日本基本情報技術者考试的中文辅导老师。请用中文解析以下题目。\n'
     p += '以 JSON 格式返回，字段：\n'
     p += '- "mondai": 题目中文转述与考点分析\n'
-    p += '- "selects": {"0": "对选项的分析", "1": "对选项的分析", ...} 每个选项逐一分析，key是选项的序号(0,1,2,3)\n'
+    p += '- "selects": {"ア": "选项ア的分析", "イ": "选项イ的分析", ...} key对应选项的日语标识\n'
     p += '- "summary": 整体解题思路与知识点总结\n'
     p += '数学公式用 \\(...\\) 或 \\[...\\] 包裹。只返回 JSON，不要额外文字。\n\n'
     p += '【题目】\n' + strip_html(q.get('mondai', '')) + '\n\n【选项】\n'
-    for i, s in enumerate(q.get('selects', [])):
-        p += f'{i}: ' + strip_html(s.get('text', '')) + '\n'
+    for s in q.get('selects', []):
+        p += s.get('label', '') + ': ' + strip_html(s.get('text', '')) + '\n'
     p += '\n【解説】\n' + strip_html(q.get('kaisetsu', '')) + '\n'
     return p
 
