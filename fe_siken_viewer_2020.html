@@ -309,6 +309,10 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 .swipe-hint.left { left: 20px; }
 .swipe-hint.right { right: 20px; }
 .swipe-hint.show { opacity: .6; }
+#shortcutPanel { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-top: 8px; font-size: 12px; line-height: 1.7; color: var(--text-secondary); }
+#shortcutPanel.visible { display: block; }
+#shortcutPanel kbd { display: inline-block; background: var(--header-bg); color: var(--header-text); border-radius: 3px; padding: 0 5px; font-size: 11px; margin: 0 2px; font-family: inherit; }
+#shortcutBtn { font-size: 15px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text-secondary); cursor: pointer; font-family: inherit; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -319,7 +323,16 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   <select id="yearSelect"></select>
   <span class="timer" id="timer">01:30:00</span>
   </div>
-  <div class="sub">全80問 — 解答・解説付き <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / F强制重译/解析 / D草稿 / M暗記 / N自動 / X AI講解 / 长按强制 / Space解答 / A全 U未 C正 W误</span></div>
+  <div class="sub">全80問 — 解答・解説付き <button id="shortcutBtn" title="ショートカット一覧">⌨</button></div>
+  <div id="shortcutPanel">
+    <kbd>←</kbd><kbd>→</kbd> 前問/次問<br>
+    <kbd>S</kbd> 選択肢順シャッフル　<kbd>R</kbd> ランダム　<kbd>G</kbd> 一覧<br>
+    <kbd>B</kbd> ブックマーク　<kbd>T</kbd> 日中翻訳切替　<kbd>長押T</kbd> 翻訳強制再取得<br>
+    <kbd>X</kbd> AI講解　<kbd>長押X</kbd> 解析強制再取得　<kbd>F</kbd> 強制再取得<br>
+    <kbd>D</kbd> 草稿　<kbd>M</kbd> 暗記モード　<kbd>N</kbd> 自動送り<br>
+    <kbd>Space</kbd> 正解表示/非表示　<kbd>A</kbd> 全問 <kbd>U</kbd> 未回答 <kbd>C</kbd> 正解 <kbd>W</kbd> 不正解<br>
+    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択
+  </div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
     <select id="filterSelect">
@@ -483,6 +496,15 @@ function applyTheme() {
 }
 themeToggle.addEventListener('click', () => { state.dark = !state.dark; applyTheme(); });
 applyTheme();
+
+// ===================== SHORTCUT PANEL =====================
+const shortcutBtn = $('shortcutBtn');
+const shortcutPanel = $('shortcutPanel');
+shortcutBtn.addEventListener('click', () => {
+  shortcutPanel.classList.toggle('visible');
+  localStorage.setItem('fe_shortcut_visible', shortcutPanel.classList.contains('visible') ? '1' : '0');
+});
+if (localStorage.getItem('fe_shortcut_visible') === '1') shortcutPanel.classList.add('visible');
 
 // ===================== TRANSLATION CACHE =====================
 function getTransKey(num) { return LS_TRANS + num; }
