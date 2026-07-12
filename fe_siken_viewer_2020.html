@@ -1073,37 +1073,22 @@ aiExplainBtn.addEventListener('click', async () => {
   const num = state.current;
   const d = state.data[num];
   if (!d) return;
+  // 如果已展开则收起
+  if (aiMondaiPanel.classList.contains('ai-visible')) { clearAI(); forceAiBtn.style.display = 'none'; return; }
   // 优先 JSON 预置
   const builtin = d.ai_explain || '';
   if (builtin) {
     let aiData;
     try { aiData = JSON.parse(builtin); } catch (e) {}
-    if (aiData && (aiData.mondai || aiData.selects || aiData.summary)) {
-      const vis = aiMondaiPanel.classList.toggle('ai-visible');
-      if (!vis || !aiMondaiPanel.innerHTML) { renderAIData(aiData); forceAiBtn.style.display = 'inline-block'; }
-      else { clearAI(); forceAiBtn.style.display = 'none'; }
-      return;
-    }
-    if (builtin.length > 10) {
-      const vis = aiMondaiPanel.classList.toggle('ai-visible');
-      if (!vis || !aiMondaiPanel.innerHTML) { renderAIFallback(builtin); forceAiBtn.style.display = 'inline-block'; }
-      else { clearAI(); forceAiBtn.style.display = 'none'; }
-      return;
-    }
+    if (aiData && (aiData.mondai || aiData.selects || aiData.summary)) { renderAIData(aiData); forceAiBtn.style.display = 'inline-block'; return; }
+    if (builtin.length > 10) { renderAIFallback(builtin); forceAiBtn.style.display = 'inline-block'; return; }
   }
   // 其次 localStorage
   const cached = localStorage.getItem(getAIKey(num));
   if (cached) {
     let aiData = parseAIResponse(cached);
-    if (aiData) {
-      const vis = aiMondaiPanel.classList.toggle('ai-visible');
-      if (!vis || !aiMondaiPanel.innerHTML) { renderAIData(aiData); forceAiBtn.style.display = 'inline-block'; }
-      else { clearAI(); forceAiBtn.style.display = 'none'; }
-    } else {
-      const vis = aiMondaiPanel.classList.toggle('ai-visible');
-      if (!vis || !aiMondaiPanel.innerHTML) { renderAIFallback(cached); forceAiBtn.style.display = 'inline-block'; }
-      else { clearAI(); forceAiBtn.style.display = 'none'; }
-    }
+    if (aiData) { renderAIData(aiData); forceAiBtn.style.display = 'inline-block'; }
+    else { renderAIFallback(cached); forceAiBtn.style.display = 'inline-block'; }
     return;
   }
   callAIExplain();
