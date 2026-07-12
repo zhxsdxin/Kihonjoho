@@ -122,6 +122,8 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
   content: '⟳'; position: absolute; bottom: -12px; font-size: 10px; color: #e65100;
   pointer-events: none; line-height: 1;
 }
+#aiExplainBtn.force-ready { border-color: #34a853; background: rgba(52,168,83,0.1); }
+#translateBtn.force-ready { border-color: var(--primary); background: var(--choice-selected); }
 .q-status button.mark-bookmark { border-color: var(--bookmark-color); color: var(--bookmark-color); }
 #mondai { font-size: 16px; padding: 12px 0; margin-bottom: 20px; }
 .ol { text-decoration: overline; }
@@ -1078,6 +1080,7 @@ aiExplainBtn.addEventListener('click', async () => {
 function addLongPress(el, callback) {
   let pressStart = 0, isLong = false;
   function start() {
+    if (!el.classList.contains('force-ready')) return;
     pressStart = Date.now(); isLong = false;
     setTimeout(() => { if (pressStart && Date.now() - pressStart >= 600) { isLong = true; callback(); } }, 600);
   }
