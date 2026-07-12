@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>基本情報技術者 令和2年度 問題集（午前免除）</title>
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 :root {
   --bg: #f5f5f5;
@@ -142,9 +144,9 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 .answer-section.visible #answerChar { display: inline; }
 #kaisetsu { font-size: 14px; line-height: 1.9; display: none; }
 .explanation-section.visible #kaisetsu { display: block; }
-#aiExplainPanel { margin-top: 12px; padding: 12px 16px; background: var(--choice-selected); border-radius: 6px; font-size: 14px; line-height: 1.8; white-space: pre-wrap; display: none; }
+#aiExplainPanel { margin-top: 12px; padding: 12px 16px; background: var(--choice-selected); border-radius: 6px; font-size: 14px; line-height: 1.8; display: none; }
 #aiExplainPanel.ai-visible { display: block; }
-#aiExplainPanel.loading-ai { text-align: center; color: var(--text-secondary); }
+#aiExplainPanel.loading-ai { text-align: center; color: var(--text-secondary); white-space: normal; }
 
 #kaisetsu img { max-width: 100%; height: auto; border-radius: 4px; margin: 8px 0; }
 #kaisetsu ul { padding-left: 24px; margin: 8px 0; }
@@ -944,13 +946,21 @@ function buildAIPrompt(num) {
   return prompt;
 }
 
+function renderAIText(text) {
+  const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const withBreaks = escaped.replace(/\n/g, '<br>');
+  aiExplainPanel.innerHTML = withBreaks;
+  aiExplainPanel.classList.remove('loading-ai');
+  if (window.MathJax) MathJax.typesetPromise([aiExplainPanel]);
+}
+
 aiExplainBtn.addEventListener('click', async () => {
   const num = state.current;
   const d = state.data[num];
   if (!d) return;
   const cached = localStorage.getItem(getAIKey(num));
   if (cached) {
-    aiExplainPanel.textContent = cached;
+    renderAIText(cached);
     aiExplainPanel.classList.toggle('ai-visible');
     if (aiExplainPanel.classList.contains('ai-visible')) explanationSection.classList.add('visible');
     return;
@@ -978,8 +988,7 @@ aiExplainBtn.addEventListener('click', async () => {
     if (!res.ok) { const err = await res.text(); throw new Error('API 错误: ' + res.status + ' ' + err.slice(0, 200)); }
     const data = await res.json();
     const text = data.choices?.[0]?.message?.content || 'AI 返回为空，请重试';
-    aiExplainPanel.textContent = text;
-    aiExplainPanel.classList.remove('loading-ai');
+    renderAIText(text);
     localStorage.setItem(getAIKey(num), text);
   } catch (e) {
     aiExplainPanel.textContent = '解析失败: ' + e.message;
