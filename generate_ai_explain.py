@@ -15,14 +15,15 @@ def strip_html(s):
     return re.sub(r'<[^>]*>', '', s or '').strip()
 
 def build_prompt(q):
-    p = '你是一位日本基本情報技術者考试的中文辅导老师。请用中文对以下题目进行详细解析，包括：\n'
-    p += '1. 题目中文转述和考点分析\n'
-    p += '2. 每个选项逐一分析（不直接说对错）\n'
-    p += '3. 解题思路和涉及的知识点\n'
-    p += '请使用 \\(...\\) 包裹行内公式，\\[...\\] 包裹独立公式。\n\n'
+    p = '你是一位日本基本情報技術者考试的中文辅导老师。请用中文解析以下题目。\n'
+    p += '以 JSON 格式返回，字段：\n'
+    p += '- "mondai": 题目中文转述与考点分析\n'
+    p += '- "selects": {"0": "对选项的分析", "1": "对选项的分析", ...} 每个选项逐一分析，key是选项的序号(0,1,2,3)\n'
+    p += '- "summary": 整体解题思路与知识点总结\n'
+    p += '数学公式用 \\(...\\) 或 \\[...\\] 包裹。只返回 JSON，不要额外文字。\n\n'
     p += '【题目】\n' + strip_html(q.get('mondai', '')) + '\n\n【选项】\n'
-    for s in q.get('selects', []):
-        p += s.get('label', '') + ': ' + strip_html(s.get('text', '')) + '\n'
+    for i, s in enumerate(q.get('selects', [])):
+        p += f'{i}: ' + strip_html(s.get('text', '')) + '\n'
     p += '\n【解説】\n' + strip_html(q.get('kaisetsu', '')) + '\n'
     return p
 

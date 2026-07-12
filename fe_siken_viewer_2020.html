@@ -144,9 +144,6 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 .answer-section.visible #answerChar { display: inline; }
 #kaisetsu { font-size: 14px; line-height: 1.9; display: none; }
 .explanation-section.visible #kaisetsu { display: block; }
-#aiExplainPanel { margin-top: 12px; padding: 12px 16px; background: var(--choice-selected); border-radius: 6px; font-size: 14px; line-height: 1.8; display: none; }
-#aiExplainPanel.ai-visible { display: block; }
-#aiExplainPanel.loading-ai { text-align: center; color: var(--text-secondary); white-space: normal; }
 
 #kaisetsu img { max-width: 100%; height: auto; border-radius: 4px; margin: 8px 0; }
 #kaisetsu ul { padding-left: 24px; margin: 8px 0; }
@@ -158,6 +155,13 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 #kaisetsu dl { margin: 8px 0; } #kaisetsu dt { font-weight: 700; margin-top: 10px; } #kaisetsu dd { margin-left: 16px; }
 .info-row { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-secondary); }
 .info-row a { color: var(--primary); text-decoration: none; } .info-row a:hover { text-decoration: underline; }
+.ai-panel { margin: 8px 0; padding: 10px 14px; background: var(--choice-selected); border-radius: 6px; font-size: 13px; line-height: 1.7; display: none; border-left: 3px solid var(--primary); }
+.ai-panel.ai-visible { display: block; }
+#aiMondaiPanel { margin-bottom: 16px; }
+.ai-select-panel { display: none; margin-top: 6px; padding: 6px 10px; background: var(--choice-selected); border-radius: 4px; font-size: 12px; line-height: 1.6; border-left: 3px solid #34a853; }
+.ai-select-panel.ai-visible { display: block; }
+#aiSummaryPanel { margin-top: 12px; }
+.ai-panel.loading-ai { text-align: center; color: var(--text-secondary); white-space: normal; }
 .btm-nav { display: flex; gap: 10px; margin-top: 20px; align-items: center; flex-wrap: wrap; }
 .btm-nav button {
   padding: 8px 20px; border: 1px solid var(--border); border-radius: var(--radius);
@@ -349,6 +353,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     </div>
     <div id="questionContent" style="display:none">
       <div id="mondai"></div>
+      <div id="aiMondaiPanel" class="ai-panel"></div>
       <ul class="selectList" id="selectList"></ul>
       <div class="answer-section" id="answerSection">
         <h3>正解</h3>
@@ -358,7 +363,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <div class="explanation-section" id="explanationSection">
         <h3>解説</h3>
         <div id="kaisetsu"></div>
-        <div id="aiExplainPanel"></div>
+        <div id="aiSummaryPanel" class="ai-panel"></div>
       </div>
       <div class="info-row" id="infoRow"></div>
     </div>
@@ -462,7 +467,8 @@ const shuffleToggle = $('shuffleToggle');
 const draftToggle = $('draftToggle');
 const memorizeBtn = $('memorizeBtn');
 const aiExplainBtn = $('aiExplainBtn');
-const aiExplainPanel = $('aiExplainPanel');
+const aiMondaiPanel = $('aiMondaiPanel');
+const aiSummaryPanel = $('aiSummaryPanel');
 
 // ===================== THEME =====================
 function applyTheme() {
@@ -600,7 +606,7 @@ function displayQuestion(num, data) {
     const origIdx = perm ? perm[i] : data.selects.indexOf(s);
     const li = document.createElement('li');
     li.dataset.origIdx = origIdx;
-    li.innerHTML = '<span class="choice-label">' + s.label + '</span><span>' + fixImages(s.text) + '</span>';
+    li.innerHTML = '<span class="choice-label">' + s.label + '</span><span>' + fixImages(s.text) + '</span><div class="ai-select-panel"></div>';
     li.addEventListener('click', () => handleChoiceClick(num, origIdx));
     selectList.appendChild(li);
   });
@@ -608,7 +614,8 @@ function displayQuestion(num, data) {
   answerSection.classList.remove('visible');
   kaisetsuEl.innerHTML = fixImages(data.kaisetsu);
   explanationSection.classList.remove('visible');
-  aiExplainPanel.classList.remove('ai-visible');
+  aiMondaiPanel.classList.remove('ai-visible');
+  aiSummaryPanel.classList.remove('ai-visible');
   if (state.memorize) { answerSection.classList.add('visible'); explanationSection.classList.add('visible'); }
   infoRow.innerHTML = fixImages(data.info);
 
@@ -933,45 +940,103 @@ function getAIKey(num) { return 'fe2020_ai_' + num; }
 
 function stripHTML(s) { return (s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim(); }
 
+function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function escBR(s) { return esc(s).replace(/\n/g, '<br>'); }
+
+function parseAIResponse(text) {
+  try {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (m) { const obj = JSON.parse(m[0]); if (obj.mondai || obj.selects || obj.summary) return obj; }
+  } catch (e) { /* fallback */ }
+  return null;
+}
+
+function renderAIData(aiData) {
+  if (aiData.mondai) {
+    aiMondaiPanel.innerHTML = escBR(aiData.mondai);
+    aiMondaiPanel.classList.add('ai-visible');
+  }
+  if (aiData.selects) {
+    const lis = selectList.querySelectorAll('li');
+    lis.forEach(li => {
+      const idx = li.dataset.origIdx;
+      const panel = li.querySelector('.ai-select-panel');
+      if (panel && aiData.selects[idx]) {
+        panel.innerHTML = escBR(aiData.selects[idx]);
+        panel.classList.add('ai-visible');
+      }
+    });
+  }
+  if (aiData.summary) {
+    aiSummaryPanel.innerHTML = escBR(aiData.summary);
+    aiSummaryPanel.classList.add('ai-visible');
+  }
+  if (aiData.mondai || aiData.selects || aiData.summary) {
+    explanationSection.classList.add('visible');
+  }
+  if (window.MathJax) {
+    const els = document.querySelectorAll('.ai-panel.ai-visible, .ai-select-panel.ai-visible');
+    MathJax.typesetPromise(Array.from(els));
+  }
+}
+
+function renderAIFallback(text) {
+  aiMondaiPanel.innerHTML = escBR(text);
+  aiMondaiPanel.classList.add('ai-visible');
+  explanationSection.classList.add('visible');
+  if (window.MathJax) MathJax.typesetPromise([aiMondaiPanel]);
+}
+
 function buildAIPrompt(num) {
   const d = state.data[num];
   if (!d) return '';
-  let prompt = '你是一位日本基本情報技術者考试的中文辅导老师。请用中文对以下题目进行详细解析，包括：\n';
-  prompt += '1. 题目中文转述和考点分析\n';
-  prompt += '2. 每个选项逐一分析（不直接说对错）\n';
-  prompt += '3. 解题思路和涉及的知识点\n\n';
-  prompt += '【题目】\n' + stripHTML(d.mondai) + '\n\n【选项】\n';
-  d.selects.forEach(s => { prompt += s.label + ': ' + stripHTML(s.text) + '\n'; });
-  prompt += '\n【解説】\n' + stripHTML(d.kaisetsu) + '\n';
-  return prompt;
-}
-
-function renderAIText(text) {
-  const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const withBreaks = escaped.replace(/\n/g, '<br>');
-  aiExplainPanel.innerHTML = withBreaks;
-  aiExplainPanel.classList.remove('loading-ai');
-  if (window.MathJax) MathJax.typesetPromise([aiExplainPanel]);
+  let p = '你是一位日本基本情報技術者考试的中文辅导老师。请用中文解析以下题目。\n';
+  p += '以 JSON 格式返回，字段：\n';
+  p += '- "mondai": 题目中文转述与考点分析\n';
+  p += '- "selects": {"0": "对选项的分析", "1": "对选项的分析", ...} 每个选项逐一分析，key是选项的序号(0,1,2,3)\n';
+  p += '- "summary": 整体解题思路与知识点总结\n';
+  p += '数学公式用 \\(...\\) 或 \\[...\\] 包裹。只返回 JSON，不要额外文字。\n\n';
+  p += '【题目】\n' + stripHTML(d.mondai) + '\n\n【选项】\n';
+  d.selects.forEach((s, i) => { p += i + ': ' + stripHTML(s.text) + '\n'; });
+  p += '\n【解説】\n' + stripHTML(d.kaisetsu) + '\n';
+  return p;
 }
 
 aiExplainBtn.addEventListener('click', async () => {
   const num = state.current;
   const d = state.data[num];
   if (!d) return;
-  // 优先使用 JSON 预置的 ai_explain
-  const builtin = d.ai_explain;
-  if (builtin && builtin.length > 10) {
-    renderAIText(builtin);
-    aiExplainPanel.classList.toggle('ai-visible');
-    if (aiExplainPanel.classList.contains('ai-visible')) explanationSection.classList.add('visible');
-    return;
+  // 优先 JSON 预置
+  const builtin = d.ai_explain || '';
+  if (builtin) {
+    let aiData;
+    try { aiData = JSON.parse(builtin); } catch (e) {}
+    if (aiData && (aiData.mondai || aiData.selects || aiData.summary)) {
+      const vis = aiMondaiPanel.classList.toggle('ai-visible');
+      if (!vis || !aiMondaiPanel.innerHTML) renderAIData(aiData);
+      else { aiMondaiPanel.classList.remove('ai-visible'); aiSummaryPanel.classList.remove('ai-visible'); }
+      return;
+    }
+    if (builtin.length > 10) {
+      const vis = aiMondaiPanel.classList.toggle('ai-visible');
+      if (!vis || !aiMondaiPanel.innerHTML) renderAIFallback(builtin);
+      else { aiMondaiPanel.classList.remove('ai-visible'); aiSummaryPanel.classList.remove('ai-visible'); }
+      return;
+    }
   }
-  // 其次使用 localStorage 缓存
+  // 其次 localStorage
   const cached = localStorage.getItem(getAIKey(num));
   if (cached) {
-    renderAIText(cached);
-    aiExplainPanel.classList.toggle('ai-visible');
-    if (aiExplainPanel.classList.contains('ai-visible')) explanationSection.classList.add('visible');
+    let aiData = parseAIResponse(cached);
+    if (aiData) {
+      const vis = aiMondaiPanel.classList.toggle('ai-visible');
+      if (!vis || !aiMondaiPanel.innerHTML) renderAIData(aiData);
+      else { aiMondaiPanel.classList.remove('ai-visible'); aiSummaryPanel.classList.remove('ai-visible'); }
+    } else {
+      const vis = aiMondaiPanel.classList.toggle('ai-visible');
+      if (!vis || !aiMondaiPanel.innerHTML) renderAIFallback(cached);
+      else { aiMondaiPanel.classList.remove('ai-visible'); aiSummaryPanel.classList.remove('ai-visible'); }
+    }
     return;
   }
   let apiKey = localStorage.getItem(AI_KEY);
@@ -980,8 +1045,11 @@ aiExplainBtn.addEventListener('click', async () => {
     if (!apiKey) return;
     localStorage.setItem(AI_KEY, apiKey);
   }
-  aiExplainPanel.textContent = 'AI 正在解析中...';
-  aiExplainPanel.classList.add('ai-visible', 'loading-ai');
+  aiSummaryPanel.textContent = '';
+  aiMondaiPanel.textContent = 'AI 正在解析中...';
+  aiMondaiPanel.classList.add('ai-visible');
+  aiSummaryPanel.classList.remove('ai-visible');
+  aiMondaiPanel.classList.add('loading-ai');
   explanationSection.classList.add('visible');
   try {
     const res = await fetch(AI_API, {
@@ -997,11 +1065,18 @@ aiExplainBtn.addEventListener('click', async () => {
     if (!res.ok) { const err = await res.text(); throw new Error('API 错误: ' + res.status + ' ' + err.slice(0, 200)); }
     const data = await res.json();
     const text = data.choices?.[0]?.message?.content || 'AI 返回为空，请重试';
-    renderAIText(text);
-    localStorage.setItem(getAIKey(num), text);
+    const aiData = parseAIResponse(text);
+    if (aiData) {
+      renderAIData(aiData);
+      localStorage.setItem(getAIKey(num), JSON.stringify(aiData));
+    } else {
+      renderAIFallback(text);
+      localStorage.setItem(getAIKey(num), text);
+    }
+    aiMondaiPanel.classList.remove('loading-ai');
   } catch (e) {
-    aiExplainPanel.textContent = '解析失败: ' + e.message;
-    aiExplainPanel.classList.remove('loading-ai');
+    aiMondaiPanel.textContent = '解析失败: ' + e.message;
+    aiMondaiPanel.classList.remove('loading-ai');
     if (e.message.includes('401') || e.message.includes('403') || e.message.includes('key')) { localStorage.removeItem(AI_KEY); }
   }
 });
