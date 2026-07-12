@@ -128,14 +128,14 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 .selectList li.show-correct.correct-choice { background: var(--correct-bg); border-color: var(--correct-text); }
 .selectList li.show-correct.wrong-choice { background: var(--incorrect-bg); border-color: var(--incorrect-text); }
 .selectList li .choice-label { font-weight: 700; min-width: 24px; color: var(--primary); }
-.selectList li .frac, #kaisetsu .frac {
-  display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.15;
+.frac {
+  display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.15; font-size: 14px;
 }
-.selectList li .frac > span, #kaisetsu .frac > span {
+.frac > span {
   display: flex; justify-content: center; align-items: flex-end;
   padding: 1px 6px; border-bottom: 2px solid var(--text); min-width: 1.5em;
 }
-.selectList li .frac sup, #kaisetsu .frac sup { font-size: 10px; }
+.frac sup { font-size: 10px; }
 .answer-section, .explanation-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
 .answer-section h3, .explanation-section h3 { font-size: 14px; margin-bottom: 8px; color: var(--text-secondary); }
 #answerChar { font-size: 24px; font-weight: 800; color: var(--correct-text); display: none; }
