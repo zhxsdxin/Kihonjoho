@@ -858,6 +858,7 @@ function applyTr() {
 async function loadQuestion(num) {
   if (num < 1 || num > TOTAL) return;
   state.current = num;
+  localStorage.setItem(LS_POS, num);
   qNumber.textContent = '問' + num;
   qNumber.href = BASE_URL + num + '.html';
   jumpInput.value = num;
@@ -1336,9 +1337,12 @@ async function loadFullData() {
 }
 
 // ===================== INIT =====================
+const LS_POS = 'fe2020_pos';
 (async () => {
   const loaded = await loadFullData();
   updateProgress();
+  const saved = parseInt(localStorage.getItem(LS_POS));
+  if (saved >= 1 && saved <= TOTAL) state.current = saved;
   loadQuestion(loaded ? state.current : 1);
 })();
 
