@@ -12,7 +12,20 @@ API_URL = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-chat"
 
 def strip_html(s):
-    return re.sub(r'<[^>]*>', '', s or '').strip()
+    s = s or ''
+    def inner(t):
+        t = re.sub(r'<span\s+class="frac">\s*<span>(.*?)</span>(.*?)</span>',
+                   lambda m: r'\frac{' + inner(m.group(1)) + '}{' + inner(m.group(2)) + '}', t, flags=re.I)
+        t = re.sub(r'<span\s+class="ol">(.*?)</span>',
+                   lambda m: r'\overline{' + inner(m.group(1)) + '}', t, flags=re.I)
+        t = re.sub(r'<sup>(.*?)</sup>', r'^{\1}', t, flags=re.I)
+        t = re.sub(r'<sub>(.*?)</sub>', r'_{\1}', t, flags=re.I)
+        t = re.sub(r'<img[^>]*>', '[図]', t, flags=re.I)
+        t = t.replace('&fnof;', 'f')
+        t = re.sub(r'<[^>]*>', '', t)
+        return t
+    s = inner(s)
+    return re.sub(r'\s+', ' ', s).strip()
 
 def build_prompt(q):
     p = '你是一位日本基本情報技術者考试的中文辅导老师。请用中文解析以下题目。\n'

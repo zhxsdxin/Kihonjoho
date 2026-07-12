@@ -937,7 +937,19 @@ const AI_API = 'https://api.deepseek.com/chat/completions';
 
 function getAIKey(num) { return 'fe2020_ai_' + num; }
 
-function stripHTML(s) { return (s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim(); }
+function htmlToText(s) {
+  s = (s || '');
+  s = s.replace(/<span\s+class="frac">\s*<span>(.*?)<\/span>(.*?)<\/span>/gi, (_, n, d) => '\\frac{' + htmlToText(n) + '}{' + htmlToText(d) + '}');
+  s = s.replace(/<span\s+class="ol">(.*?)<\/span>/gi, (_, c) => '\\overline{' + htmlToText(c) + '}');
+  s = s.replace(/<sup>(.*?)<\/sup>/gi, (_, c) => '^{' + htmlToText(c) + '}');
+  s = s.replace(/<sub>(.*?)<\/sub>/gi, (_, c) => '_{' + htmlToText(c) + '}');
+  s = s.replace(/<img[^>]*>/gi, '[図]');
+  s = s.replace(/&fnof;/gi, 'f');
+  s = s.replace(/<[^>]*>/g, '');
+  return s.replace(/\s+/g, ' ').trim();
+}
+
+function stripHTML(s) { return htmlToText(s); }
 
 function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 function escBR(s) { return esc(s).replace(/\n/g, '<br>'); }
