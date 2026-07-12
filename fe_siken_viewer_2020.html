@@ -1085,18 +1085,19 @@ aiExplainBtn.addEventListener('click', async () => {
 // 长按触发强制解析/翻译
 function addLongPress(el, callback) {
   let pressStart = 0, isLong = false;
-  function start() {
+  function start(e) {
     if (!el.classList.contains('force-ready')) return;
     pressStart = Date.now(); isLong = false;
     setTimeout(() => { if (pressStart && Date.now() - pressStart >= 600) { isLong = true; callback(); } }, 600);
   }
-  function end() { pressStart = 0; if (isLong) return false; return true; }
+  function end(e) { pressStart = 0; if (isLong) { e.preventDefault(); e.stopPropagation(); } }
   el.addEventListener('mousedown', start);
   el.addEventListener('mouseup', end);
   el.addEventListener('mouseleave', end);
   el.addEventListener('touchstart', start, {passive: true});
   el.addEventListener('touchend', end);
   el.addEventListener('touchcancel', end);
+  el.addEventListener('click', e => { if (isLong) { e.preventDefault(); e.stopPropagation(); isLong = false; } });
   return true;
 }
 
