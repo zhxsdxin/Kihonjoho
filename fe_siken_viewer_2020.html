@@ -956,10 +956,49 @@ memorizeBtn.addEventListener('click', () => {
 });
 
 // ===================== AI EXPLAIN =====================
-const AI_KEY = 'fe_ai_key';
-const AI_API = 'https://api.deepseek.com/chat/completions';
+const AI_PROVIDERS = {
+  deepseek: {
+    name: 'DeepSeek', api: 'https://api.deepseek.com/chat/completions',
+    model: 'deepseek-chat', hasVision: false,
+    keyHelp: 'https://platform.deepseek.com/api_keys'
+  },
+  qwen: {
+    name: '通义千问', api: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    model: 'qwen-vl-max', hasVision: true,
+    keyHelp: 'https://dashscope.aliyun.com'
+  }
+};
 
 function getAIKey(num) { return 'fe2020_ai_' + num; }
+function getProviderKey(id) { return 'fe_ai_key_' + id; }
+
+function hasImages(num) {
+  const d = state.data[num];
+  if (!d) return false;
+  return /<img\b/i.test(d.mondai || '') || /<img\b/i.test(d.kaisetsu || '');
+}
+
+async function fetchImgAsDataURL(url) {
+  try {
+    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    if (blob.size > 2 * 1024 * 1024) return null;
+    return await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  } catch (e) { return null; }
+}
+
+function extractImgURLs(html) {
+  const urls = [];
+  const re = /<img[^>]+src="([^"]+)"/gi;
+  let m;
+  while ((m = re.exec(html || '')) !== null) urls.push(m[1]);
+  return [...new Set(urls)];
+}
 
 function htmlToText(s) {
   s = (s || '');
@@ -981,49 +1020,101 @@ function htmlToText(s) {
 
 function stripHTML(s) { return htmlToText(s); }
 
+async function getProviderKeyPrompt(id) {
+  let key = localStorage.getItem(getProviderKey(id));
+  if (!key) {
+    key = prompt('请输入' + AI_PROVIDERS[id].name + ' API Key（获取: ' + AI_PROVIDERS[id].keyHelp + '）:');
+    if (!key) return null;
+    localStorage.setItem(getProviderKey(id), key);
+  }
+  return key;
+}
+
+async function callAIWithProvider(providerId, num, buildBody) {
+  const provider = AI_PROVIDERS[providerId];
+  const key = await getProviderKeyPrompt(providerId);
+  if (!key) return null;
+  const res = await fetch(provider.api, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+    body: JSON.stringify(buildBody())
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    if (res.status === 429 || res.status === 402) {
+      localStorage.removeItem(getProviderKey(providerId));
+      throw new Error(provider.name + ' 额度不足，请换服务');
+    }
+    throw new Error(provider.name + ' API 错误: ' + res.status);
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || null;
+}
+
 async function callAIExplain() {
   const num = state.current;
   const d = state.data[num];
   if (!d) return;
-  let apiKey = localStorage.getItem(AI_KEY);
-  if (!apiKey) {
-    apiKey = prompt('请输入 DeepSeek API Key（获取: https://platform.deepseek.com/api_keys）:');
-    if (!apiKey) return;
-    localStorage.setItem(AI_KEY, apiKey);
-  }
   clearAI();
   aiMondaiPanel.textContent = 'AI 正在解析中...';
   aiMondaiPanel.classList.add('ai-visible', 'loading-ai');
   explanationSection.classList.add('visible');
-  try {
-    const res = await fetch(AI_API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [{ role: 'user', content: buildAIPrompt(num) }],
+
+  const imgURLs = [...extractImgURLs(d.mondai || ''), ...extractImgURLs(d.kaisetsu || '')];
+  let text = null, usedProvider = '';
+
+  // Determine providers to try: vision-capable first if images, otherwise cheapest first
+  const order = imgURLs.length > 0 ? ['qwen', 'deepseek'] : ['deepseek', 'qwen'];
+
+  for (const pid of order) {
+    const provider = AI_PROVIDERS[pid];
+    try {
+      if (imgURLs.length > 0 && !provider.hasVision) continue; // skip text-only for image questions
+      const imgParts = [];
+      if (provider.hasVision && imgURLs.length) {
+        aiMondaiPanel.textContent = 'AI 正在解析中（' + provider.name + ' 含图片）...';
+        for (const url of imgURLs.slice(0, 4)) {
+          const dataURL = await fetchImgAsDataURL(url);
+          if (dataURL) imgParts.push({ type: 'image_url', image_url: { url: dataURL } });
+        }
+      }
+      text = await callAIWithProvider(pid, num, () => ({
+        model: provider.model,
+        messages: [{
+          role: 'user',
+          content: provider.hasVision && imgParts.length > 0
+            ? [{ type: 'text', text: buildAIPrompt(num) }, ...imgParts]
+            : buildAIPrompt(num)
+        }],
         response_format: { type: 'json_object' },
-        temperature: 0.7,
-        max_tokens: 4096
-      })
-    });
-    if (!res.ok) { const err = await res.text(); throw new Error('API 错误: ' + res.status + ' ' + err.slice(0, 200)); }
-    const data = await res.json();
-    const text = data.choices?.[0]?.message?.content || 'AI 返回为空，请重试';
-    const aiData = parseAIResponse(text);
-    if (aiData) {
-      renderAIData(aiData);
-      localStorage.setItem(getAIKey(num), JSON.stringify(aiData));
-    } else {
-      renderAIFallback(text);
-      localStorage.setItem(getAIKey(num), text);
+        temperature: 0.7, max_tokens: 4096
+      }));
+      if (text) { usedProvider = provider.name; break; }
+    } catch (e) {
+      aiMondaiPanel.textContent = provider.name + ' 失败: ' + e.message + '  尝试换服务...';
+      if (e.message.includes('额度不足')) {
+        if (pid === 'deepseek') aiMondaiPanel.textContent = 'DeepSeek 额度不足，切换通义千问...';
+        else aiMondaiPanel.textContent += '\n请手动提供可用的 API Key';
+      }
     }
-    aiMondaiPanel.classList.remove('loading-ai');
-  } catch (e) {
-    aiMondaiPanel.textContent = '解析失败: ' + e.message;
-    aiMondaiPanel.classList.remove('loading-ai');
-    if (e.message.includes('401') || e.message.includes('403') || e.message.includes('key')) { localStorage.removeItem(AI_KEY); }
   }
+
+  if (!text) {
+    aiMondaiPanel.textContent = '所有 AI 服务均失败，请检查 API Key 或稍后重试';
+    aiMondaiPanel.classList.remove('loading-ai');
+    return;
+  }
+
+  const aiData = parseAIResponse(text);
+  if (aiData) {
+    renderAIData(aiData);
+    localStorage.setItem(getAIKey(num), JSON.stringify(aiData));
+    if (usedProvider) localStorage.setItem('fe2020_ai_provider', usedProvider);
+  } else {
+    renderAIFallback(text);
+    localStorage.setItem(getAIKey(num), text);
+  }
+  aiMondaiPanel.classList.remove('loading-ai');
 }
 
 function clearAI() {
