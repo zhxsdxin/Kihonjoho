@@ -122,8 +122,8 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
   content: '⟳'; position: absolute; bottom: -12px; font-size: 10px; color: #e65100;
   pointer-events: none; line-height: 1;
 }
-#aiExplainBtn.force-ready { border-color: #34a853; background: rgba(52,168,83,0.1); box-shadow: 0 0 6px rgba(52,168,83,0.3); }
-#translateBtn.force-ready { border-color: var(--primary); background: var(--choice-selected); box-shadow: 0 0 6px rgba(26,115,232,0.3); }
+#aiExplainBtn.force-ready { border-color: #34a853; color: #34a853; background: rgba(52,168,83,0.1); box-shadow: 0 0 6px rgba(52,168,83,0.3); }
+#translateBtn.force-ready { border-color: var(--primary); color: var(--primary); background: var(--choice-selected); box-shadow: 0 0 6px rgba(26,115,232,0.3); }
 .q-status button.mark-bookmark { border-color: var(--bookmark-color); color: var(--bookmark-color); }
 #mondai { font-size: 16px; padding: 12px 0; margin-bottom: 20px; }
 .ol { text-decoration: overline; }
@@ -348,8 +348,8 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <a class="q-number" id="qNumber" href="#" target="_blank" title="原題を開く">問1</a>
       <div class="q-status">
         <button id="markBookmark" title="ブックマーク (B)">★</button>
-        <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px;border-color:#34a853;color:#34a853">🤖</button>
-        <button id="translateBtn" title="日中切替 (T)" style="font-size:13px;border-color:var(--text-secondary)">中</button>
+        <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px;border-color:var(--text-secondary);color:var(--text-secondary)">🤖</button>
+        <button id="translateBtn" title="日中切替 (T)" style="font-size:13px;border-color:var(--text-secondary);color:var(--text-secondary)">中</button>
       </div>
     </div>
     <div class="loading" id="loadingIndicator">
