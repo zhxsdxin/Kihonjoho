@@ -45,6 +45,7 @@ def call_api(api_key, prompt):
     body = json.dumps({
         "model": MODEL,
         "messages": [{"role": "user", "content": prompt}],
+        "response_format": {"type": "json_object"},
         "temperature": 0.7,
         "max_tokens": 4096
     }).encode('utf-8')

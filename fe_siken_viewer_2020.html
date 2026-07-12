@@ -985,6 +985,7 @@ async function callAIExplain() {
       body: JSON.stringify({
         model: 'deepseek-chat',
         messages: [{ role: 'user', content: buildAIPrompt(num) }],
+        response_format: { type: 'json_object' },
         temperature: 0.7,
         max_tokens: 4096
       })
@@ -1023,7 +1024,9 @@ function escBR(s) { return esc(s).replace(/\n/g, '<br>'); }
 
 function parseAIResponse(text) {
   try {
-    const m = text.match(/\{[\s\S]*\}/);
+    // 尝试去掉 markdown 代码块
+    let t = text.replace(/```(?:json)?\s*/g, '').replace(/```/g, '').trim();
+    const m = t.match(/\{[\s\S]*\}/);
     if (m) { const obj = JSON.parse(m[0]); if (obj.mondai || obj.selects || obj.summary) return obj; }
   } catch (e) { /* fallback */ }
   return null;
