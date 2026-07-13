@@ -1679,10 +1679,10 @@ function showSelPopup() {
 }
 
 document.addEventListener('mouseup', showSelPopup);
-document.addEventListener('touchend', () => { setTimeout(showSelPopup, 100); });
+document.addEventListener('touchend', () => { setTimeout(showSelPopup, 200); });
 selTransPopup.addEventListener('click', async (e) => { e.stopPropagation(); await translateSelection(); });
-document.addEventListener('mousedown', (e) => { if (!selTransResult.contains(e.target) && !selTransPopup.contains(e.target)) hideSelResult(); });
-document.addEventListener('touchstart', (e) => { if (!selTransResult.contains(e.target) && !selTransPopup.contains(e.target)) hideSelResult(); }, {passive: true});
+document.addEventListener('mousedown', (e) => { if (e.target !== selTransPopup && e.target !== selTransResult && !selTransResult.contains(e.target) && !selTransPopup.contains(e.target)) hideSelResult(); });
+document.addEventListener('touchstart', (e) => { if (e.target !== selTransPopup && e.target !== selTransResult && !selTransResult.contains(e.target) && !selTransPopup.contains(e.target)) hideSelResult(); }, {passive: true});
 
 function hideSelResult() {
   selTransResult.style.display = 'none';
