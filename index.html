@@ -1714,12 +1714,9 @@ async function doSelTranslate() {
     const result = (data?.[0]?.[0]?.[0]) || '翻译失败';
     resultEl.textContent = result;
     resultEl.style.display = 'block';
-    if (lastSelRect) {
-      resultEl.style.top = Math.min(lastSelRect.bottom + 8, window.innerHeight - 200) + 'px';
-      resultEl.style.left = Math.min(lastSelRect.left, window.innerWidth - 400) + 'px';
-    } else {
-      resultEl.style.top = '50%'; resultEl.style.left = '10%';
-    }
+    resultEl.style.top = ''; resultEl.style.bottom = '20px';
+    resultEl.style.left = ''; resultEl.style.right = '20px';
+    resultEl.style.maxWidth = window.innerWidth > 600 ? '500px' : '90%';
     setTimeout(() => { resultEl.style.display = 'none'; lastSelText = ''; lastSelRect = null; }, 5000);
   } catch (e) {
     alert('翻译失败: ' + e.message);
