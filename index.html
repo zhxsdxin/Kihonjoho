@@ -1687,25 +1687,25 @@ window.addEventListener('resize', () => { if (scratchpad.classList.contains('ope
 // ===================== SELECTION TRANSLATE =====================
 const selTransPopup = document.getElementById('selTransPopup');
 const selTransResult = document.getElementById('selTransResult');
-let selTranslateTimer = null;
 
-document.addEventListener('selectionchange', () => {
-  clearTimeout(selTranslateTimer);
+function showSelPopup() {
+  selTransPopup.style.display = 'none';
   const sel = window.getSelection();
-  const text = (sel || '').toString().trim();
-  if (!text || text.length < 2 || text.length > 500 || !text.match(/[\u3040-\u30ff\u4e00-\u9fff\u3400-\u4dbf]/)) { selTransPopup.style.display = 'none'; return; }
-  selTranslateTimer = setTimeout(() => {
-    const sel2 = window.getSelection();
-    const text2 = (sel2 || '').toString().trim();
-    if (text2 !== text || !text2) { selTransPopup.style.display = 'none'; return; }
-    const range = sel2.getRangeAt(0);
+  if (!sel || sel.isCollapsed) return;
+  const text = sel.toString().trim();
+  if (!text || text.length < 2 || text.length > 500) return;
+  if (!/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) return;
+  try {
+    const range = sel.getRangeAt(0);
     const rect = range.getBoundingClientRect();
-    if (!rect || !rect.bottom) return;
     selTransPopup.style.display = 'block';
     selTransPopup.style.top = (rect.bottom + window.scrollY + 4) + 'px';
     selTransPopup.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 60) + 'px';
-  }, 200);
-});
+  } catch(e) { selTransPopup.style.display = 'none'; }
+}
+
+document.addEventListener('mouseup', showSelPopup);
+document.addEventListener('touchend', () => { setTimeout(showSelPopup, 100); });
 selTransPopup.addEventListener('click', async (e) => { e.stopPropagation(); await translateSelection(); });
 document.addEventListener('mousedown', (e) => { if (!selTransResult.contains(e.target) && !selTransPopup.contains(e.target)) hideSelResult(); });
 document.addEventListener('touchstart', (e) => { if (!selTransResult.contains(e.target) && !selTransPopup.contains(e.target)) hideSelResult(); }, {passive: true});
