@@ -655,6 +655,7 @@ function displayQuestion(num, data) {
   aiSummaryPanel.classList.remove('ai-visible');
   if (state.memorize) { answerSection.classList.add('visible'); explanationSection.classList.add('visible'); }
   infoRow.innerHTML = fixImages(data.info);
+  infoRow.querySelectorAll('a').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
 
   updateMarkUI();
   state.translated = 0;
