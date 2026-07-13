@@ -352,7 +352,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <option value="incorrect">不正解</option>
       <option value="bookmark">ブックマーク</option>
     </select>
-    <button id="randomBtn" title="随机 (R)">🎲 ランダム</button>
+    <button id="randomBtn" title="随机 (R)" style="display:none">🎲 ランダム</button>
     <button id="shuffleToggle" title="打乱 (S)">🔀 打順</button>
     <button id="gridToggle" title="一覧 (G)">📋 一覧</button>
     <button id="draftToggle" title="草稿 (D)">✏ 草稿</button>
@@ -1404,7 +1404,6 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowRight') nextBtn.click();
   else if (e.key === ' ') { e.preventDefault(); showAnswerBtn.click(); }
   else if (e.key === 's' || e.key === 'S') shuffleToggle.click();
-  else if (e.key === 'r' || e.key === 'R') randomBtn.click();
   else if (e.key === 'g' || e.key === 'G') gridToggle.click();
   else if (e.key === 'b' || e.key === 'B') markBookmark.click();
   else if (e.key === 't' || e.key === 'T') translateBtn.click();
