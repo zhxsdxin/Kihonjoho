@@ -1686,7 +1686,7 @@ window.addEventListener('resize', () => { if (scratchpad.classList.contains('ope
 // ===================== SELECTION TRANSLATE =====================
 const selTransBtn = $('selTransBtn');
 
-let lastSelText = '', lastSelRect = null;
+let lastSelText = '', lastSelRect = null, selCapturedAt = 0;
 document.addEventListener('mouseup', () => { setTimeout(captureSel, 10); });
 document.addEventListener('touchend', () => { setTimeout(captureSel, 200); });
 function captureSel() {
@@ -1695,7 +1695,7 @@ function captureSel() {
   if (!sel || sel.isCollapsed || !text || text.length < 2 || text.length > 500 || !/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) {
     lastSelText = ''; lastSelRect = null; return;
   }
-  lastSelText = text;
+  lastSelText = text; selCapturedAt = Date.now();
   try { lastSelRect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e) { lastSelText = ''; }
 }
 
@@ -1727,13 +1727,14 @@ async function doSelTranslate() {
   selTransBtn.textContent = '📝';
 }
 
-// 选中后点击选中区域触发翻译
+// 选中后点击选中区域触发翻译（忽略选择手势本身的click）
 document.addEventListener('click', (e) => {
   const el = document.getElementById('selTransResult');
   if (!lastSelText || !lastSelRect) {
     if (el) el.style.display = 'none';
     return;
   }
+  if (Date.now() - selCapturedAt < 500) return; // 忽略选文手势自带的click
   const x = e.clientX, y = e.clientY;
   const r = lastSelRect;
   if (x >= r.left - 10 && x <= r.right + 10 && y >= r.top - 10 && y <= r.bottom + 10) {
