@@ -1689,23 +1689,22 @@ const selTransPopup = document.getElementById('selTransPopup');
 const selTransResult = document.getElementById('selTransResult');
 
 function showSelPopup() {
+  selTransPopup.style.display = 'none';
   const sel = window.getSelection();
-  if (!sel || sel.isCollapsed) { selTransPopup.style.display = 'none'; return; }
+  if (!sel || sel.isCollapsed) return;
   const text = sel.toString().trim();
-  if (!text || text.length < 2 || text.length > 500) { selTransPopup.style.display = 'none'; return; }
-  if (!/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) { selTransPopup.style.display = 'none'; return; }
-  try {
-    const range = sel.getRangeAt(0);
-    const rect = range.getBoundingClientRect();
-    if (!rect || !rect.height) { selTransPopup.style.display = 'none'; return; }
-    selTransPopup.style.display = 'block';
-    selTransPopup.style.top = (rect.bottom + window.scrollY + 4) + 'px';
-    selTransPopup.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 60) + 'px';
-  } catch(e) { selTransPopup.style.display = 'none'; }
+  if (!text || text.length < 2 || text.length > 500) return;
+  if (!/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) return;
+  let rect;
+  try { rect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e) { return; }
+  if (!rect || !rect.height) return;
+  selTransPopup.style.display = 'block';
+  selTransPopup.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+  selTransPopup.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 60) + 'px';
 }
 
-document.addEventListener('mouseup', () => { setTimeout(showSelPopup, 10); });
-document.addEventListener('touchend', () => { setTimeout(showSelPopup, 300); });
+window.addEventListener('mouseup', (e) => { setTimeout(showSelPopup, 50); });
+window.addEventListener('touchend', (e) => { setTimeout(showSelPopup, 300); });
 selTransPopup.addEventListener('click', async (e) => { e.stopPropagation(); await translateSelection(); });
 document.addEventListener('mousedown', (e) => { if (e.target !== selTransPopup && e.target !== selTransResult && !selTransResult.contains(e.target) && !selTransPopup.contains(e.target)) hideSelResult(); });
 document.addEventListener('touchstart', (e) => { if (e.target !== selTransPopup && e.target !== selTransResult && !selTransResult.contains(e.target) && !selTransPopup.contains(e.target)) hideSelResult(); }, {passive: true});
