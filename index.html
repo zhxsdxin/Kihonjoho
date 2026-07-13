@@ -789,11 +789,10 @@ markBookmark.addEventListener('click', () => toggleMark('bookmark'));
 
 
 // ===================== TRANSLATE =====================
-const TRANS_API = 'https://translate.googleapis.com/translate_a/t?client=dict-chrome-ex&sl=ja&tl=zh-CN&q=';
+const TRANS_API = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ja&tl=zh-CN&dt=t&q=';
 
 async function translateText(text) {
   if (!text.trim()) return text;
-  // 保护数字、大写缩写不被翻译
   const ph = [];
   let t = text;
   t = t.replace(/\b\d+(?:[.,]\d+)*\b|\b[A-Z]{2,}\b/g, m => { const i = ph.length; ph.push(m); return `__PH${i}__`; });
@@ -801,10 +800,10 @@ async function translateText(text) {
     const res = await fetch(TRANS_API + encodeURIComponent(t.slice(0, 1800)), { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return text;
     const data = await res.json();
-    let r = data && data[0] ? data[0] : text;
+    let r = (data?.[0] || []).map(p => p[0]).join('') || text;
     ph.forEach((v, i) => { r = r.split(`__PH${i}__`).join(v); });
     return r;
-  } catch (e) { /* 失败静默 */ }
+  } catch (e) { }
   return text;
 }
 
@@ -1694,9 +1693,9 @@ selTransBtn.addEventListener('click', async () => {
   if (!text || text.length < 2 || text.length > 500) { alert('请先选中要翻译的文字（2-500字）'); return; }
   selTransBtn.textContent = '…';
   try {
-    const res = await fetch('https://translate.googleapis.com/translate_a/t?client=dict-chrome-ex&sl=ja&tl=zh-CN&q=' + encodeURIComponent(text));
+    const res = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=ja&tl=zh-CN&dt=t&q=' + encodeURIComponent(text));
     const data = await res.json();
-    const result = data?.[0] || '翻译失败';
+    const result = (data?.[0]?.[0]?.[0]) || '翻译失败';
     const rect = sel.getRangeAt(0).getBoundingClientRect();
     selTransResult.textContent = result;
     selTransResult.style.display = 'block';
