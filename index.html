@@ -1688,22 +1688,25 @@ window.addEventListener('resize', () => { if (scratchpad.classList.contains('ope
 const selTransBtn = $('selTransBtn');
 
 let lastSelText = '', lastSelRect = null, selCapturedAt = 0;
-document.addEventListener('mouseup', () => { setTimeout(captureSel, 10); });
-document.addEventListener('touchend', () => { setTimeout(captureSel, 200); });
+document.addEventListener('mouseup', captureSel);
+document.addEventListener('touchend', captureSel);
 function captureSel() {
-  const sel = window.getSelection();
-  const text = sel.toString().trim();
-  if (!sel || sel.isCollapsed || !text || text.length < 2 || text.length > 500 || !/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) {
-    lastSelText = ''; lastSelRect = null; return;
-  }
-  lastSelText = text; selCapturedAt = Date.now();
-  try { lastSelRect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e) { lastSelText = ''; }
+  setTimeout(() => {
+    const sel = window.getSelection();
+    const text = sel.toString().trim();
+    if (!sel || sel.isCollapsed || !text || text.length < 2 || text.length > 500 || !/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) {
+      lastSelText = ''; lastSelRect = null; return;
+    }
+    lastSelText = text; selCapturedAt = Date.now();
+    try { lastSelRect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e) { lastSelText = ''; }
+  }, 300);
 }
 
 selTransBtn.addEventListener('click', async () => { await doSelTranslate(); });
 
 async function doSelTranslate() {
-  const text = lastSelText;
+  const sel = window.getSelection();
+  const text = (lastSelText || sel.toString()).trim();
   if (!text || text.length < 2 || text.length > 500) { alert('请先选中要翻译的文字（2-500字）'); return; }
   selTransBtn.textContent = '…';
   const resultEl = document.getElementById('selTransResult');
@@ -1715,11 +1718,11 @@ async function doSelTranslate() {
     const result = (data?.[0]?.[0]?.[0]) || '翻译失败';
     resultEl.textContent = result;
     resultEl.className = 'show';
-    const r = lastSelRect;
-    if (r) {
-      const top = r.bottom + 8, left = Math.max(8, Math.min(r.left, window.innerWidth - 388));
-      resultEl.style.top = top + 'px';
-      resultEl.style.left = left + 'px';
+    let rect = lastSelRect;
+    if (!rect && sel && !sel.isCollapsed) try { rect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e) {}
+    if (rect) {
+      resultEl.style.top = (rect.bottom + 8) + 'px';
+      resultEl.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - 388)) + 'px';
       resultEl.style.bottom = ''; resultEl.style.right = '';
     }
     lastSelText = ''; lastSelRect = null;
