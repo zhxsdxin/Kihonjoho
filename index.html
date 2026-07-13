@@ -1687,8 +1687,8 @@ window.addEventListener('resize', () => { if (scratchpad.classList.contains('ope
 const selTransBtn = $('selTransBtn');
 
 let lastSelText = '', lastSelRect = null;
-document.addEventListener('mouseup', () => { setTimeout(captureSel, 50); });
-document.addEventListener('touchend', () => { setTimeout(captureSel, 300); });
+document.addEventListener('mouseup', () => { setTimeout(captureSel, 10); });
+document.addEventListener('touchend', () => { setTimeout(captureSel, 200); });
 function captureSel() {
   const sel = window.getSelection();
   const text = sel.toString().trim();
@@ -1702,7 +1702,7 @@ function captureSel() {
 selTransBtn.addEventListener('click', async () => { await doSelTranslate(); });
 
 async function doSelTranslate() {
-  const text = lastSelText || window.getSelection().toString().trim();
+  const text = lastSelText;
   if (!text || text.length < 2 || text.length > 500) { alert('请先选中要翻译的文字（2-500字）'); return; }
   selTransBtn.textContent = '…';
   const resultEl = document.getElementById('selTransResult');
@@ -1712,11 +1712,14 @@ async function doSelTranslate() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const result = (data?.[0]?.[0]?.[0]) || '翻译失败';
-    const rect = lastSelRect || window.getSelection().getRangeAt(0).getBoundingClientRect();
     resultEl.textContent = result;
     resultEl.style.display = 'block';
-    resultEl.style.top = Math.min(rect.bottom + 8, window.innerHeight - 200) + 'px';
-    resultEl.style.left = Math.min(rect.left, window.innerWidth - 400) + 'px';
+    if (lastSelRect) {
+      resultEl.style.top = Math.min(lastSelRect.bottom + 8, window.innerHeight - 200) + 'px';
+      resultEl.style.left = Math.min(lastSelRect.left, window.innerWidth - 400) + 'px';
+    } else {
+      resultEl.style.top = '50%'; resultEl.style.left = '10%';
+    }
     setTimeout(() => { resultEl.style.display = 'none'; lastSelText = ''; lastSelRect = null; }, 5000);
   } catch (e) {
     alert('翻译失败: ' + e.message);
@@ -1726,27 +1729,18 @@ async function doSelTranslate() {
 
 // 选中后点击选中区域触发翻译
 document.addEventListener('click', (e) => {
-  if (!lastSelText || !lastSelRect) return;
+  const el = document.getElementById('selTransResult');
+  if (!lastSelText || !lastSelRect) {
+    if (el) el.style.display = 'none';
+    return;
+  }
   const x = e.clientX, y = e.clientY;
   const r = lastSelRect;
   if (x >= r.left - 10 && x <= r.right + 10 && y >= r.top - 10 && y <= r.bottom + 10) {
-    e.preventDefault(); e.stopPropagation();
     doSelTranslate();
     return;
   }
-  const el = document.getElementById('selTransResult');
   if (el && !el.contains(e.target)) { el.style.display = 'none'; lastSelText = ''; lastSelRect = null; }
-});
-document.addEventListener('touchend', (e) => {
-  if (!lastSelText || !lastSelRect) return;
-  const t = e.changedTouches[0];
-  if (!t) return;
-  const x = t.clientX, y = t.clientY;
-  const r = lastSelRect;
-  if (x >= r.left - 15 && x <= r.right + 15 && y >= r.top - 15 && y <= r.bottom + 15) {
-    e.preventDefault();
-    doSelTranslate();
-  }
 });
 </script>
 
