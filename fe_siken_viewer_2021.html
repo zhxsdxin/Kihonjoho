@@ -1690,12 +1690,14 @@ function hideSelResult() {
 }
 
 async function translateSelection() {
-  const text = window.getSelection().toString().trim();
+  const sel = window.getSelection();
+  const text = sel.toString().trim();
   if (!text) return;
+  const pr = selTransPopup.getBoundingClientRect();
+  sel.removeAllRanges();
   selTransPopup.style.display = 'none';
   selTransResult.textContent = '翻译中...';
   selTransResult.style.display = 'block';
-  const pr = selTransPopup.getBoundingClientRect();
   selTransResult.style.top = Math.min(pr.bottom + 4, window.innerHeight - 200) + 'px';
   selTransResult.style.left = Math.min(pr.left, window.innerWidth - 400) + 'px';
   try {
