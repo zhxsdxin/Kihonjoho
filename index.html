@@ -323,8 +323,6 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 #shortcutPanel.visible { display: block; }
 #shortcutPanel kbd { display: inline-block; background: var(--header-bg); color: var(--header-text); border-radius: 3px; padding: 0 5px; font-size: 11px; margin: 0 2px; font-family: inherit; }
 #shortcutBtn { font-size: 15px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text-secondary); cursor: pointer; font-family: inherit; vertical-align: middle; }
-#selTransPopup { position: fixed; z-index: 200; background: var(--surface); border: 1px solid var(--primary); border-radius: 6px; padding: 8px 12px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,.2); display: none; cursor: pointer; white-space: nowrap; }
-#selTransPopup:hover { background: var(--choice-selected); }
 #selTransResult { position: fixed; z-index: 200; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 14px; line-height: 1.7; box-shadow: 0 4px 20px rgba(0,0,0,.2); display: none; max-width: 380px; }
 </style>
 </head>
@@ -344,7 +342,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <kbd>X</kbd> AI講解　<kbd>長押X</kbd> 解析強制再取得　<kbd>F</kbd> 強制再取得<br>
     <kbd>D</kbd> 草稿　<kbd>M</kbd> 暗記モード　<kbd>N</kbd> 自動送り<br>
     <kbd>Space</kbd> 正解表示/非表示　<kbd>A</kbd> 全問 <kbd>U</kbd> 未回答 <kbd>C</kbd> 正解 <kbd>W</kbd> 不正解<br>
-    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択
+    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択テキスト翻訳
   </div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
@@ -360,6 +358,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <button id="gridToggle" title="一覧 (G)">📋 一覧</button>
     <button id="draftToggle" title="草稿 (D)">✏ 草稿</button>
     <button id="memorizeBtn" title="背题模式 (M)">📖 暗記</button>
+    <button id="selTransBtn" title="翻译选中文字 (V)">📝 译选中</button>
     <span class="spacer"></span>
     <span class="progress-text" id="progressText">0/80</span>
     <button id="exportBtn" title="导出数据 (E)">📤</button>
@@ -1426,6 +1425,7 @@ document.addEventListener('keydown', e => {
     else if (state.translated) { localStorage.removeItem(getTransKey(state.current)); translateBtn.click(); }
   }
   else if (e.key === 'x' || e.key === 'X') aiExplainBtn.click();
+  else if (e.key === 'v' || e.key === 'V') selTransBtn.click();
 });
 
 // ===================== LOAD FULL DATA =====================
@@ -1685,56 +1685,32 @@ window.addEventListener('resize', () => { if (scratchpad.classList.contains('ope
 })();
 
 // ===================== SELECTION TRANSLATE =====================
-const selTransPopup = document.getElementById('selTransPopup');
+const selTransBtn = $('selTransBtn');
 const selTransResult = document.getElementById('selTransResult');
 
-function showSelPopup() {
-  const sel = window.getSelection();
-  if (!sel || sel.isCollapsed) { selTransPopup.style.display = 'none'; return; }
-  const text = sel.toString().trim();
-  if (!text || text.length < 2 || text.length > 500) { selTransPopup.style.display = 'none'; return; }
-  if (!/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) { selTransPopup.style.display = 'none'; return; }
-  let rect;
-  try { rect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e) { selTransPopup.style.display = 'none'; return; }
-  if (!rect || !rect.height) { selTransPopup.style.display = 'none'; return; }
-  selTransPopup.style.display = 'block';
-  selTransPopup.style.top = Math.min(rect.bottom + 6, window.innerHeight - 40) + 'px';
-  selTransPopup.style.left = Math.min(rect.left, window.innerWidth - 60) + 'px';
-}
-
-document.addEventListener('mouseup', (e) => { setTimeout(showSelPopup, 30); });
-document.addEventListener('touchend', (e) => { setTimeout(showSelPopup, 400); });
-selTransPopup.addEventListener('click', async (e) => { e.stopPropagation(); await translateSelection(); });
-document.addEventListener('mousedown', (e) => { if (e.target !== selTransPopup && e.target !== selTransResult && !selTransResult.contains(e.target) && !selTransPopup.contains(e.target)) hideSelResult(); });
-document.addEventListener('touchstart', (e) => { if (e.target !== selTransPopup && e.target !== selTransResult && !selTransResult.contains(e.target) && !selTransPopup.contains(e.target)) hideSelResult(); }, {passive: true});
-
-function hideSelResult() {
-  selTransResult.style.display = 'none';
-  selTransPopup.style.display = 'none';
-}
-
-async function translateSelection() {
+selTransBtn.addEventListener('click', async () => {
   const sel = window.getSelection();
   const text = sel.toString().trim();
-  if (!text) return;
-  const pr = selTransPopup.getBoundingClientRect();
-  sel.removeAllRanges();
-  selTransPopup.style.display = 'none';
-  selTransResult.textContent = '翻译中...';
-  selTransResult.style.display = 'block';
-  selTransResult.style.top = Math.min(pr.bottom + 4, window.innerHeight - 200) + 'px';
-  selTransResult.style.left = Math.min(pr.left, window.innerWidth - 400) + 'px';
+  if (!text || text.length < 2 || text.length > 500) { alert('请先选中要翻译的文字（2-500字）'); return; }
+  selTransBtn.textContent = '…';
   try {
     const res = await fetch('https://translate.googleapis.com/translate_a/t?client=dict-chrome-ex&sl=ja&tl=zh-CN&q=' + encodeURIComponent(text));
     const data = await res.json();
-    selTransResult.textContent = data?.[0] || '翻译失败';
+    const result = data?.[0] || '翻译失败';
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    selTransResult.textContent = result;
+    selTransResult.style.display = 'block';
+    selTransResult.style.top = Math.min(rect.bottom + 8, window.innerHeight - 200) + 'px';
+    selTransResult.style.left = Math.min(rect.left, window.innerWidth - 400) + 'px';
+    setTimeout(() => { selTransResult.style.display = 'none'; }, 5000);
   } catch (e) {
-    selTransResult.textContent = '翻译失败';
+    alert('翻译失败');
   }
-}
+  selTransBtn.textContent = '📝 译选中';
+});
+document.addEventListener('click', (e) => { if (!selTransResult.contains(e.target)) selTransResult.style.display = 'none'; });
 </script>
 
-<div id="selTransPopup">译</div>
 <div id="selTransResult"></div>
 </body>
 </html>
