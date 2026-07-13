@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>基本情報技術者 令和元年度 問題集（午前免除）</title>
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 :root {
   --bg: #f5f5f5;
@@ -115,12 +117,20 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
   display: flex; align-items: center; justify-content: center; transition: all .15s;
 }
 .q-status button:hover { transform: scale(1.1); }
+.q-status button.force-ready { position: relative; }
+.q-status button.force-ready::after {
+  content: '⟳'; position: absolute; bottom: -12px; font-size: 10px; color: #e65100;
+  pointer-events: none; line-height: 1;
+}
+#aiExplainBtn.force-ready { border-color: #34a853; color: #34a853; background: rgba(52,168,83,0.1); box-shadow: 0 0 6px rgba(52,168,83,0.3); }
+#translateBtn.force-ready { border-color: var(--primary); color: var(--primary); background: var(--choice-selected); box-shadow: 0 0 6px rgba(26,115,232,0.3); }
+.q-status button.mark-bookmark { border-color: var(--bookmark-color); color: var(--bookmark-color); box-shadow: 0 0 6px rgba(249,171,0,0.3); }
 .q-status button.mark-bookmark { border-color: var(--bookmark-color); color: var(--bookmark-color); }
 #mondai { font-size: 16px; padding: 12px 0; margin-bottom: 20px; }
 .ol { text-decoration: overline; }
 .selectList { list-style: none; margin: 16px 0; }
 .selectList li {
-  margin: 8px 0; display: flex; align-items: flex-start; gap: 10px;
+  margin: 8px 0; display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;
   padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px;
   cursor: pointer; transition: all .15s;
 }
@@ -163,6 +173,13 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 #kaisetsu dl { margin: 8px 0; } #kaisetsu dt { font-weight: 700; margin-top: 10px; } #kaisetsu dd { margin-left: 16px; }
 .info-row { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-secondary); }
 .info-row a { color: var(--primary); text-decoration: none; } .info-row a:hover { text-decoration: underline; }
+.ai-panel { margin: 8px 0; padding: 10px 14px; background: var(--choice-selected); border-radius: 6px; font-size: 13px; line-height: 1.7; display: none; border-left: 3px solid var(--primary); }
+.ai-panel.ai-visible { display: block; }
+#aiMondaiPanel { margin-bottom: 16px; }
+.ai-select-panel { display: none; margin-top: 6px; padding: 6px 10px; background: var(--choice-selected); border-radius: 4px; font-size: 12px; line-height: 1.6; border-left: 3px solid #34a853; flex-basis: 100%; }
+.ai-select-panel.ai-visible { display: block; }
+#aiSummaryPanel { margin-top: 16px; border-left-color: var(--bookmark-color); }
+.ai-panel.loading-ai { text-align: center; color: var(--text-secondary); white-space: normal; }
 .btm-nav { display: flex; gap: 10px; margin-top: 20px; align-items: center; flex-wrap: wrap; }
 .btm-nav button {
   padding: 8px 20px; border: 1px solid var(--border); border-radius: var(--radius);
@@ -302,6 +319,10 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 .swipe-hint.left { left: 20px; }
 .swipe-hint.right { right: 20px; }
 .swipe-hint.show { opacity: .6; }
+#shortcutPanel { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-top: 8px; font-size: 12px; line-height: 1.7; color: var(--text-secondary); }
+#shortcutPanel.visible { display: block; }
+#shortcutPanel kbd { display: inline-block; background: var(--header-bg); color: var(--header-text); border-radius: 3px; padding: 0 5px; font-size: 11px; margin: 0 2px; font-family: inherit; }
+#shortcutBtn { font-size: 15px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text-secondary); cursor: pointer; font-family: inherit; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -312,7 +333,16 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   <select id="yearSelect"></select>
   <span class="timer" id="timer">01:30:00</span>
   </div>
-  <div class="sub">全80問 — 解答・解説付き <span style="opacity:.5;font-size:11px">←→前次 / S打乱 / R随机 / B书签 / T翻译 / F强制翻译 / D草稿 / M暗記 / N自動 / Space解答 / A全 U未 C正 W误</span></div>
+  <div class="sub">全80問 — 解答・解説付き <button id="shortcutBtn" title="ショートカット一覧">⌨</button></div>
+  <div id="shortcutPanel">
+    <kbd>←</kbd><kbd>→</kbd> 前問/次問<br>
+    <kbd>S</kbd> 選択肢順シャッフル　<kbd>R</kbd> ランダム　<kbd>G</kbd> 一覧<br>
+    <kbd>B</kbd> ブックマーク　<kbd>T</kbd> 日中翻訳切替　<kbd>長押T</kbd> 翻訳強制再取得<br>
+    <kbd>X</kbd> AI講解　<kbd>長押X</kbd> 解析強制再取得　<kbd>F</kbd> 強制再取得<br>
+    <kbd>D</kbd> 草稿　<kbd>M</kbd> 暗記モード　<kbd>N</kbd> 自動送り<br>
+    <kbd>Space</kbd> 正解表示/非表示　<kbd>A</kbd> 全問 <kbd>U</kbd> 未回答 <kbd>C</kbd> 正解 <kbd>W</kbd> 不正解<br>
+    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択
+  </div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
     <select id="filterSelect">
@@ -342,8 +372,8 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <a class="q-number" id="qNumber" href="#" target="_blank" title="原題を開く">問1</a>
       <div class="q-status">
         <button id="markBookmark" title="ブックマーク (B)">★</button>
-        <button id="translateBtn" title="日中切替 (T)" style="font-size:13px;border-color:var(--text-secondary)">中</button>
-        <button id="forceTransBtn" title="强制API翻译 (F)" style="display:none;font-size:13px;border-color:#e65100;color:#ff9800">⟳</button>
+        <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px">🤖</button>
+        <button id="translateBtn" title="日中切替 (T)" style="font-size:13px">中</button>
       </div>
     </div>
     <div class="loading" id="loadingIndicator">
@@ -352,7 +382,9 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     </div>
     <div id="questionContent" style="display:none">
       <div id="mondai"></div>
+      <div id="aiMondaiPanel" class="ai-panel"></div>
       <ul class="selectList" id="selectList"></ul>
+      <div id="aiSummaryPanel" class="ai-panel"></div>
       <div class="answer-section" id="answerSection">
         <h3>正解</h3>
         <span id="answerChar"></span>
@@ -459,10 +491,12 @@ const questionGrid = $('questionGrid');
 const progressText = $('progressText');
 const markBookmark = $('markBookmark');
 const translateBtn = $('translateBtn');
-const forceTransBtn = $('forceTransBtn');
 const shuffleToggle = $('shuffleToggle');
 const draftToggle = $('draftToggle');
 const memorizeBtn = $('memorizeBtn');
+const aiExplainBtn = $('aiExplainBtn');
+const aiMondaiPanel = $('aiMondaiPanel');
+const aiSummaryPanel = $('aiSummaryPanel');
 
 // ===================== THEME =====================
 function applyTheme() {
@@ -472,6 +506,15 @@ function applyTheme() {
 }
 themeToggle.addEventListener('click', () => { state.dark = !state.dark; applyTheme(); });
 applyTheme();
+
+// ===================== SHORTCUT PANEL =====================
+const shortcutBtn = $('shortcutBtn');
+const shortcutPanel = $('shortcutPanel');
+shortcutBtn.addEventListener('click', () => {
+  shortcutPanel.classList.toggle('visible');
+  localStorage.setItem('fe_shortcut_visible', shortcutPanel.classList.contains('visible') ? '1' : '0');
+});
+if (localStorage.getItem('fe_shortcut_visible') === '1') shortcutPanel.classList.add('visible');
 
 // ===================== TRANSLATION CACHE =====================
 function getTransKey(num) { return LS_TRANS + num; }
@@ -600,7 +643,7 @@ function displayQuestion(num, data) {
     const origIdx = perm ? perm[i] : data.selects.indexOf(s);
     const li = document.createElement('li');
     li.dataset.origIdx = origIdx;
-    li.innerHTML = '<span class="choice-label">' + s.label + '</span><span>' + fixImages(s.text) + '</span>';
+    li.innerHTML = '<span class="choice-label">' + s.label + '</span><span>' + fixImages(s.text) + '</span><div class="ai-select-panel"></div>';
     li.addEventListener('click', () => handleChoiceClick(num, origIdx));
     selectList.appendChild(li);
   });
@@ -608,6 +651,8 @@ function displayQuestion(num, data) {
   answerSection.classList.remove('visible');
   kaisetsuEl.innerHTML = fixImages(data.kaisetsu);
   explanationSection.classList.remove('visible');
+  aiMondaiPanel.classList.remove('ai-visible');
+  aiSummaryPanel.classList.remove('ai-visible');
   if (state.memorize) { answerSection.classList.add('visible'); explanationSection.classList.add('visible'); }
   infoRow.innerHTML = fixImages(data.info);
 
@@ -615,7 +660,8 @@ function displayQuestion(num, data) {
   state.translated = 0;
   translateBtn.textContent = '中';
   translateBtn.classList.remove('active');
-  forceTransBtn.style.display = 'none';
+  translateBtn.classList.remove('force-ready');
+  translateBtn.title = '日中切替 (T)';
   updateProgress();
   jumpInput.value = num;
 
@@ -756,6 +802,7 @@ async function translateNode(node) {
 
 
 translateBtn.addEventListener('click', async () => {
+  if (translateBtn._isLong) { translateBtn._isLong = false; return; }
   const num = state.current;
   const d = state.data[num];
   if (!d) return;
@@ -765,10 +812,11 @@ translateBtn.addEventListener('click', async () => {
     const lis = selectList.querySelectorAll('li');
     d.selects.forEach((s, i) => { if (lis[i]) lis[i].querySelector('span:last-child').innerHTML = s.text; });
     kaisetsuEl.innerHTML = d.kaisetsu;
+    translateBtn.classList.remove('force-ready');
+    translateBtn.title = '日中切替 (T)';
     state.translated = 0;
     translateBtn.textContent = '中';
     translateBtn.classList.remove('active');
-    forceTransBtn.style.display = 'none';
     localStorage.setItem('lastTranslated', '0');
     return;
   }
@@ -800,34 +848,17 @@ function applyTr() {
   state.translated = 1;
   translateBtn.textContent = '日';
   translateBtn.classList.add('active');
-  forceTransBtn.style.display = 'inline-block';
+  translateBtn.classList.add('force-ready');
+  translateBtn.title = '×收起 长按强制重译';
   localStorage.setItem('lastTranslated', '1');
 }
 
-
-forceTransBtn.addEventListener('click', async () => {
-  const num = state.current;
-  const d = state.data[num];
-  if (!d || !state.translated) return;
-  forceTransBtn.textContent = '…';
-  await translateNode(mondaiEl);
-  const lis = selectList.querySelectorAll('li');
-  for (const li of lis) {
-    const span = li.querySelector('span:last-child');
-    if (span) await translateNode(span);
-  }
-  await translateNode(kaisetsuEl);
-  const sels = {};
-  lis.forEach(li => { const s = li.querySelector('span:last-child'); if (s) sels[li.dataset.origIdx] = s.innerHTML; });
-  d._tr = { mondai: mondaiEl.innerHTML, sels, kaisetsu: kaisetsuEl.innerHTML };
-  saveTransToCache(num, d._tr);
-  applyTr();
-});
 
 // ===================== LOAD =====================
 async function loadQuestion(num) {
   if (num < 1 || num > TOTAL) return;
   state.current = num;
+  localStorage.setItem(LS_POS, num);
   qNumber.textContent = '問' + num;
   qNumber.href = BASE_URL + num + '.html';
   jumpInput.value = num;
@@ -922,6 +953,314 @@ memorizeBtn.addEventListener('click', () => {
     if (state.memorize) { answerSection.classList.add('visible'); explanationSection.classList.add('visible'); }
     else { answerSection.classList.remove('visible'); explanationSection.classList.remove('visible'); }
   }
+});
+
+// ===================== AI EXPLAIN =====================
+const AI_PROVIDERS = {
+  deepseek: {
+    name: 'DeepSeek', api: 'https://api.deepseek.com/chat/completions',
+    model: 'deepseek-chat', hasVision: false,
+    keyHelp: 'https://platform.deepseek.com/api_keys'
+  },
+  qwen: {
+    name: '通义千问', api: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    model: 'qwen-vl-max', hasVision: true,
+    keyHelp: 'https://dashscope.aliyun.com'
+  }
+};
+
+function getAIKey(num) { return 'fe2019_ai_' + num; }
+function getProviderKey(id) { return 'fe_ai_key_' + id; }
+
+function hasImages(num) {
+  const d = state.data[num];
+  if (!d) return false;
+  return /<img\b/i.test(d.mondai || '') || /<img\b/i.test(d.kaisetsu || '');
+}
+
+async function fetchImgAsDataURL(url) {
+  try {
+    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    if (blob.size > 2 * 1024 * 1024) return null;
+    return await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  } catch (e) { return null; }
+}
+
+function extractImgURLs(html) {
+  const urls = [];
+  const re = /<img[^>]+src="([^"]+)"/gi;
+  let m;
+  while ((m = re.exec(html || '')) !== null) urls.push(m[1]);
+  return [...new Set(urls)];
+}
+
+function htmlToText(s) {
+  s = (s || '');
+  s = s.replace(/<span\s+class="frac">\s*<span>(.*?)<\/span>(.*?)<\/span>/gi, (_, n, d) => '\\frac{' + htmlToText(n) + '}{' + htmlToText(d) + '}');
+  s = s.replace(/<span\s+class="ol">(.*?)<\/span>/gi, (_, c) => '\\overline{' + htmlToText(c) + '}');
+  s = s.replace(/<sup>(.*?)<\/sup>/gi, (_, c) => '^{' + htmlToText(c) + '}');
+  s = s.replace(/<sub>(.*?)<\/sub>/gi, (_, c) => '_{' + htmlToText(c) + '}');
+  s = s.replace(/<img[^>]*>/gi, '[図]');
+  s = s.replace(/&fnof;/gi, 'f');
+  // add step numbers from li class
+  s = s.replace(/<li\s+class="li(\d+)">/gi, (_, n) => '<li>(' + n + ') ');
+  s = s.replace(/<li\s+class="lia">/gi, '<li>ア ');
+  s = s.replace(/<li\s+class="lii">/gi, '<li>イ ');
+  s = s.replace(/<li\s+class="liu">/gi, '<li>ウ ');
+  s = s.replace(/<li\s+class="lie">/gi, '<li>エ ');
+  s = s.replace(/<[^>]*>/g, '');
+  return s.replace(/\s+/g, ' ').trim();
+}
+
+function stripHTML(s) { return htmlToText(s); }
+
+async function getProviderKeyPrompt(id) {
+  let key = localStorage.getItem(getProviderKey(id));
+  if (!key) {
+    key = prompt('请输入' + AI_PROVIDERS[id].name + ' API Key（获取: ' + AI_PROVIDERS[id].keyHelp + '）:');
+    if (!key) return null;
+    localStorage.setItem(getProviderKey(id), key);
+  }
+  return key;
+}
+
+async function callAIWithProvider(providerId, num, buildBody) {
+  const provider = AI_PROVIDERS[providerId];
+  const key = await getProviderKeyPrompt(providerId);
+  if (!key) return null;
+  const res = await fetch(provider.api, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+    body: JSON.stringify(buildBody())
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    if (res.status === 429 || res.status === 402) {
+      localStorage.removeItem(getProviderKey(providerId));
+      throw new Error(provider.name + ' 额度不足，请换服务');
+    }
+    throw new Error(provider.name + ' API 错误: ' + res.status);
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || null;
+}
+
+async function callAIExplain() {
+  const num = state.current;
+  const d = state.data[num];
+  if (!d) return;
+  clearAI();
+  aiMondaiPanel.textContent = 'AI 正在解析中...';
+  aiMondaiPanel.classList.add('ai-visible', 'loading-ai');
+  explanationSection.classList.add('visible');
+
+  const imgURLs = [...extractImgURLs(d.mondai || ''), ...extractImgURLs(d.kaisetsu || '')];
+  let text = null, usedProvider = '';
+
+  // Determine providers to try: vision-capable first if images, otherwise cheapest first
+  const order = imgURLs.length > 0 ? ['qwen', 'deepseek'] : ['deepseek', 'qwen'];
+
+  for (const pid of order) {
+    const provider = AI_PROVIDERS[pid];
+    try {
+      if (imgURLs.length > 0 && !provider.hasVision) continue; // skip text-only for image questions
+      const imgParts = [];
+      if (provider.hasVision && imgURLs.length) {
+        aiMondaiPanel.textContent = 'AI 正在解析中（' + provider.name + ' 含图片）...';
+        for (const url of imgURLs.slice(0, 4)) {
+          const dataURL = await fetchImgAsDataURL(url);
+          if (dataURL) imgParts.push({ type: 'image_url', image_url: { url: dataURL } });
+        }
+      }
+      text = await callAIWithProvider(pid, num, () => ({
+        model: provider.model,
+        messages: [{
+          role: 'user',
+          content: provider.hasVision && imgParts.length > 0
+            ? [{ type: 'text', text: buildAIPrompt(num) }, ...imgParts]
+            : buildAIPrompt(num)
+        }],
+        response_format: { type: 'json_object' },
+        temperature: 0.7, max_tokens: 4096
+      }));
+      if (text) { usedProvider = provider.name; break; }
+    } catch (e) {
+      aiMondaiPanel.textContent = provider.name + ' 失败: ' + e.message + '  尝试换服务...';
+      if (e.message.includes('额度不足')) {
+        if (pid === 'deepseek') aiMondaiPanel.textContent = 'DeepSeek 额度不足，切换通义千问...';
+        else aiMondaiPanel.textContent += '\n请手动提供可用的 API Key';
+      }
+    }
+  }
+
+  if (!text) {
+    aiMondaiPanel.textContent = '所有 AI 服务均失败，请检查 API Key 或稍后重试';
+    aiMondaiPanel.classList.remove('loading-ai');
+    return;
+  }
+
+  const aiData = parseAIResponse(text);
+  if (aiData) {
+    renderAIData(aiData);
+    localStorage.setItem(getAIKey(num), JSON.stringify(aiData));
+    if (usedProvider) localStorage.setItem('fe2019_ai_provider', usedProvider);
+  } else {
+    renderAIFallback(text);
+    localStorage.setItem(getAIKey(num), text);
+  }
+  aiMondaiPanel.classList.remove('loading-ai');
+}
+
+function clearAI() {
+  aiMondaiPanel.innerHTML = '';
+  aiMondaiPanel.classList.remove('ai-visible');
+  aiSummaryPanel.innerHTML = '';
+  aiSummaryPanel.classList.remove('ai-visible');
+  aiExplainBtn.classList.remove('force-ready');
+  aiExplainBtn.title = 'AI中文讲解 (X)';
+  selectList.querySelectorAll('.ai-select-panel').forEach(p => { p.innerHTML = ''; p.classList.remove('ai-visible'); });
+}
+
+function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function escBR(s) { return esc(s).replace(/\n/g, '<br>'); }
+
+function parseAIResponse(text) {
+  try {
+    let t = text.replace(/```(?:json)?\s*/g, '').replace(/```/g, '').trim();
+    const m = t.match(/\{[\s\S]*\}/);
+    if (m) { const obj = JSON.parse(m[0]); if (obj.mondai || obj.selects || obj.summary) {
+      // 兼容旧版数字 key 转为标签 key
+      const labels = ['ア','イ','ウ','エ','オ','カ','キ','ク','ケ','コ'];
+      if (obj.selects) {
+        const newSelects = {};
+        for (const [k, v] of Object.entries(obj.selects)) {
+          const nk = labels[parseInt(k)] || k;
+          newSelects[nk] = v;
+        }
+        obj.selects = newSelects;
+      }
+      return obj;
+    }}
+  } catch (e) { /* fallback */ }
+  return null;
+}
+
+function renderAIData(aiData) {
+  if (aiData.mondai) {
+    aiMondaiPanel.innerHTML = escBR(aiData.mondai);
+    aiMondaiPanel.classList.add('ai-visible');
+  }
+  if (aiData.selects) {
+    const lis = selectList.querySelectorAll('li');
+    lis.forEach(li => {
+      const label = li.querySelector('.choice-label')?.textContent?.trim() || '';
+      const panel = li.querySelector('.ai-select-panel');
+      if (panel && aiData.selects[label]) {
+        panel.innerHTML = escBR(aiData.selects[label]);
+        panel.classList.add('ai-visible');
+      }
+    });
+  }
+  if (aiData.summary) {
+    aiSummaryPanel.innerHTML = escBR(aiData.summary);
+    aiSummaryPanel.classList.add('ai-visible');
+  }
+  if (aiData.mondai || aiData.selects || aiData.summary) {
+    explanationSection.classList.add('visible');
+    aiExplainBtn.classList.add('force-ready');
+    aiExplainBtn.title = '×收起 长按强制重解析';
+  }
+  if (window.MathJax) {
+    const els = document.querySelectorAll('.ai-panel.ai-visible, .ai-select-panel.ai-visible');
+    MathJax.typesetPromise(Array.from(els));
+  }
+}
+
+function renderAIFallback(text) {
+  aiMondaiPanel.innerHTML = escBR(text);
+  aiMondaiPanel.classList.add('ai-visible');
+  explanationSection.classList.add('visible');
+  aiExplainBtn.classList.add('force-ready');
+  aiExplainBtn.title = '×收起 长按强制重解析';
+  if (window.MathJax) MathJax.typesetPromise([aiMondaiPanel]);
+}
+
+function buildAIPrompt(num) {
+  const d = state.data[num];
+  if (!d) return '';
+  let p = '你是一位日本基本情報技術者考试的中文辅导老师。请用中文解析以下题目。\n';
+  p += '以 JSON 格式返回，字段：\n';
+  p += '- "mondai": 题目中文转述与考点分析\n';
+  p += '- "selects": {"ア": "选项ア的分析", "イ": "选项イ的分析", ...} key对应选项的日语标识\n';
+  p += '- "summary": 整体解题思路与知识点总结\n';
+  p += '数学公式用 \\(...\\) 或 \\[...\\] 包裹。只返回 JSON，不要额外文字。\n\n';
+  p += '【题目】\n' + stripHTML(d.mondai) + '\n\n【选项】\n';
+  d.selects.forEach(s => { p += s.label + ': ' + stripHTML(s.text) + '\n'; });
+  p += '\n【解説】\n' + stripHTML(d.kaisetsu) + '\n';
+  return p;
+}
+
+aiExplainBtn.addEventListener('click', async () => {
+  if (aiExplainBtn._isLong) { aiExplainBtn._isLong = false; return; }
+  const num = state.current;
+  const d = state.data[num];
+  if (!d) return;
+  if (aiMondaiPanel.classList.contains('ai-visible')) { clearAI(); return; }
+  const builtin = d.ai_explain || '';
+  if (builtin) {
+    let aiData;
+    try { aiData = JSON.parse(builtin); } catch (e) {}
+    if (aiData && (aiData.mondai || aiData.selects || aiData.summary)) {
+      if (aiData.selects) { const labels = ['ア','イ','ウ','エ','オ','カ','キ','ク','ケ','コ']; const ns = {}; for (const [k, v] of Object.entries(aiData.selects)) ns[labels[parseInt(k)] || k] = v; aiData.selects = ns; }
+      renderAIData(aiData); return;
+    }
+    if (builtin.length > 10) { renderAIFallback(builtin); return; }
+  }
+  const cached = localStorage.getItem(getAIKey(num));
+  if (cached) {
+    let aiData = parseAIResponse(cached);
+    if (aiData) renderAIData(aiData);
+    else renderAIFallback(cached);
+    return;
+  }
+  callAIExplain();
+});
+
+// 长按触发强制解析/翻译
+function addLongPress(el, callback) {
+  let pressStart = 0;
+  el._isLong = false;
+  function start(e) {
+    if (!el.classList.contains('force-ready')) return;
+    pressStart = Date.now(); el._isLong = false;
+    setTimeout(() => { if (pressStart && Date.now() - pressStart >= 600) { el._isLong = true; pressStart = 0; callback(); } }, 600);
+  }
+  function end(e) { pressStart = 0; if (el._isLong) { e.preventDefault(); } }
+  el.addEventListener('mousedown', start);
+  el.addEventListener('mouseup', end);
+  el.addEventListener('mouseleave', end);
+  el.addEventListener('touchstart', start, {passive: true});
+  el.addEventListener('touchend', end);
+  el.addEventListener('touchcancel', end);
+  return true;
+}
+
+addLongPress(aiExplainBtn, () => { localStorage.removeItem(getAIKey(state.current)); aiExplainBtn._isLong = false; callAIExplain(); });
+addLongPress(translateBtn, () => {
+  const d = state.data[state.current];
+  if (d) delete d._tr;
+  localStorage.removeItem(getTransKey(state.current));
+  state.translated = 0;
+  translateBtn.textContent = '中';
+  translateBtn.classList.remove('active');
+  translateBtn._isLong = false;
+  translateBtn.click();
 });
 
 // ===================== EXPORT / IMPORT =====================
@@ -1058,7 +1397,11 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'w' || e.key === 'W') { filterSelect.value = 'incorrect'; filterSelect.dispatchEvent(new Event('change')); }
   else if (e.key === 'm' || e.key === 'M') memorizeBtn.click();
   else if (e.key === 'n' || e.key === 'N') autoNextBtn.click();
-  else if (e.key === 'f' || e.key === 'F') { if (state.translated) forceTransBtn.click(); }
+  else if (e.key === 'f' || e.key === 'F') {
+    if (aiMondaiPanel.classList.contains('ai-visible')) { localStorage.removeItem(getAIKey(state.current)); callAIExplain(); }
+    else if (state.translated) { localStorage.removeItem(getTransKey(state.current)); translateBtn.click(); }
+  }
+  else if (e.key === 'x' || e.key === 'X') aiExplainBtn.click();
 });
 
 // ===================== LOAD FULL DATA =====================
@@ -1085,9 +1428,12 @@ async function loadFullData() {
 }
 
 // ===================== INIT =====================
+const LS_POS = 'fe2019_pos';
 (async () => {
   const loaded = await loadFullData();
   updateProgress();
+  const saved = parseInt(localStorage.getItem(LS_POS));
+  if (saved >= 1 && saved <= TOTAL) state.current = saved;
   loadQuestion(loaded ? state.current : 1);
 })();
 
