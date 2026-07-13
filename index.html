@@ -358,7 +358,6 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <button id="gridToggle" title="一覧 (G)">📋 一覧</button>
     <button id="draftToggle" title="草稿 (D)">✏ 草稿</button>
     <button id="memorizeBtn" title="背题模式 (M)">📖 暗記</button>
-    <button id="selTransBtn" title="翻译选中文字 (V)">📝 译选中</button>
     <span class="spacer"></span>
     <span class="progress-text" id="progressText">0/80</span>
     <button id="exportBtn" title="导出数据 (E)">📤</button>
@@ -375,6 +374,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <div class="q-status">
         <button id="markBookmark" title="ブックマーク (B)">★</button>
         <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px">🤖</button>
+        <button id="selTransBtn" title="翻译选中文字 (V)" style="font-size:13px">📝</button>
         <button id="translateBtn" title="日中切替 (T)" style="font-size:13px">中</button>
       </div>
     </div>
@@ -1706,7 +1706,7 @@ selTransBtn.addEventListener('click', async () => {
   } catch (e) {
     alert('翻译失败');
   }
-  selTransBtn.textContent = '📝 译选中';
+  selTransBtn.textContent = '📝';
 });
 document.addEventListener('click', (e) => { if (!selTransResult.contains(e.target)) selTransResult.style.display = 'none'; });
 </script>
