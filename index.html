@@ -797,8 +797,7 @@ async function translateText(text) {
   let t = text;
   t = t.replace(/\b\d+(?:[.,]\d+)*\b|\b[A-Z]{2,}\b/g, m => { const i = ph.length; ph.push(m); return `__PH${i}__`; });
   try {
-    const url = TRANS_API + encodeURIComponent(t.slice(0, 1800));
-    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url), { signal: AbortSignal.timeout(8000) });
+    const res = await fetch(TRANS_API + encodeURIComponent(t.slice(0, 1800)));
     if (!res.ok) return text;
     const data = await res.json();
     let r = (data?.[0] || []).map(p => p[0]).join('') || text;
@@ -1695,7 +1694,8 @@ selTransBtn.addEventListener('click', async () => {
   selTransBtn.textContent = '…';
   try {
     const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ja&tl=zh-CN&dt=t&q=' + encodeURIComponent(text);
-    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const result = (data?.[0]?.[0]?.[0]) || '翻译失败';
     const rect = sel.getRangeAt(0).getBoundingClientRect();
@@ -1705,7 +1705,7 @@ selTransBtn.addEventListener('click', async () => {
     selTransResult.style.left = Math.min(rect.left, window.innerWidth - 400) + 'px';
     setTimeout(() => { selTransResult.style.display = 'none'; }, 5000);
   } catch (e) {
-    alert('翻译失败');
+    alert('翻译失败: ' + e.message);
   }
   selTransBtn.textContent = '📝';
 });
