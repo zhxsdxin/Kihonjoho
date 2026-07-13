@@ -1685,13 +1685,13 @@ window.addEventListener('resize', () => { if (scratchpad.classList.contains('ope
 
 // ===================== SELECTION TRANSLATE =====================
 const selTransBtn = $('selTransBtn');
-const selTransResult = document.getElementById('selTransResult');
 
 selTransBtn.addEventListener('click', async () => {
   const sel = window.getSelection();
   const text = sel.toString().trim();
   if (!text || text.length < 2 || text.length > 500) { alert('请先选中要翻译的文字（2-500字）'); return; }
   selTransBtn.textContent = '…';
+  const resultEl = document.getElementById('selTransResult');
   try {
     const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ja&tl=zh-CN&dt=t&q=' + encodeURIComponent(text);
     const res = await fetch(url);
@@ -1699,17 +1699,17 @@ selTransBtn.addEventListener('click', async () => {
     const data = await res.json();
     const result = (data?.[0]?.[0]?.[0]) || '翻译失败';
     const rect = sel.getRangeAt(0).getBoundingClientRect();
-    selTransResult.textContent = result;
-    selTransResult.style.display = 'block';
-    selTransResult.style.top = Math.min(rect.bottom + 8, window.innerHeight - 200) + 'px';
-    selTransResult.style.left = Math.min(rect.left, window.innerWidth - 400) + 'px';
-    setTimeout(() => { selTransResult.style.display = 'none'; }, 5000);
+    resultEl.textContent = result;
+    resultEl.style.display = 'block';
+    resultEl.style.top = Math.min(rect.bottom + 8, window.innerHeight - 200) + 'px';
+    resultEl.style.left = Math.min(rect.left, window.innerWidth - 400) + 'px';
+    setTimeout(() => { resultEl.style.display = 'none'; }, 5000);
   } catch (e) {
     alert('翻译失败: ' + e.message);
   }
   selTransBtn.textContent = '📝';
 });
-document.addEventListener('click', (e) => { if (!selTransResult.contains(e.target)) selTransResult.style.display = 'none'; });
+document.addEventListener('click', (e) => { const el = document.getElementById('selTransResult'); if (el && !el.contains(e.target)) el.style.display = 'none'; });
 </script>
 
 <div id="selTransResult"></div>
