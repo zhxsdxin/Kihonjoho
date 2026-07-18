@@ -305,15 +305,41 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   .btm-nav .page-jump button { font-size: 12px; padding: 4px 8px; }
   #scratchpad { width: 260px; }
 }
-/* ===== FAB（移动端切换工具栏） ===== */
-#fabBtn { display: none; position: fixed; bottom: 90px; right: 16px; width: 48px; height: 48px; border-radius: 50%; border: none; background: var(--primary); color: #fff; font-size: 22px; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.3); z-index: 95; }
+/* ===== FAB（移动端显示隐藏侧栏） ===== */
+#fabBtn { display: none; position: fixed; bottom: 90px; right: 16px; width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--primary); color: #fff; font-size: 20px; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.3); z-index: 95; align-items: center; justify-content: center; }
+/* ===== 左侧极窄栏（56px 常驻图标列） ===== */
+#sideMenu { display: none; }
 @media (max-width: 900px) {
-  header h1, header .sub { display: none; }
-  header.menu-visible h1, header.menu-visible .sub { display: block; }
-  .toolbar { display: none; }
-  header.menu-visible .toolbar { display: flex; }
-  #fabBtn { display: flex; align-items: center; justify-content: center; }
+  header h1, header .sub, .toolbar { display: none; }
+  body.side-shown { padding-left: 56px; }
+  #sideMenu {
+    display: flex; position: fixed; top: 0; left: 0; width: 56px; height: 100%;
+    background: var(--surface); z-index: 100;
+    flex-direction: column; align-items: center;
+    padding: 6px 0; gap: 1px; overflow-y: auto;
+  }
+  body.dark #sideMenu { background: #1e2a3a; }
+  #sideMenu.hidden { display: none; }
+  body.side-shown #fabBtn { display: none; }
+  body:not(.side-shown) #fabBtn { display: flex; }
 }
+#sideMenu .side-close {
+  width: 40px; height: 40px; border: none; background: none;
+  font-size: 18px; cursor: pointer; color: var(--text);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 2px; flex-shrink: 0;
+}
+#sideMenu .side-close:hover { background: var(--choice-hover); }
+#sideMenu .side-btn {
+  width: 44px; height: 44px; border: none; border-radius: 8px;
+  background: transparent; color: var(--text); font-size: 18px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .12s; flex-shrink: 0;
+}
+#sideMenu .side-btn:hover { background: var(--choice-hover); }
+#sideMenu .side-btn.active { background: var(--primary); color: #fff; }
+#sideMenu .side-btn.side-filter { font-size: 13px; font-weight: 700; }
+#sideMenu .side-div { width: 32px; height: 1px; background: var(--border); margin: 2px 0; flex-shrink: 0; }
 /* ===== 长按 / 滑动 ===== */
 .swipe-hint { position: fixed; top: 50%; transform: translateY(-50%); font-size: 32px; opacity: 0; pointer-events: none; z-index: 100; transition: opacity .2s; }
 .swipe-hint.left { left: 20px; }
@@ -437,7 +463,27 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   </div>
 </div>
 
-<button id="fabBtn" title="工具栏">☰</button>
+<!-- 左侧栏（极窄，常驻） -->
+<div id="sideMenu">
+  <button class="side-close" id="sideClose">✕</button>
+  <button class="side-btn" id="sideThemeToggle" title="テーマ">🌙</button>
+  <div class="side-div"></div>
+  <button class="side-btn side-filter active" data-filter="all" title="すべて">A</button>
+  <button class="side-btn side-filter" data-filter="unanswered" title="未回答">U</button>
+  <button class="side-btn side-filter" data-filter="correct" title="正解">C</button>
+  <button class="side-btn side-filter" data-filter="incorrect" title="不正解">W</button>
+  <button class="side-btn side-filter" data-filter="bookmark" title="ブックマーク">★</button>
+  <div class="side-div"></div>
+  <button class="side-btn" id="sideShuffleBtn" title="打順 (S)">🔀</button>
+  <button class="side-btn" id="sideRandomBtn" title="ランダム (R)">🎲</button>
+  <button class="side-btn" id="sideGridBtn" title="一覧 (G)">📋</button>
+  <button class="side-btn" id="sideDraftBtn" title="草稿 (D)">✏</button>
+  <button class="side-btn" id="sideMemorizeBtn" title="暗記 (M)">📖</button>
+  <div class="side-div"></div>
+  <button class="side-btn" id="sideExportBtn" title="导出 (E)">📤</button>
+  <button class="side-btn" id="sideImportBtn" title="导入 (I)">📥</button>
+</div>
+<button id="fabBtn" title="菜单">☰</button>
 
 <script>
 // ===================== CONFIG =====================
@@ -1427,6 +1473,7 @@ document.addEventListener('keydown', e => {
   }
   else if (e.key === 'x' || e.key === 'X') aiExplainBtn.click();
   else if (e.key === 'v' || e.key === 'V') selTransBtn.click();
+  else if (e.key === 'h' || e.key === 'H') toggleSidebar();
 });
 
 // ===================== LOAD FULL DATA =====================
@@ -1675,15 +1722,43 @@ window.addEventListener('resize', () => { if (scratchpad.classList.contains('ope
   });
 })();
 
-// ===================== FAB TOGGLE TOOLBAR =====================
-(function() {
-  const fab = document.getElementById('fabBtn');
-  const hdr = document.querySelector('header');
-  fab.addEventListener('click', () => {
-    hdr.classList.toggle('menu-visible');
-    fab.textContent = hdr.classList.contains('menu-visible') ? '✕' : '☰';
+// ===================== FAB / SIDEBAR TOGGLE =====================
+function toggleSidebar() {
+  const menu = document.getElementById('sideMenu');
+  const hidden = menu.classList.toggle('hidden');
+  document.body.classList.toggle('side-shown', !hidden);
+}
+document.getElementById('fabBtn').addEventListener('click', toggleSidebar);
+document.getElementById('sideClose').addEventListener('click', toggleSidebar);
+
+// 侧栏按钮映射到现有功能
+document.getElementById('sideThemeToggle').addEventListener('click', () => { themeToggle.click(); });
+document.getElementById('sideShuffleBtn').addEventListener('click', () => { shuffleToggle.click(); });
+document.getElementById('sideRandomBtn').addEventListener('click', () => { randomBtn.click(); });
+document.getElementById('sideGridBtn').addEventListener('click', () => { gridToggle.click(); });
+document.getElementById('sideDraftBtn').addEventListener('click', () => { draftToggle.click(); });
+document.getElementById('sideMemorizeBtn').addEventListener('click', () => { memorizeBtn.click(); });
+document.getElementById('sideExportBtn').addEventListener('click', () => { exportBtn.click(); });
+document.getElementById('sideImportBtn').addEventListener('click', () => { importBtn.click(); });
+
+// 侧栏过滤按钮
+document.querySelectorAll('#sideMenu .side-filter').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#sideMenu .side-filter').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    filterSelect.value = b.dataset.filter;
+    filterSelect.dispatchEvent(new Event('change'));
   });
-})();
+});
+// 初始同步过滤状态
+document.querySelectorAll('#sideMenu .side-filter').forEach(b => {
+  b.classList.toggle('active', b.dataset.filter === filterSelect.value);
+});
+
+// 小屏默认开启侧栏（常驻，隐藏时会显示☰ FAB）
+if (window.innerWidth <= 900) {
+  document.body.classList.add('side-shown');
+}
 
 // ===================== SELECTION TRANSLATE =====================
 const selTransBtn = $('selTransBtn');
