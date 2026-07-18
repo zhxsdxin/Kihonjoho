@@ -1472,7 +1472,7 @@ document.addEventListener('keydown', e => {
     else if (state.translated) { localStorage.removeItem(getTransKey(state.current)); translateBtn.click(); }
   }
   else if (e.key === 'x' || e.key === 'X') aiExplainBtn.click();
-  else if (e.key === 'v' || e.key === 'V') selTransBtn.click();
+  else if (e.key === 'v' || e.key === 'V') { e.preventDefault(); doSelTranslate(); }
   else if (e.key === 'h' || e.key === 'H') toggleSidebar();
 });
 
@@ -1766,16 +1766,15 @@ const selTransBtn = $('selTransBtn');
 let lastSelText = '', lastSelRect = null, selCapturedAt = 0;
 document.addEventListener('mouseup', captureSel);
 document.addEventListener('touchend', captureSel);
+document.addEventListener('selectionchange', captureSel);
 function captureSel() {
-  setTimeout(() => {
-    const sel = window.getSelection();
-    const text = sel.toString().trim();
-    if (!sel || sel.isCollapsed || !text || text.length < 2 || text.length > 500 || !/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) {
-      lastSelText = ''; lastSelRect = null; return;
-    }
-    lastSelText = text; selCapturedAt = Date.now();
-    try { lastSelRect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e) { lastSelText = ''; }
-  }, 300);
+  const sel = window.getSelection();
+  const text = sel.toString().trim();
+  if (!sel || sel.isCollapsed || !text || text.length < 2 || text.length > 500 || !/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) {
+    lastSelText = ''; lastSelRect = null; return;
+  }
+  lastSelText = text; selCapturedAt = Date.now();
+  try { lastSelRect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e) { lastSelText = ''; }
 }
 
 selTransBtn.addEventListener('click', async () => { await doSelTranslate(); });
