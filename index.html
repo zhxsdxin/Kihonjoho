@@ -306,8 +306,8 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   #scratchpad { width: 260px; }
 }
 /* ===== FAB（移动端显示隐藏侧栏） ===== */
-#fabBtn { display: none; position: fixed; bottom: 90px; right: 16px; width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--primary); color: #fff; font-size: 20px; cursor: grab; box-shadow: 0 4px 16px rgba(0,0,0,.3); z-index: 95; align-items: center; justify-content: center; opacity: .65; touch-action: none; user-select: none; }
-#fabBtn:active { cursor: grabbing; opacity: .9; }
+#fabBtn { display: none; position: fixed; bottom: 90px; right: 16px; width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--primary); color: #fff; font-size: 20px; cursor: grab; box-shadow: 0 4px 16px rgba(0,0,0,.3); z-index: 95; align-items: center; justify-content: center; opacity: .5; touch-action: none; user-select: none; }
+#fabBtn:active { cursor: grabbing; opacity: .85; }
 /* ===== 左侧极窄栏（56px 常驻图标列） ===== */
 #sideMenu { display: none; }
 @media (max-width: 900px) {
@@ -1729,7 +1729,6 @@ function toggleSidebar() {
   const hidden = menu.classList.toggle('hidden');
   document.body.classList.toggle('side-shown', !hidden);
 }
-document.getElementById('fabBtn').addEventListener('click', toggleSidebar);
 document.getElementById('sideClose').addEventListener('click', toggleSidebar);
 
 // 侧栏按钮映射到现有功能
@@ -1767,9 +1766,9 @@ if (window.innerWidth <= 900) {
   const key = 'fe_fab_pos';
   const saved = localStorage.getItem(key);
   if (saved) { const p = JSON.parse(saved); fab.style.left = p.left; fab.style.top = p.top; fab.style.right = 'auto'; fab.style.bottom = 'auto'; }
-  let dx = 0, dy = 0, dragging = false;
+  let dx = 0, dy = 0, wasDragged = false;
   fab.addEventListener('pointerdown', e => {
-    dragging = false;
+    wasDragged = false;
     const rect = fab.getBoundingClientRect();
     dx = e.clientX - rect.left;
     dy = e.clientY - rect.top;
@@ -1777,21 +1776,21 @@ if (window.innerWidth <= 900) {
   });
   fab.addEventListener('pointermove', e => {
     if (!e.buttons) return;
-    dragging = true;
+    wasDragged = true;
     fab.style.left = (e.clientX - dx) + 'px';
     fab.style.top = (e.clientY - dy) + 'px';
     fab.style.right = 'auto';
     fab.style.bottom = 'auto';
   });
   fab.addEventListener('pointerup', e => {
-    if (dragging) {
-      e.preventDefault();
+    if (wasDragged) {
       e.stopPropagation();
       localStorage.setItem(key, JSON.stringify({ left: fab.style.left, top: fab.style.top }));
+    } else {
+      toggleSidebar();
     }
-    dragging = false;
+    wasDragged = false;
   });
-  fab.addEventListener('click', e => { if (dragging) { e.stopPropagation(); dragging = false; } });
 })();
 
 // ===================== SELECTION TRANSLATE =====================
