@@ -1870,16 +1870,22 @@ async function doSelExplain() {
       resultEl.textContent = AI_PROVIDERS[pid].name + ' 失败: ' + e.message;
     }
   }
-  if (!ok) resultEl.textContent = '所有AI服务均失败，请检查API Key';
+  if (!ok) {
+    resultEl.textContent = '所有AI服务均失败，请检查API Key';
+    setTimeout(() => { resultEl.className = 'hide'; setTimeout(() => { resultEl.className = ''; }, 800); }, 3000);
+  }
   lastSelText = ''; lastSelRect = null;
-  setTimeout(() => { if (resultEl.textContent.includes('💡')) resultEl.className = 'hide'; }, 6000);
-  setTimeout(() => { if (resultEl.className === 'hide') resultEl.className = ''; }, 6800);
   selExplainBtn.textContent = '💡';
 }
 
 // 选中后点击选中区域触发翻译
 document.addEventListener('click', (e) => {
   const el = document.getElementById('selTransResult');
+  // AI用语解说结果：点击空白处才消失
+  if (el && el.textContent.includes('💡') && el.className === 'show') {
+    if (!el.contains(e.target)) { el.className = 'hide'; setTimeout(() => { el.className = ''; el.textContent = ''; }, 800); }
+    return;
+  }
   if (!lastSelText || !lastSelRect) {
     if (el && el.className === 'show') { el.className = 'hide'; setTimeout(() => { el.className = ''; }, 800); }
     return;
