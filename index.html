@@ -1814,10 +1814,23 @@ function captureSel() {
 
 selTransBtn.addEventListener('click', async () => { await doSelTranslate(); });
 
+function cacheKey(prefix, text) { return prefix + text; }
+
 async function doSelTranslate() {
   const sel = window.getSelection();
   const text = (lastSelText || sel.toString()).trim();
   if (!text || text.length < 2 || text.length > 500) { alert('请先选中要翻译的文字（2-500字）'); return; }
+  const k = cacheKey('fe_seltrans_', text);
+  const cached = localStorage.getItem(k);
+  if (cached) {
+    const resultEl = document.getElementById('selTransResult');
+    resultEl.textContent = cached;
+    resultEl.className = 'show';
+    lastSelText = ''; lastSelRect = null;
+    setTimeout(() => { resultEl.className = 'hide'; }, 3000);
+    setTimeout(() => { resultEl.className = ''; }, 3800);
+    return;
+  }
   selTransBtn.textContent = '…';
   const resultEl = document.getElementById('selTransResult');
   try {
@@ -1826,6 +1839,7 @@ async function doSelTranslate() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const result = (data?.[0]?.[0]?.[0]) || '翻译失败';
+    localStorage.setItem(k, result);
     resultEl.textContent = result;
     resultEl.className = 'show';
     lastSelText = ''; lastSelRect = null;
