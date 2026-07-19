@@ -1859,8 +1859,16 @@ async function doSelExplain() {
   const sel = window.getSelection();
   const text = (lastSelText || sel.toString()).trim();
   if (!text || text.length < 1 || text.length > 100) { alert('请选中一个词或短语（1-100字）'); return; }
-  selExplainBtn.textContent = '…';
+  const k = cacheKey('fe_explain_', text);
+  const cached = localStorage.getItem(k);
   const resultEl = document.getElementById('selTransResult');
+  if (cached) {
+    resultEl.textContent = '💡 ' + text + '：' + cached;
+    resultEl.className = 'show';
+    lastSelText = ''; lastSelRect = null;
+    return;
+  }
+  selExplainBtn.textContent = '…';
   const order = ['deepseek', 'qwen'];
   let ok = false;
   for (const pid of order) {
@@ -1871,11 +1879,15 @@ async function doSelExplain() {
         model: AI_PROVIDERS[pid].model,
         messages: [{
           role: 'user',
-          content: '你是一个IT术语词典。请用1-2句简单易懂的中文解释下面这个日语IT词汇/专业术语，说清楚它是什么、干什么用：\n' + text
+          content: '你是一个日语IT词汇解说工具。按以下规则回答：\n'
+            + '— 如果是片假名外来语（如スタック），先写 → 英语原文，再用1-2句通俗中文解释\n'
+            + '— 如果是含汉字的日语词（如行う、処理），先写 → 假名读音与声调，再用1-2句通俗中文解释\n'
+            + '词汇：' + text
         }],
         temperature: 0.3, max_tokens: 512
       }));
       if (answer) {
+        localStorage.setItem(k, answer);
         resultEl.textContent = '💡 ' + text + '：' + answer;
         resultEl.className = 'show';
         ok = true; break;
