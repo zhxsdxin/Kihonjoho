@@ -371,7 +371,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <kbd>X</kbd> AI講解　<kbd>長押X</kbd> 解析強制再取得　<kbd>F</kbd> 強制再取得<br>
     <kbd>D</kbd> 草稿　<kbd>M</kbd> 暗記モード　<kbd>N</kbd> 自動送り<br>
     <kbd>Space</kbd> 正解表示/非表示　<kbd>A</kbd> 全問 <kbd>U</kbd> 未回答 <kbd>C</kbd> 正解 <kbd>W</kbd> 不正解<br>
-    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択テキスト翻訳
+    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択テキスト翻訳　<kbd>K</kbd> AI用語解説
   </div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
@@ -404,6 +404,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
         <button id="markBookmark" title="ブックマーク (B)">★</button>
         <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px">🤖</button>
         <button id="selTransBtn" title="翻译选中文字 (V)" style="font-size:13px">📝</button>
+        <button id="selExplainBtn" title="AI解释选中词 (K)" style="font-size:13px">💡</button>
         <button id="translateBtn" title="日中切替 (T)" style="font-size:13px">中</button>
       </div>
     </div>
@@ -1474,6 +1475,7 @@ document.addEventListener('keydown', e => {
   }
   else if (e.key === 'x' || e.key === 'X') aiExplainBtn.click();
   else if (e.key === 'v' || e.key === 'V') { e.preventDefault(); doSelTranslate(); }
+  else if (e.key === 'k' || e.key === 'K') { e.preventDefault(); doSelExplain(); }
   else if (e.key === 'h' || e.key === 'H') toggleSidebar();
 });
 
@@ -1833,6 +1835,46 @@ async function doSelTranslate() {
     alert('翻译失败: ' + e.message);
   }
   selTransBtn.textContent = '📝';
+}
+
+// ===================== SELECTION AI EXPLAIN (K) =====================
+const selExplainBtn = $('selExplainBtn');
+selExplainBtn.addEventListener('click', async () => { await doSelExplain(); });
+
+async function doSelExplain() {
+  const sel = window.getSelection();
+  const text = (lastSelText || sel.toString()).trim();
+  if (!text || text.length < 1 || text.length > 100) { alert('请选中一个词或短语（1-100字）'); return; }
+  selExplainBtn.textContent = '…';
+  const resultEl = document.getElementById('selTransResult');
+  const order = ['deepseek', 'qwen'];
+  let ok = false;
+  for (const pid of order) {
+    try {
+      resultEl.textContent = 'AI 解析中（' + AI_PROVIDERS[pid].name + '）...';
+      resultEl.className = 'show';
+      const answer = await callAIWithProvider(pid, state.current, () => ({
+        model: AI_PROVIDERS[pid].model,
+        messages: [{
+          role: 'user',
+          content: '你是一个IT术语词典。请用1-2句简单易懂的中文解释下面这个日语IT词汇/专业术语，说清楚它是什么、干什么用：\n' + text
+        }],
+        temperature: 0.3, max_tokens: 512
+      }));
+      if (answer) {
+        resultEl.textContent = '💡 ' + text + '：' + answer;
+        resultEl.className = 'show';
+        ok = true; break;
+      }
+    } catch (e) {
+      resultEl.textContent = AI_PROVIDERS[pid].name + ' 失败: ' + e.message;
+    }
+  }
+  if (!ok) resultEl.textContent = '所有AI服务均失败，请检查API Key';
+  lastSelText = ''; lastSelRect = null;
+  setTimeout(() => { if (resultEl.textContent.includes('💡')) resultEl.className = 'hide'; }, 6000);
+  setTimeout(() => { if (resultEl.className === 'hide') resultEl.className = ''; }, 6800);
+  selExplainBtn.textContent = '💡';
 }
 
 // 选中后点击选中区域触发翻译
