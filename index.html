@@ -1806,6 +1806,7 @@ function captureSel() {
   const sel = window.getSelection();
   const text = sel.toString().trim();
   if (!sel || sel.isCollapsed || !text || text.length < 2 || text.length > 500 || !/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) {
+    if (lastSelText && Date.now() - selCapturedAt < 800) return;
     lastSelText = ''; lastSelRect = null; return;
   }
   lastSelText = text; selCapturedAt = Date.now();
