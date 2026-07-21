@@ -496,7 +496,7 @@ const YEAR_CONFIGS = {
   2020: { title: '令和2年度', base: '02_menjo', json: 'fe_siken_viewer_2020.json' },
   2019: { title: '令和元年度', base: '01_aki', json: 'fe_siken_viewer_2019.json' },
 };
-let currentYear = 2020;
+let currentYear = parseInt(localStorage.getItem('fe_current_year')) || 2020;
 let BASE_URL = '';
 let PAGE_NAME = '';
 let LOCAL_PAGES_DIR = '';
@@ -508,6 +508,8 @@ let LS_POS = '';
 
 function setYear(year) {
   currentYear = year;
+  localStorage.setItem('fe_current_year', year);
+
   const cfg = YEAR_CONFIGS[year];
   BASE_URL = 'https://www.fe-siken.com/kakomon/' + cfg.base + '/q';
   PAGE_NAME = 'fe_siken_viewer_' + year;
@@ -520,7 +522,7 @@ function setYear(year) {
   document.getElementById('yearTitle').textContent = '基本情報技術者 ' + cfg.title + '（午前免除）';
   document.title = '基本情報技術者 ' + cfg.title + ' 問題集（午前免除）';
 }
-setYear(2020);
+setYear(currentYear);
 
 // ===================== STATE =====================
 const state = {
