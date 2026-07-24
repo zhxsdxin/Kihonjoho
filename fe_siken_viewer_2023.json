@@ -1,0 +1,1687 @@
+{
+  "questions": {
+    "1": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">0.12</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">0.55</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">0.75</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">0.84</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; 基礎理論 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#1_1\">離散数学</a>",
+      "kaisetsu": "16進数の1桁は2進数の4桁に対応しています。16進数を10進数に変換する場合は、16進数→2進数→10進数というように、2進数を経由して考えるとわかりやすいです。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/01.png\" width=\"503\" height=\"231\" alt=\"01.png/image-size:503×231\"></div>まず16進数の0.Cを2進数4桁にすると以下のようになります。<br><br>　0.C<sub>(16)</sub> → 0.1100<sub>(2)</sub><br><br>小数点以下の2進数の各桁は、10進数で<span class=\"frac\"><span>1</span>2<sup>n</sup></span>（nは小数点からの各桁の距離）と表現できるので、<br><br>　0.1100<sub>(2)</sub>＝<span class=\"frac\"><span>1</span>2<sup>1</sup></span>＋<span class=\"frac\"><span>1</span>2<sup>2</sup></span>＝<span class=\"frac\"><span>1</span>2</span>＋<span class=\"frac\"><span>1</span>4</span>＝<span class=\"frac\"><span>3</span>4</span>＝0.75<sub>(10)</sub><br><br>したがって、16進数の0.Cは10進数で「0.75」となります。",
+      "answer": "ウ",
+      "mondai": "16進小数0.Cを10進小数に変換したものはどれか。"
+    },
+    "2": {
+      "selects": [
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_a\">1,110</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">1,111</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">1,210</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">1,331</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; 基礎理論 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#1_2\">応用数学</a>",
+      "kaisetsu": "設問の条件より、文字列の並びとして以下の3種類があることがわかります。2文字目が空白文字の場合は、3文字目も自動的に空白文字になることに注意しましょう。<ul><li>数字、数字、数字</li><li>数字、数字、空白</li><li>数字、空白、空白</li></ul>各パターンごとに組合せ数を考え、それを合計して答えを導きます。<br><br>まず、空白文字がない0～9の数字だけで長さ3の文字列「数字、数字、数字」の組合せ数は、<br><br>　10×10×10＝1,000通り … (1)<br><br>次に、3文字目だけが空白文字の並び「数字、数字、空白」の組合せ数は、<br><br>　10×10×1＝100通り … (2)<br><br>最後に、2・3文字目が空白文字の並び「数字、空白、空白」の組合せ数は、<br><br>　10×1×1＝10通り … (3)<br><br>(1)～(3)を足し合わせると、全部で<em class=\"r\">1,110通り</em>の文字列が存在することがわかります。したがって「ア」が正解です。",
+      "answer": "ア",
+      "mondai": "0～9の数字と空白文字を組み合わせて長さ3の文字列を作る。先頭1文字には数字を使えるが，空白文字は使えない。2文字目以降には空白文字も使えるが，空白文字の後に数字を並べることは許されない。何通りの文字列を作ることができるか。ここで，同じ数字の繰返し使用を許すものとする。"
+    },
+    "3": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">全てのデータに定数aを加えたものの標準偏差は，元の標準偏差にaを加えたものになる。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">全てのデータに定数aを加えたものの標準偏差は，元の標準偏差のa倍になる。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">全てのデータを2倍したものの標準偏差は，元の標準偏差の1／2倍になる。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">全てのデータを2倍したものの標準偏差は，元の標準偏差の2倍になる。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; 基礎理論 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#1_2\">応用数学</a>",
+      "kaisetsu": "<strong>標準偏差</strong>は、数値データ群の散らばり度合いを表すものです。次のように求めます。<ol><li>x1, x2, x3, ... , xn のn個の数値データの平均を μ とする</li><li>データごとにμとの差（偏差）の2乗を求めて合計し、それをデータの個数で割る。これを分散と呼ぶ</li><li>分散は元データを2乗しているため、平方根を求めることで元データと単位を揃える。この<span class=\"root\">分散</span>を標準偏差と呼ぶ</li></ol>設問では、&#9312;全てのデータに対して定数aを加えた場合、&#9313;全てのデータを2倍した場合の標準偏差が問われています。それぞれ検討します。<dl><dt>&#9312;全てのデータに対して定数aを加えた場合</dt><dd>全てのデータに定数aを加えると、平均もaだけ高くなります。データ群全体がaだけ移動しますが、分布の形状は変わらないため散らばり度合いは変化しません。したがって、標準偏差は元のデータ群と<em class=\"r\">同じ</em>になります<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/03_1.png\" width=\"436\" height=\"141\" alt=\"03_1.png/image-size:436×141\"></div></dd><dt>&#9313;全てのデータを2倍した場合</dt><dd>全てのデータを2倍すると、1, 2, 3 ⇒ 2, 4, 6 というようにデータ同士の差も2倍となります。分布の形状が広がるので、散らばり度合いが大きくなります。このとき各データの偏差も2倍となるため、標準偏差は元のデータ群の<em class=\"r\">2倍</em>になります<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/03_2.png\" width=\"468\" height=\"175\" alt=\"03_2.png/image-size:468×175\"></div></dd></dl><ul><li class=\"lia\">元の標準偏差と同じになります。</li><li class=\"lii\">元の標準偏差と同じになります。</li><li class=\"liu\">元の標準偏差の2倍になります。</li><li class=\"lie\">正しい。元の標準偏差の2倍になります。</li></ul>",
+      "answer": "エ",
+      "mondai": "標準偏差に関する記述のうち，適切なものはどれか。"
+    },
+    "4": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">30, 3F, 7A</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_i\">30, 3F, FA</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">B0, 3F, FA</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">B0, BF, 7A</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; 基礎理論 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#1_4\">通信に関する理論</a>",
+      "kaisetsu": "<strong>パリティチェック</strong>は、データ通信やメモリチェックなどにおいてデータのビット誤りを検出する最もシンプルな方法です。一定長のビット列（通常は7～8ビット）ごとに1ビットの検査ビット（パリティビット）を付加し、検査側が受信データとパリティビットを照合することで誤りを検出します。<br><br>ビット列とパリティビットを合わせて\"1\"のビット数が奇数になるようにパリティビットを付加する方式を「奇数パリティ」、\"1\"のビット数が偶数になるようにパリティビットを付加する方式を「偶数パリティ」といいます。<br><br>16進数で表現されている文字コード 30、3F、7A を2進数に変換して\"1\"のビット数を確認します。<br><br>　30 ⇒ 011 0000 (2個)<br>　3F ⇒ 011 1111 (6個)<br>　7A ⇒ 111 1010 (5個)<br><br>30 と 3F は\"1\"の個数がすでに偶数なので、偶数を維持するために\"0\"を先頭に付加します。\"1\"の個数が奇数である 7A は、先頭に\"1\"のパリティビットを付加して\"1\"の個数が偶数になるようにします。<br><br>　30 ⇒ 011 0000 ⇒ <em class=\"r\">0</em>011 0000 ⇒ <b>30</b><br>　3F ⇒ 011 1111 ⇒ <em class=\"r\">0</em>011 1111 ⇒ <b>3F</b><br>　7A ⇒ 111 1010 ⇒ <em class=\"r\">1</em>111 1010 ⇒ <b>FA</b><br><br>以上より、偶数パリティビットを付加した後のデータは「30，3F，FA」になります。",
+      "answer": "イ",
+      "mondai": "7ビットの文字コードの先頭に1ビットの偶数パリティビットを付加するとき，文字コード30，3F，7Aにパリティビットを付加したものはどれか。ここで，文字コードは16進数で表している。"
+    },
+    "5": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">a，b，e，f</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">a，e，f</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">a，f</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">b，e</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; アルゴリズムとプログラミング &raquo; <a href=\"https://www.fe-siken.com/index_te.html#2_1\">データ構造</a>",
+      "kaisetsu": "まず、追加前の社員名をポインタの示すアドレスの順（[ ]内はアドレス）に並べます。前ポインタが\"0(参照なし)\"の要素が先頭、次ポインタが\"0(参照なし)\"の要素が末尾に配置されるので、次の順序のリスト構造になります。<br><br>100：社員A [次300、前0]<br>　　↓<br>300：社員K [次200、前100]<br>　　↓<br>200：社員T [次0、前300]<br><br>社員Gは、社員Aと社員Kの間に追加されるので、追加後の順番は以下のようになります。<br><br>100：社員A [次300、前0]<br>　　↓<br><em class=\"m\">400：社員G [次●、前■]</em><br>　　↓<br>300：社員K [次200、前100]<br>　　↓<br>200：社員T [次0、前300]<br><br>「A→G→K」のポインタの参照が正しく繋がるためには、\"Gのひとつ前であるAの次ポインタ\"と\"Gのひとつ後であるKの前ポインタ\"をそれぞれ\"400\"に更新する必要があります。したがって、追加前と値が変わるポインタは「a，f」の2か所です。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/05a.png\" width=\"294\" height=\"125\" alt=\"05a.png/image-size:294×125\"></div>",
+      "answer": "ウ",
+      "mondai": "双方向のポインタをもつリスト構造のデータを表に示す。この表において新たな社員Gを社員Aと社員Kの間に追加する。追加後の表のポインタa～fの中で追加前と比べて値が変わるポインタだけをすべて列記したものはどれか。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/05.png\" width=\"326\" height=\"306\" alt=\"05.png/image-size:326×306\"></div>"
+    },
+    "6": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">APR </span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_i\">FEB </span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">JAN </span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">NOV</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; アルゴリズムとプログラミング &raquo; <a href=\"https://www.fe-siken.com/index_te.html#2_2\">アルゴリズム</a>",
+      "kaisetsu": "キーの値から関数によって、データの格納場所などを求める方法をハッシュ法と言います。ハッシュ法では、異なるキー値から同じハッシュ値が得られることがあり、これを衝突（シノニム）といいます。<br><br>設問の指示に従って、キー\"SEP\"のハッシュ値を計算します。各アルファベットを表に当てはめると、S=19、E=5、P=16なので、<br><br>　h＝(19＋5＋16) mod 27<br>＝40 mod 27＝13<br><br>キー\"SEP\"のハッシュ値hは<em class=\"r\">13</em>となります。同じ手順で選択肢それぞれのキーについてもハッシュ値hを計算し、一致するものを探します。<ul><li class=\"lia\">A=1、P=16、R=18なので、<br>　(1＋16＋18) mod 27＝35 mod 27＝8<br>ハッシュ値は一致しません。</li><li class=\"lii\">F=6、E=5、B=2なので、<br>　(6＋5＋2) mod 27＝13 mod 27＝<em class=\"r\">13</em><br>キー\"SEP\"とハッシュ値が一致するので<em class=\"m\">衝突が発生します</em>。</li><li class=\"liu\">J=10、A=1、N=14なので、<br>　(10＋1＋14) mod 27＝25 mod 27＝25<br>ハッシュ値は一致しません。</li><li class=\"lie\">N=14、O=15、V=22なので、<br>　(14＋15＋22) mod 27＝51 mod 27＝24<br>ハッシュ値は一致しません。</li></ul>",
+      "answer": "イ",
+      "mondai": "アルファベット3文字で構成されるキーがある。次の式によってハッシュ値hを決めるとき，キー\"SEP\"と衝突するのはどれか。ここで，a mod bは，aをbで割った余りを表す。<br><br>h＝(キーの各アルファベットの順位の総和) mod 27<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/06.png\" width=\"404\" height=\"339\" alt=\"06.png/image-size:404×339\"></div>"
+    },
+    "7": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">オブジェクト内の詳細な仕様や構造を外部から隠蔽すること</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_i\">スーパークラスで定義されたメソッドをサブクラスで再定義すること</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">同一クラス内に，メソッド名が同一で，引数の型，個数，並び順が異なる複数のメソッドを定義すること</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">複数のクラスの共通する性質をまとめて，抽象化したクラスを作ること</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; アルゴリズムとプログラミング &raquo; <a href=\"https://www.fe-siken.com/index_te.html#2_3\">プログラミング</a>",
+      "kaisetsu": "<strong>オーバーライド</strong>(Override)は、上位クラスで定義されたメソッド(メンバー関数)を、下位クラス側の役割に応じて再定義し動作を変更することです。オブジェクト指向ではこの方法によって、\"同じメッセージを送ってもオブジェクトごとに異なる操作が行われる\"特性である多相性を実現しています。<br><br>親クラスで関数 Hello() が「\"こんにちは\"を表示する」と定義されているとき、子クラスで hello をオーバーライドして「\"ごきげんよう\"を表示する」と挙動を変更するようなイメージです。<ul><li class=\"lia\">カプセル化の説明です。</li><li class=\"lii\">正しい。オーバーライドの説明です。</li><li class=\"liu\">オーバーロードの説明です。hello(性別) と hello(性別, 年齢) など引数が異なる同名の関数を同一クラス内に定義することです。</li><li class=\"lie\">汎化の説明です。例えば、りんごクラス、みかんクラス、ももクラスに共通の特性を集めて果物クラスを作ることです。</li></ul>",
+      "answer": "イ",
+      "mondai": "オブジェクト指向プログラミングにおける，多相性を実現するためのオーバーライドの説明はどれか。"
+    },
+    "8": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">30</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">40</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">200</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">300</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; コンピュータ構成要素 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#3_1\">プロセッサ</a>",
+      "kaisetsu": "設問の記述どおり、CPIはその命令を1回実行するのに必要なクロック数です。プログラムは「a→c→b→a→c→d」の順で実行されるので、全体で必要となるクロック数は次のように計算できます。<br><br>　6＋4＋2＋6＋4＋8＝30クロック<br><br>CPUのクロック周波数が100MHz＝100,000,000Hzなので、1クロック当たりの時間は、<br><br>　1秒÷100,000,000＝10ナノ秒<br><br>プログラムの実行には、1回10ナノ秒のクロックが30回必要なので、実行時間は、<br><br>　10ナノ秒×30クロック＝300ナノ秒<br><br>したがって「エ」が正解です。",
+      "answer": "エ",
+      "mondai": "あるプログラムは，命令a～dを次の順で実行する。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/08_1.png\" width=\"350\" height=\"42\" alt=\"08_1.png/image-size:350×42\"></div>各命令の実行に必要なクロックサイクル数(CPI：Cycles Per Instruction)は，表のとおりである。 CPUのクロック周波数を100MHzとするとき，この命令列の実行時間は何ナノ秒か。ここで，命令の実行はオーバーラップしないものとする。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/08_2.png\" width=\"128\" height=\"123\" alt=\"08_2.png/image-size:128×123\"></div>"
+    },
+    "9": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">主記憶と入出力装置，又は主記憶同士のデータの受渡しをCPU経由でなく直接やり取りする方式</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">主記憶にデータを送り出す際に，データをキャッシュに書き込み，キャッシュがあふれたときに主記憶へ書き込む方式</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">主記憶のデータの一部をキャッシュにコピーすることによって，レジスタと主記憶とのアクセス速度の差を縮める方式</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">主記憶を複数の独立して動作するグループに分けて，各グループに並列にアクセスする方式</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; コンピュータ構成要素 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#3_2\">メモリ</a>",
+      "kaisetsu": "<strong>メモリインターリーブ</strong>は、物理上はひとつである主記憶領域を、同時アクセス可能な複数の論理的な領域（バンク）に分け、それぞれのバンクに対してデータの読み書きを並列で行うことにより、メモリアクセスの高速化を図る技術です。メモリインターリーブでは、奇数アドレスはバンク1、偶数アドレスはバンク2というように、連続したアドレスを複数のバンクに割り振っていきます。通常は、連続するアドレスに次々とアクセスされることが多いため、見かけ上並列アクセスしているようになり、実効アクセス時間が短くなります。「主記憶に並列アクセス」ときたらメモリインターリーブです。<br><br>したがって「エ」が正解です。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/09.png\" width=\"265\" height=\"226\" alt=\"09.png/image-size:265×226\"></div><ul><li class=\"lia\">DMA(Direct Memory Access)の説明です。</li><li class=\"lii\">主記憶とキャッシュメモリの同期方法のひとつであるライトバック方式の説明です。</li><li class=\"liu\">キャッシュメモリの説明です。</li><li class=\"lie\">正しい。メモリインターリーブの説明です。</li></ul>",
+      "answer": "エ",
+      "mondai": "コンピュータの高速化技術の一つであるメモリインターリーブに関する記述として，適切なものはどれか。"
+    },
+    "10": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">CPUが磁気ディスクと主記憶とのデータの受渡しを行う転送方式である。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">主記憶の入出力専用アドレス空間に入出力装置のレジスタを割り当てる方式である。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">専用の制御回路が入出力装置や主記憶などの間のデータ転送を行う方式である。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">複数の命令の実行ステージを部分的にオーバラップさせて同時に処理し，全体としての処理時間を短くする方式である。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; コンピュータ構成要素 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#3_4\">入出力デバイス</a>",
+      "kaisetsu": "<strong>DMA</strong>(Direct Memory Access)は、コンピュータと周辺機器とデータのやり取りを制御する伝送路で、ダイレクトメモリアクセスの名称が示すとおり、入出力装置とメモリとの間でCPUを介さずに直接データを転送する方式です。CPUが行うメモリ制御はDMAコントローラが代行します。CPUが入出力装置の制御を行わなくてもよいため、データ転送中も別の処理を行うことが可能になるため効率化されます。<br><br>したがって「ウ」が適切な記述です。<ul><li class=\"lia\">直接制御方式の説明です。</li><li class=\"lii\">メモリマップドI/Oの説明です。</li><li class=\"liu\">正しい。DMA方式の説明です。</li><li class=\"lie\">パイプライン制御の説明です。</li></ul>",
+      "answer": "ウ",
+      "mondai": "DMAの説明として，適切なものはどれか。"
+    },
+    "11": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">画面生成やデータ処理をクライアント側で実行することによって，Webアプリケーションソフトウェアの操作性や表現力を高めること</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">データが送信されてきたときだけ必要なサーバを立ち上げて，処理が終わり次第サーバを停止してリソースを解放すること</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">複数のサーバやPCを仮想化して統合することによって一つの高性能なコンピュータを作り上げ，並列処理によって処理能力を高めること</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">利用者や機器に取り付けられたセンサーなどのデータ発生源に近い場所にあるサーバなどでデータを一次処理し，処理のリアルタイム性を高めること</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; システム構成要素 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#4_1\">システムの構成</a>",
+      "kaisetsu": "<strong>エッジコンピューティング</strong>は、利用者や端末と物理的に近い場所に処理装置を分散配置して、ネットワークの端点でデータ処理を行う技術の総称です。処理装置をクラウド上に配置する従来の方式よりも端末と処理装置の距離が短縮されるので、アプリケーション処理の低遅延化やネットワーク負荷の低減が期待できます。高いリアルタイム性が要求されるIoTに適した技術として注目されています。<ul><li class=\"lia\">リッチクライアントの説明です。</li><li class=\"lii\">サーバレスアーキテクチャの説明です。</li><li class=\"liu\">グリッドコンピューティングの説明です。</li><li class=\"lie\">正しい。エッジコンピューティングの説明です。</li></ul>",
+      "answer": "エ",
+      "mondai": "エッジコンピューティングの説明として，最も適切なものはどれか。"
+    },
+    "12": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">③，②，④，①</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_i\">③，④，②，①</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">④，②，①，③</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">④，③，①，②</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; システム構成要素 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#4_2\">システムの評価指標</a>",
+      "kaisetsu": "<b>キャパシティプランニング</b>とは、情報システムの設計段階において、現状の最大負荷だけでなく将来予測される最大負荷時にもサービスの水準を維持できるような設計を検討することです。検討は、CPUの性能や回線の速度などに加えて経済性や拡張性も対象になります。キャパシティプランニングを行うことで適切なハードウェアを選定し、最適な投資ができます。<br><br>キャパシティプランニングの実施は一般に次の手順で行います。<ol><li>現行システムをモニタリングし現状の処理能力を把握する</li><li>将来的に予測される端末の増加、利用者数の増加などを分析する</li><li>2.の分析結果からシステム能力の限界時期を予測する</li><li>新たなシステム構成で実現すべき性能要件から必要なハードウェア増設を検討する</li></ol>設問の各作業項目は次のフェーズに当たります。<ul><li class=\"li1\">&#9313;で作成した案の評価・見直し</li><li class=\"li2\">増設の検討</li><li class=\"li3\">現状処理能力の把握</li><li class=\"li4\">将来予測</li></ul>したがって適切な順序は「&#9314;，&#9315;，&#9313;，&#9312;」になります。",
+      "answer": "イ",
+      "mondai": "稼働状況が継続的に監視されているシステムがある。稼働して数年後に新規業務をシステムに適用する場合に実施する，キャパシティプランニングの作業項目の順序として，適切なものはどれか。<br><br>〔キャパシティプランニングの作業項目〕<ol><li class=\"maru1\">システム構成の案について，適正なものかどうかを評価し，必要があれば見直しを行う。</li><li class=\"maru2\">システム特性に合わせて，サーバの台数，並列分散処理の実施の有無など，必要なシステム構成の案を検討する。</li><li class=\"maru3\">システムの稼働状況から，ハードウェアの性能情報やシステム固有の環境を把握する。</li><li class=\"maru4\">利用者などに新規業務をヒアリングし，想定される処理件数や処理に要する時間といったシステムに求められる要件を把握する。</li></ol>"
+    },
+    "13": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">15</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">20</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">25</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">30</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ソフトウェア &raquo; <a href=\"https://www.fe-siken.com/index_te.html#5_1\">オペレーティングシステム</a>",
+      "kaisetsu": "〔スケジューリング方式〕の説明より、3つのジョブはマルチタスク的に並行して実行されていくことがわかります。<br><br>当初は3つのジョブを同時に実行していくので、CPU時間は、3つのジョブに平均的に割り当てられていきます。処理を進めていくと、まず開始から15分時点でジョブA（処理時間5分）が完了します。15分のうち1／3がジョブAに割り当てられるためです。この時点で、ジョブBとジョブCも全体のうち5分間の処理が完了していることになります。<br><br>ジョブAの終了後は、CPU時間は2つのジョブに割り当てられます。ジョブBの残り時間は「10分－5分＝5分」で、CPU時間の1／2が割り当てられるので、ジョブBの終了はジョブAの終了後10分後となることがわかります。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/13.png\" width=\"346\" height=\"209\" alt=\"13.png/image-size:346×209\"></div>したがって、ジョブB完了までに要する時間は「15＋10＝<em class=\"r\">25分</em>」です。",
+      "answer": "ウ",
+      "mondai": "処理はすべてCPU処理である三つのジョブA，B，Cがある。それらを単独で実行したときの処理時間は，ジョブAが5分，ジョブBが10分，ジョブCは15分である。この三つのジョブを次のスケジューリング方式に基づいて同時に実行すると，ジョブBが終了するまでの経過時間はおよそ何分か。 <br><br>〔スケジューリング方式〕<ul><li class=\"li1\">一定時間(これをタイムクウォンタムと呼ぶ)内に処理が終了しなければ，処理を中断させて，待ち行列の最後尾へ回す。</li><li class=\"li2\">待ち行列に並んだ順に実行する。</li><li class=\"li3\">タイムクウォンタムは，ジョブの処理時間に比べて十分に小さい値とする。</li><li class=\"li4\">ジョブの切替え時間は考慮しないものとする。</li></ul>"
+    },
+    "14": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">b＋c÷d×e÷f－g</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">b＋c÷d×(e÷f－g)</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">(b＋c÷d)×e÷f－g</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">(b＋c÷d)×(e÷f－g)</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ソフトウェア &raquo; <a href=\"https://www.fe-siken.com/index_te.html#5_4\">開発ツール</a>",
+      "kaisetsu": "設問の指示である\"c＝a op b\"⇒\"op(a，b，c)\"に従って、各3アドレス命令を命令の形に戻していきます。<ol><li>÷(c，d，w1) ⇒ w1＝c÷d</li><li>＋(b，w1，w2) ⇒ w2＝b＋w1<br>w1＝c÷dより、w2＝b＋c÷d</li><li>÷(e，f，w3) ⇒ w3＝e÷f</li><li>－(w3，g，w4) ⇒ w4＝w3－g<br>w3＝e÷fより、w4＝e÷f－g</li><li>×(w2，w4，x) ⇒ x＝w2×w4<br>w2＝b＋c÷d、w4＝e÷f－gより、x＝<em class=\"r\">(b＋c÷d)×(e÷f－g)</em></li></ol>したがって結果xを表す式は「エ」となります。",
+      "answer": "エ",
+      "mondai": "次の一連の3アドレス命令で得られる結果xを表す式はどれか。ここで，3アドレス命令では，三つのオペランドを用いた命令\"c ← a op b\"を\"op(a，b，c)\"として表記する。また，opは一つの演算子を表し，結果xを表す式における演算子は×，÷，＋，－の順に優先される。<br><br>　÷(c，d，w1)<br>　＋(b，w1，w2)<br>　÷(e，f，w3)<br>　－(w3，g，w4)<br>　×(w2，w4，x)"
+    },
+    "15": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">アサーションチェッカ</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">シミュレーター</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">静的コード解析</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">テストカバレージ分析</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ソフトウェア &raquo; <a href=\"https://www.fe-siken.com/index_te.html#5_4\">開発ツール</a>",
+      "kaisetsu": "<ul><li class=\"lia\">アサーションチェッカは、プログラムの正当性を検査するために、変数間で論理的に成立する条件が満たされているかをチェックするツールです。</li><li class=\"lii\">シミュレーターは、プログラムを現実に実行するのではなく、コンピュータプログラム上で模擬実行をするためのツールです。</li><li class=\"liu\">静的コード解析は、プログラムを実行しない状態でプログラムの検証を行うことをいいます。構文チェッカ、コードオーディタ、モジュールインタフェースチェックツールなどを用いて確認を行います。</li><li class=\"lie\">正しい。<strong>テストカバレージ分析</strong>は、ツールを用いて、テストケースがどの程度プログラムのソースコードを網羅しているかを測定することです。ソースコードの文、分岐、条件、関数などが検証された割合（網羅率）を示すため、テストの品質を客観的に把握することができ、ソフトウェアの品質やテスト妥当性を評価する際の指標になります。</li></ul>",
+      "answer": "エ",
+      "mondai": "ホワイトボックステストにおいて，コード中のどれだけの割合の部分を実行できたかを評価するのに使うものはどれか。"
+    },
+    "16": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">1／2<sup>4</sup></span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">1／2<sup>6</sup></span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">1／2<sup>8</sup></span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">1／2<sup>10</sup></span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ハードウェア &raquo; <a href=\"https://www.fe-siken.com/index_te.html#6_1\">ハードウェア</a>",
+      "kaisetsu": "発振器から出力された15MHzは、PLL1で8倍にされて120MHzになります。その後、PLL2でさらに2倍されて240MHzのクロック信号がCPUに届けられます。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/16a.png\" width=\"453\" height=\"167\" alt=\"16a.png/image-size:453×167\"></div>問題の分周器の値ですが、分周器への入力が120MHz、SIO(シリアル通信)に供給されるクロック信号は115kHzなので、およそ1／1000の値になっていることに気が付きます。<br><br>　120×10<sup>6</sup>÷(115×10<sup>3</sup>)≒10<sup>3</sup> <br><br>よって、分周器の値は約1／1000に設定すればよいことになります。1000を2の累乗で表すと最も近いのが「1024＝2<sup>10</sup>」ですから、答えは1／2<sup>10</sup>となります。",
+      "answer": "エ",
+      "mondai": "ワンチップマイコンにおける内部クロック発生器のブロック図を示す。15MHzの発振器と，内部のPLL1，PLL2及び分周器の組合せでCPUに240MHz，シリアル通信(SIO)に115kHzのクロック信号を供給する場合の分周器の値は幾らか。ここで，シリアル通信のクロック精度は±5%以内とする。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/16.png\" width=\"514\" height=\"190\" alt=\"16.png/image-size:514×190\"></div>"
+    },
+    "17": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">CG映像作成における最終段階として，物体のデータをディスプレイに描画できるように映像化する処理である。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_i\">画像表示領域にウィンドウを定義し，ウィンドウの外側を除去し，内側の見える部分だけを取り出す処理である。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">スクリーンの画素数が有限であるために図形の境界近くに生じる，階段状のギザギザを目立たなくする処理である。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">立体感を生じさせるために，物体の表面に陰影を付ける処理である。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; 情報メディア &raquo; <a href=\"https://www.fe-siken.com/index_te.html#8_2\">マルチメディア応用</a>",
+      "kaisetsu": "<strong>クリッピング</strong>は、最終的な表示画面の範囲外（視点からみて可視できない部分）にあるデータを、CGの描画対象から除外する処理です。最終的な仕上りに影響を与えない余分なデータをカットすることで、後工程で必要となる計算量を減らし、作業効率を高めるために行われます。<ul><li class=\"lia\">レンダリングの説明です。</li><li class=\"lii\">正しい。クリッピングの説明です。</li><li class=\"liu\">アンチエイリアシングの説明です。</li><li class=\"lie\">シェーディング(陰影処理)の説明です。</li></ul>",
+      "answer": "イ",
+      "mondai": "3次元グラフィックス処理におけるクリッピングの説明はどれか。"
+    },
+    "18": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">\"ノード\"，\"リレーションシップ\"，\"プロパティ\"の3要素によってノード間の関係性を表現する。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">1件分のデータを\"ドキュメント\"と呼び，個々のドキュメントのデータ構造は自由であって，データを追加する都度変えることができる。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">集合論に基づいて，行と列から成る2次元の表で表現する。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">任意の保存したいデータと，そのデータを一意に識別できる値を組みとして保存する。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; データベース &raquo; <a href=\"https://www.fe-siken.com/index_te.html#9_5\">データベース応用</a>",
+      "kaisetsu": "<strong>キーバリューストア</strong>(KVS)は、NoSQLで用いられるデータ型の1つです。プログラミングで使用される連想配列のように、1つのキーに1つの値を結びつけてデータを格納します。構造が単純な分、スケーラビリティや処理速度に優れるためビッグデータの処理に使われています。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/18.png\" width=\"161\" height=\"152\" alt=\"18.png/image-size:161×152\"></div>NoSQLで用いられる他の主要なデータ型についても簡単にまとめておきます。<dl><dt>カラム指向</dt><dd>行キーに対してカラム（名前と値の組み合わせ）を結びつけて格納する</dd><dt>ドキュメント指向</dt><dd>XMLやJSONなどの構造でデータを格納する</dd><dt>グラフ指向</dt><dd>グラフ理論に基づいてデータ間の関係性を表現する</dd></dl><ul><li class=\"lia\">グラフ型データベースの説明です。</li><li class=\"lii\">ドキュメント指向データベースの説明です。</li><li class=\"liu\">関係データベースの説明です。</li><li class=\"lie\">正しい。キーバリューストア型は、キーと値の組を単位としてデータを格納するデータベースです。</li></ul>",
+      "answer": "エ",
+      "mondai": "ビッグデータの処理で使われるキーバリューストアの説明として，適切なものはどれか。"
+    },
+    "19": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">主キーとした列に対して検索条件を指定しなければ，行の検索はできない。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">数値型の列を主キーに指定すると，その列は算術演算の対象としては使えない。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">一つの表の中に，主キーの値が同じ行が複数存在することはない。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">複数の列からなる主キーを構成することはできない。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; データベース &raquo; <a href=\"https://www.fe-siken.com/index_te.html#9_2\">データベース設計</a>",
+      "kaisetsu": "関係データベースの主キーには、&#9312;値で表中の行を一意に特定できなければならない(一意性制約)、&#9313;NULL(空)値は許されない(非NULL制約)、という2つの制約が課されます。<ul><li class=\"lia\">主キー以外の列の値を使った検索もすることができます。</li><li class=\"lii\">そのような制約はありません。主キー列を集計関数等で計算の対象とすることもできます。</li><li class=\"liu\">正しい。一意性制約(ユニーク制約)を説明した文です。表中の行を一意に識別できるという性質を保持するため、主キーの値が同じ行が複数存在することは許されません。</li><li class=\"lie\">1つの属性だけでは行の特定ができない場合、複数の属性を組み合わせて複合主キーとすることがあります。</li></ul>",
+      "answer": "ウ",
+      "mondai": "関係データベースの主キーの性質として，適切なものはどれか。"
+    },
+    "20": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">仕入先コード → 仕入担当者コード → 仕入先住所</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">商品コード → 仕入先コード → 商品販売価格</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">注文コード → 顧客コード → 顧客住所</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">注文コード → 商品コード → 顧客注文数量</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; データベース &raquo; <a href=\"https://www.fe-siken.com/index_te.html#9_2\">データベース設計</a>",
+      "kaisetsu": "<strong>推移的関数従属</strong>とは、ある関係においてA→Cのように直接的な関数従属性があるのではなく、A→B→Cというようにある属性を経由することで、結果的にA→Cの関数従属性が成り立つことを言います。A→B→Cの例で言うと、Aが決まればBが一意に決まり、Bが決まればCが一意に決まるので、CはAに関数従属しています。このようにある属性を介して関数従属が成立するとき、その関係性を推移的関数従属といいます。<br><br>次の3つは推移的関数従属の例です。<ul><li>注文コード →　商品コード →　販売価格</li><li>従業員番号 →　部門コード →　部門名</li><li>従業員番号 →　所属支店コード →　勤務地名</li></ul><ul><li class=\"lia\">上から4つ目の関数従属より、仕入先コードが決まると、仕入先名・仕入先住所・仕入担当者コードが一意に決定するので「仕入先コード → 仕入担当者コード」は成立します。しかし、仕入担当者コードと仕入先住所の間には関数従属性がないので、推移的関数従属は成立しません。</li><li class=\"lii\">上から3つ目の関数従属より、商品コードが決まると、商品名・仕入先コード・商品販売価格が一意に決定するので「商品コード → 仕入先コード」は成立します。しかし、仕入先コードと商品販売価格の間には関数従属性がないので、推移的関数従属は成立しません。</li><li class=\"liu\">正しい。上から2つ目の関数従属より、注文コードが決まると、注文日・顧客コード・注文担当者コードが一意に決定します。さらに一番下の関数従属より、顧客コードが決まると、顧客名・顧客住所が一意に決定します。したがって「注文コード → 顧客コード → 顧客住所」の推移的関数従属が成立しています。</li><li class=\"lie\">注文コードから商品コードへの関数従属はないので、最初の「注文コード → 商品コード」が成立しません。</li></ul>",
+      "answer": "ウ",
+      "mondai": "次の関数従属を満足するとき，成立する推移的関数従属はどれか。ここで，\"A→B\"はBがAに関数従属していることを表し，\"A→{B，C}\"は，\"A→B\"かつ\"A→C\"が成立することを表す。<br><br>〔関数従属〕<br>{注文コード，商品コード} → {顧客注文数量，注文金額}<br>注文コード → {注文日，顧客コード，注文担当者コード}<br>商品コード → {商品名，仕入先コード，商品販売価格}<br>仕入先コード → {仕入先名，仕入先住所，仕入担当者コード}<br>顧客コード → {顧客名，顧客住所}"
+    },
+    "21": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\"><span class=\"code\">SELECT 生徒氏名 FROM 得点<br>　WHERE (A AND B) AND NOT (A AND B)</span></span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\"><span class=\"code\">SELECT 生徒氏名 FROM 得点<br>　WHERE (A AND B) AND NOT (A OR B)</span></span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\"><span class=\"code\">SELECT 生徒氏名 FROM 得点<br>　WHERE (A OR B) AND NOT (A AND B)</span></span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\"><span class=\"code\">SELECT 生徒氏名 FROM 得点<br>　WHERE (A OR B) AND NOT (A OR B)</span></span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; データベース &raquo; <a href=\"https://www.fe-siken.com/index_te.html#9_3\">データ操作</a>",
+      "kaisetsu": "選択肢を見ると異なっているのはWHERE句以降の条件式だけなので、この部分が正しい結果を返すかを検証していきます。ANDは論理積、ORは論理和を表します。<br><br>表からの抽出条件である\"1教科は平均点以上で，残りの1教科は平均点未満\"をベン図で表現すると次のようになります。少なくとも1教科が平均点以上である部分集合から、両方が平均点以上である部分集合を除いた部分となります。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/21.png\" width=\"150\" height=\"135\" alt=\"21.png/image-size:150×135\"></div>それぞれの条件式も同様にベン図で表現してみると、「ウ」が一致することがわかります。<ul><li class=\"lia\"><div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/21a.png\" width=\"500\" height=\"121\" alt=\"21a.png/image-size:500×121\"></div></li><li class=\"lii\"><div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/21i.png\" width=\"500\" height=\"121\" alt=\"21i.png/image-size:500×121\"></div></li><li class=\"liu\"><div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/21u.png\" width=\"500\" height=\"121\" alt=\"21u.png/image-size:500×121\"></div></li><li class=\"lie\"><div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/21e.png\" width=\"500\" height=\"121\" alt=\"21e.png/image-size:500×121\"></div></li></ul>",
+      "answer": "ウ",
+      "mondai": "国語と数学の試験を実施し，2教科の成績は氏名とともに\"得点\"表に記録されている。1教科は平均点以上で，残りの1教科は平均点未満の生徒氏名を\"得点\"表から抽出するSQL文はどれか。ここで，条件文Aと条件文Bには，それぞれ次の条件が与えられているものとする。<br><br>〔条件文〕<br>A　国語の点数が国語の平均点以上<br>B　数学の点数が数学の平均点以上"
+    },
+    "22": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">一貫性(consistency)</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_i\">原子性(atomicity)</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">耐久性(durability)</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">独立性(isolation)</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; データベース &raquo; <a href=\"https://www.fe-siken.com/index_te.html#9_4\">トランザクション処理</a>",
+      "kaisetsu": "原子性(atomicity)、一貫性(consistency)、独立性(isolation)、耐久性(durability)の4つはデータベースのトランザクション処理を行う上で必要不可欠とされる性質で、それぞれの頭文字を並べて<strong>ACID特性</strong>と呼ばれています。<br><br>トランザクションは、振込処理における出金と入金のように、処理の整合性を保つために必要なひとまとまりの処理の単位ですから、その一部だけが処理されて終了することは許されず、処理がすべて実行されるか、または全く実行されないのいずれかの状態で終了しなければなりません。このように、トランザクションが分割できない単位であることを示す特性を<strong>原子性</strong>といいます。DBMSでは、&#9312;コミットで全ての処理を確定する、&#9313;ロールバックで処理を全て巻き戻す、のいずれかの状態でトランザクションが終了するように制御しており、これにより原子性が確保されています。<ul><li class=\"lia\">一貫性は、トランザクションによりデータの矛盾が生じないこと、つまり常にデータベースの整合性が保たれていることを保証する性質です。</li><li class=\"lii\">正しい。原子性は、トランザクション内の処理がすべて実行されるか、または全く実行されないことを保証する性質です。</li><li class=\"liu\">耐久性は、一旦正常終了したトランザクションの結果は、以後システムに障害が発生しても失われないことを保証する性質です。永続性と呼ばれる場合もあります。</li><li class=\"lie\">独立性は、複数のトランザクションを同時に実行した場合と、順番に実行した場合の結果が等しくなることを保証する性質です。隔離性と呼ばれる場合もあります。</li></ul>",
+      "answer": "イ",
+      "mondai": "トランザクションが，データベースに対する更新処理を完全に行うか，全く処理しなかったかのように取り消すか，のどちらかの結果になることを保証する特性はどれか。"
+    },
+    "23": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">48ビットのネットワーク識別子であり，アクセスポイントのMACアドレスと一致する。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">48ビットのホスト識別子であり，有線LANのMACアドレスと同様の働きをする。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">最長32オクテットのネットワーク識別子であり，接続するアクセスポイントの選択に用いられる。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">最長32オクテットのホスト識別子であり，ネットワーク上で一意である。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ネットワーク &raquo; <a href=\"https://www.fe-siken.com/index_te.html#10_1\">ネットワーク方式</a>",
+      "kaisetsu": "<strong>SSID</strong>(Service Set Identifier)は、無線LANにおいて「混信」を避けるためにアクセスポイントと端末に設定するネットワーク識別子です。Wi-Fiを設定するときに表示されるアクセスポイントを表す文字列がSSIDに当たります。SSIDには最長32文字の任意の文字列を設定します。<br><br>通信を行う端末とスイッチがコードで接続されている有線LANと異なり、無線LANでは1つの端末が複数のアクセスポイントと通信できてしまう「混信状態」が発生し得ます。これを回避するため、無線LANではアクセスポイントと端末にそれぞれSSIDを設定し、SSIDが一致する機器同士しか通信ができないようにアクセス制御を行っています。<ul><li class=\"lia\">SSIDは最長32文字の文字列(英数字と一定の記号)なので、最大32オクテット(バイト)です。記述はBSSID(Basic Service Set Identifier)の説明です。</li><li class=\"lii\">SSIDは最長32文字のネットワーク識別子です。</li><li class=\"liu\">正しい。SSIDは接続する無線LANを識別するための識別子です。</li><li class=\"lie\">SSIDはホスト識別子ではなくネットワーク識別子です。</li></ul>",
+      "answer": "ウ",
+      "mondai": "無線LANで用いられるSSIDの説明として，適切なものはどれか。"
+    },
+    "24": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">255.255.255.1</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">255.255.255.32</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">255.255.255.64</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">255.255.255.128</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ネットワーク &raquo; <a href=\"https://www.fe-siken.com/index_te.html#10_3\">通信プロトコル</a>",
+      "kaisetsu": "<strong>可変長サブネットマスク</strong>(VLSM：Variable Length Subnet Masking)は、各サブネットで必要となるIPアドレス数に基づいて、サブネットごとに異なるサブネットマスクを使用する手法です。VLSMでは、一度サブネット化されているアドレスをさらに細分化することができ、IPアドレスの使用効率が向上します。<br><br>IPv4でのサブネットマスクは32ビットで、左の上位ビットから連続した●ビットを\"1\"、それ以降のビットを\"0\"とすることでネットワークアドレス部とホストアドレス部を分けます。サブネットマスクは、連続した\"1\"と連続した0\"の組合せなので、\"0\"の後に再び\"1\"が来ることはありません。<br><br>選択肢のサブネットマスクはどれも上位24ビットは255.255.255.*（111…11.）で同じなので、下位8ビットを2進表現にして適切なものを考えていきます。<ul><li class=\"lia\">1<sub>(10)</sub>＝00000001<sub>(2)</sub><br>0の後に再び1が来るので不適切です。</li><li class=\"lii\">32<sub>(10)</sub>＝00100000<sub>(2)</sub><br>0の後に再び1が来るので不適切です。</li><li class=\"liu\">64<sub>(10)</sub>＝01000000<sub>(2)</sub><br>0の後に再び1が来るので不適切です。</li><li class=\"lie\">128<sub>(10)</sub>＝10000000<sub>(2)</sub><br><em class=\"m\">サブネットマスクとして適切です</em>。</li></ul>下位8ビットをサブネットマスクとして使用する場合の正しいサブネットマスクは、255.255.255.128、255.255.255.192、255.255.255.224、255.255.255.240などになります。",
+      "answer": "エ",
+      "mondai": "IPv4ネットワークで用いられる可変長サブネットマスクとして，正しいものはどれか。"
+    },
+    "25": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">BOOTP</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">DHCP</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">MIB</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">ping</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ネットワーク &raquo; <a href=\"https://www.fe-siken.com/index_te.html#10_4\">ネットワーク管理</a>",
+      "kaisetsu": "<strong>ping</strong>(ピン／ピング)は、IPネットワークにおいて対象のコンピュータまでの通信が正常にできるかを確認するために使用するコマンドです。pingを実行して相手から応答があれば、相手のコンピュータがネットワーク上に存在し、自分のコンピュータから相手のコンピュータまでのネットワークに異常がないことを確認できます。<br><br>pingは、ネットワーク層のプロトコルであるICMPの「echo request」メッセージを対象ノードに投げ、対象ノードから「echo reply」メッセージが返す仕組みにより、ネットワークの疎通確認を行っています。<ul><li class=\"lia\">Bootstrap Protocolの略。ネットワークに接続されたクライアントが、IPアドレスやホスト名、サブネットマスク等を自動的に取得するためのプロトコルです。DHCPより前に開発されましたが、DHCPの登場により使用される機会は少なくなってきています。</li><li class=\"lii\">Dynamic Host Configuration Protocolの略。TCP/IPネットワークで、ネットワークに接続するノードへのIPアドレスの割当てを自動的に行うプロトコルです。</li><li class=\"liu\">Management Information Baseの略。ネットワーク機器が外部に自分の状態・情報を知らせるために公開している情報のことです。SNMPは、MIBを参照することでネットワークを監視・制御を行います。</li><li class=\"lie\">正しい。pingは、ネットワークの疎通確認に使われるコマンドです。</li></ul>",
+      "answer": "エ",
+      "mondai": "IPv4ネットワークにおいて，ネットワークの疎通確認に使われるものはどれか。"
+    },
+    "26": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">DMZ</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">フォワードプロキシ</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">プロキシARP</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">リバースプロキシ</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ネットワーク &raquo; <a href=\"https://www.fe-siken.com/index_te.html#10_1\">ネットワーク方式</a>",
+      "kaisetsu": "<strong>リバースプロキシ</strong>は、クライアントとWebサーバの間のWebサーバ側に位置し、Webサーバを代理する形でクライアントからのリクエストを受け取り、そのリクエストをWebサーバに受け渡す仕組みです。クライアントからのリクエストは必ずリバースプロキシを経由するので、リバースプロキシにアクセス制御や認証などの機能をもたせることで、Webサーバのセキュリティ向上が期待できます。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/26.png\" width=\"467\" height=\"204\" alt=\"26.png/image-size:467×204\"></div><ul><li class=\"lia\">DeMilitarized Zoneの略。非武装地帯の意味をもち、外部からアクセスされる可能性のある公開サーバ(Webサーバ・メールサーバ・プロキシサーバなど)などの情報資源を配置するためのネットワークセグメントのことです。外部ネットワーク及び内部ネットワークとファイアウォールで隔てられており、ファイアウォールの中でも外でもない中間的なエリアに位置付けられます。</li><li class=\"lii\">単にプロキシともいいます。クライアントとWebサーバの間のクライアント側に位置し、クライアントの要求を受け取り、クライアントに代わってWebサーバにアクセスする仕組みです。</li><li class=\"liu\">プロキシARPは、あるホスト宛てのARP要求に対して代理でARP応答をする機能で、ルータなどに備わっています。</li><li class=\"lie\">正しい。リバースプロキシは、インターネット上のクライアントからのリクエストを内部ネットワークのWebサーバに中継する仕組みです。</li></ul>",
+      "answer": "エ",
+      "mondai": "Webサーバを使ったシステムにおいて，インターネット経由でアクセスしてくるクライアントから受け取ったリクエストをWebサーバに中継する仕組みはどれか。"
+    },
+    "27": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">IT製品やITを活用して地球環境への負荷を低減する取組</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_i\">IT部門の許可を得ずに，従業員又は部門が業務に利用しているデバイスやクラウドサービス</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">攻撃対象者のディスプレイやキータイプを物陰から盗み見て，情報を盗み出す行為</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">ネットワーク上のコンピュータに侵入する準備として，侵入対象の弱点を探るために組織や所属する従業員などの情報を収集すること</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; セキュリティ &raquo; <a href=\"https://www.fe-siken.com/index_te.html#11_1\">情報セキュリティ</a>",
+      "kaisetsu": "<strong>シャドーIT</strong>とは、組織の公式な手続きを経ずに、業務に使用されているIT機器や情報システムのことです。許可を得ずに業務に使用されている従業員所有のパソコン・スマートフォン・タブレットや、承認を経ずに利用されている外部サービスなどがこれに該当します。<br><br>個人所有の機器を業務で活用する考え方は<b>BYOD</b>(Bring Your Own Device)と呼ばれますが、BYODでは使用する機器を限定し、組織の管理上で使用させます。しかしITの普及浸透に伴い、承認されていない機器やサービスを従業員が勝手に使用しているケースが多くなっているのが現状です。これらの機器には、導入に当たり十分な検討がなされていないとともに、組織のセキュリティマネジメントが十分に行き届いていないことも多く、セキュリティリスクが存在しています。このような背景から、シャドーITへの対応が盗難や情報漏えい対策上の新たな課題として浮上してきています。<br><br>したがって適切な記述は「イ」です。<ul><li class=\"lia\">グリーンITの説明です。</li><li class=\"lii\">正しい。シャドーITの説明です。</li><li class=\"liu\">盗み見(ショルダーハッキング)の説明です。</li><li class=\"lie\">フットプリンティングの説明です。</li></ul>",
+      "answer": "イ",
+      "mondai": "シャドーITに該当するものはどれか。"
+    },
+    "28": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">AESは公開鍵暗号方式，RSAは共通鍵暗号方式の一種である。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_i\">共通鍵暗号方式では，暗号化及び復号に同一の鍵を使用する。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">公開鍵暗号方式を通信内容の秘匿に使用する場合は，暗号化に使用する鍵を秘密にして，復号に使用する鍵を公開する。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">デジタル署名に公開鍵暗号方式が使用されることはなく，共通鍵暗号方式が使用される。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; セキュリティ &raquo; <a href=\"https://www.fe-siken.com/index_te.html#11_1\">情報セキュリティ</a>",
+      "kaisetsu": "<ul><li class=\"lia\">記述は逆に説明しています。AESは共通鍵暗号方式、RSAは公開鍵暗号方式です。</li><li class=\"lii\">正しい。共通鍵暗号方式は、\"共通鍵\"という名前のとおり暗号化と復号に同じ鍵を使用します。錠をかけるのと開けるのとで同じ鍵を使用する、玄関のドアのようなイメージです。</li><li class=\"liu\">公開鍵暗号方式では、暗号化に使用する鍵を公開し、復号に使用する鍵は所有者が秘密として管理します。暗号化は誰でもできますが、復号できるのは正当な受信者だけという仕組みにより、通信の機密性が確保されます。</li><li class=\"lie\">共通鍵暗号方式ではありません。デジタル署名は、公開鍵暗号方式を利用して実現されています。具体的には、送信者が自分の秘密鍵で署名データを作成し、受信者は送信者の公開鍵で署名データの検証を行います。</li></ul><div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/28.png\" width=\"558\" height=\"224\" alt=\"28.png/image-size:558×224\"></div>",
+      "answer": "イ",
+      "mondai": "暗号方式に関する記述のうち，適切なものはどれか。"
+    },
+    "29": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">TLSにおいて，HTTP通信の暗号化及び署名の付与に利用することによって，通信経路上でのXMLファイルの盗聴を防止する。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">XMLとJavaScriptがもつ非同期のHTTP通信機能を使い，Webページの内容を動的に書き換えた上で署名を付与することによって，対話型のWebページを作成する。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">XML文書全体に対する単一の署名だけではなく，文書の一部に対して署名を付与する部分署名や多重署名などの複雑な要件に対応する。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">隠したい署名データを画像データの中に埋め込むことによって，署名の存在自体を外から判別できなくする。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; セキュリティ &raquo; <a href=\"https://www.fe-siken.com/index_te.html#11_1\">情報セキュリティ</a>",
+      "kaisetsu": "<strong>XML署名</strong>は、XML文書にデジタル署名を埋め込んで改ざんを検知するための技術で、RFC3075として標準化されています。任意のデータファイルに対する署名の他にも、指定したエレメントなどのXML文書の一部に対しても署名を付することが可能です。<br><br>XML署名には署名要素と署名対象要素の関係によって3種類があります。<dl><dt>Detached Signature（デタッチ署名）</dt><dd>署名要素と署名対象要素が独立している場合の署名形式。署名対象が別のファイルである場合や同じXML文書内でも要素の親子関係がないときなどに使う</dd><dt>Enveloped Signature（エンベロープ署名）</dt><dd>署名要素が署名対象要素の子要素である場合の署名形式。対象文書の中に署名が格納される</dd><dt>Enveloping Signature（エンベローピング署名）</dt><dd>署名要素が署名対象要素の親要素である場合の署名形式。署名の中に対象文書が格納される</dd></dl><ul><div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/29.png\" width=\"400\" height=\"301\" alt=\"29.png/image-size:400×301\"></div><ul><li class=\"lia\">HTTP通信の盗聴防止はTLSによって実現されています。</li><li class=\"lii\">Ajaxに関する記述です。</li><li class=\"liu\">正しい。XML署名に関する記述です。</li><li class=\"lie\">ステガノグラフィに関する記述です。</li></ul>",
+      "answer": "ウ",
+      "mondai": "XML署名を利用することによってできることはどれか。"
+    },
+    "30": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">PCから物理的にハードディスクドライブを盗み出し，その中のデータをWebサイトで公開し，ダウンロードさせる。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">電子メールの添付ファイルを開かせて，マルウェアに感染したPCのハードディスクドライブ内のファイルを暗号化し，元に戻すための鍵を攻撃者のサーバからダウンロードさせることと引換えに金銭を要求する。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">利用者が悪意のあるWebサイトにアクセスしたときに，Webブラウザの脆弱性を悪用して利用者のPCをマルウェアに感染させる。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">利用者に気付かれないように無償配布のソフトウェアに不正プログラムを混在させておき，利用者の操作によってPCにダウンロードさせ，インストールさせることでハードディスクドライブから個人情報を収集して攻撃者のサーバに送信する。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; セキュリティ &raquo; <a href=\"https://www.fe-siken.com/index_te.html#11_2\">情報セキュリティ管理</a>",
+      "kaisetsu": "<strong>ドライブバイダウンロード</strong>は、Webサイトに悪意のあるプログラムを埋め込んでおき、Webサイトに訪れた利用者のWebブラウザを経由して、利用者が気付かないようにそのプログラムをダウンロードさせたり、自動的に実行させる攻撃です。脆弱性のある利用環境だと、Webページを閲覧しただけでマルウェアの被害に遭うおそれがあります。ドライブバイダウンロードは、単独で攻撃に使用されることもありますし、また標的型攻撃や水飲み場攻撃などで補助的に使用されることもあります。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/30.png\" width=\"443\" height=\"150\" alt=\"30.png/image-size:443×150\"></div><ul><li class=\"lia\">物理的手段による窃盗に該当します。</li><li class=\"lii\">ランサムウェアに該当します。</li><li class=\"liu\">正しい。ドライブバイダウンロード攻撃に該当します。</li><li class=\"lie\">トロイの木馬に該当します。秘密裏にインストールさせるという点では共通していますが、Webサイトではなく、配布されるソフトウェアを利用するという点でドライブバイダウンロードとは異なります。</li></ul>",
+      "answer": "ウ",
+      "mondai": "ドライブバイダウンロード攻撃に該当するものはどれか。"
+    },
+    "31": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">PCのデスクトップ上のフォルダなどを整理する。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">PCを使用中に離席した場合，一定時間経過すると，パスワードで画面ロックされたスクリーンセーバに切り替わる設定にしておく。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">帰宅時，書類やノートPCを机の上に出したままにせず，施錠できる机の引出しなどに保管する。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">机の上に置いたノートPCを，セキュリティワイヤで机に固定する。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; セキュリティ &raquo; <a href=\"https://www.fe-siken.com/index_te.html#11_4\">情報セキュリティ対策</a>",
+      "kaisetsu": "<strong>クリアデスク</strong>とは、オフィスや職場において、常に机上を整理整頓し、業務終了時や長時間離席時には机上に重要書類等を放置したままにしないことを求めるルールです。不要な書類はシュレッダーで処分し、必要な書類は鍵付きの引き出しやキャビネット等で保管するようにします。書類の盗難・紛失や、第三者に文書を見られたことによる情報漏えいを防止するためのセキュリティ管理策として、多くの企業や組織で採用されています。<br><br>したがって「ウ」が正解です。<ul><li class=\"lia\">クリアスクリーンに該当します。</li><li class=\"lii\">クリアスクリーンに該当します。</li><li class=\"liu\">正しい。クリアデスクに該当します。</li><li class=\"lie\">機器の盗難防止対策に該当します。</li></ul>",
+      "answer": "ウ",
+      "mondai": "情報セキュリティ対策のクリアデスクに該当するものはどれか。"
+    },
+    "32": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">a</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">b</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">c</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">d</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; セキュリティ &raquo; <a href=\"https://www.fe-siken.com/index_te.html#11_4\">情報セキュリティ対策</a>",
+      "kaisetsu": "<strong>WAF</strong>(Web Application Firewall)は、通過するパケットのIPアドレスやポート番号だけでなくペイロード部(データ部分)をチェックすることで、Webアプリケーションに対するこれらの攻撃を検知し、遮断することが可能なファイアウォールです。<br><br>WAFは「パターンマッチング」や「HTTPヘッダーの検証」などによって不正な通信を検知しますが、HTTPS通信が行われている経路上のパケットは暗号化されていてペイロード部分を見ることができないため、これらの検知手法が使えません。このため、HTTPSで通信が行われている「a」と「b」は設置場所として不適切です。<br><br>そして、WAFによる不正アクセスの検知・遮断は、Webアプリケーションによって処理が実行される前に行われる必要があるので「d」は不適切です。<br><br>したがって適切な設置場所は「c」しかありません。<br><br>【参考】<br>SSLアクセラレータは、SSL/TLS通信におけるパケットの暗号化と復号を高速に行う専用のハードウェアで、Webサーバの処理負荷を軽減する目的で設置されます。",
+      "answer": "ウ",
+      "mondai": "図のような構成と通信サービスのシステムにおいて，Webアプリケーションの脆弱性対策のためのWAFの設置場所として，最も適切な箇所はどこか。ここで，WAFには通信を暗号化したり，復号したりする機能はないものとする。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/32.png\" width=\"184\" height=\"334\" alt=\"32.png/image-size:184×334\"></div>"
+    },
+    "33": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">受信側のメールサーバが，受信メールの送信元IPアドレスから送信元ドメインを検索してDNSBLに照会する。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_i\">受信側のメールサーバが，受信メールの送信元IPアドレスと，送信元ドメインのDNSに登録されているメールサーバのIPアドレスとを照合する。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">受信側のメールサーバが，受信メールの送信元ドメインから送信元メールサーバのIPアドレスを検索してDNSBLに照会する。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">メール受信者のPCが，送信元ドメインから算出したハッシュ値と受信メールに添付されているハッシュ値とを照合する。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; セキュリティ &raquo; <a href=\"https://www.fe-siken.com/index_te.html#11_5\">セキュリティ実装技術</a>",
+      "kaisetsu": "<strong>SPF</strong>(Sender Policy Framework)は、メールを送信しようとしてきたメールサーバのIPアドレス情報を検証することで、正規のサーバからのメール送信であるかどうか確認することができる技術です。受信メールサーバ側がメールの送信元ドメインを管理するDNSサーバに問い合わせ、返されたIPアドレスが送信元メールサーバのIPアドレスと一致するかどうかでなりすましを検知します。<br><br>SPFでは以下の手順で送信元IPアドレスの検証を行います。<ol><li class=\"maru1\">送信側は、送信側ドメインのDNSサーバのSPFレコード(またはTXTレコード)に正当なメールサーバのIPアドレスやホスト名を登録し、公開しておく。</li><li class=\"maru2\">送信側から受信側へ、SMTPメールが送信される。</li><li class=\"maru3\">受信側メールサーバは、受信側ドメインのDNSサーバを通じて、MAIL FROMコマンドに記載された送信者メールアドレスのドメインを管理するDNSサーバに問い合わせ、SPF情報を取得する。</li><li class=\"maru4\">SPF情報との照合でSMTP接続してきたメールサーバのIPアドレスの確認に成功すれば、正当なドメインから送信されたと判断する。</li></ol><div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/33.png\" width=\"577\" height=\"280\" alt=\"33.png/image-size:577×280\"></div>したがって正しい記述は「イ」です。<br><br>【参考】<br>DNSBL(DNS Blacklist)は、迷惑メールの温床になっているオープンリレーサーバのIPアドレスや、スパム行為の発信元IPアドレスを一覧を公表したものです。",
+      "answer": "イ",
+      "mondai": "受信した電子メールの送信元ドメインが詐称されていないことを検証する仕組みであるSPF(Sender Policy Framework)の特徴はどれか。"
+    },
+    "34": {
+      "selects": [
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_a\">多くの並行処理を含むシステムの，オブジェクトの振る舞いが記述できる。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">オブジェクト群がどのようにコラボレーションを行うか記述できる。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">クラスの仕様と，クラスの間の静的な関係が記述できる。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">システムのコンポーネント間の物理的な関係が記述できる。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; システム開発技術 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#12_3\">ソフトウェア要件定義</a>",
+      "kaisetsu": "<strong>アクティビティ図</strong>は、ビジネスプロセスの流れやプログラムの制御フローのような一連の手続きを可視化できる図です。フローチャートのUML版と言えるでしょう。フローチャートと似た表記法で処理の流れを記述できるほか、処理の分岐やマージ、並行処理のフォークやジョイン、タイマー制御や例外処理なども表現できるようになっています。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/34.png\" width=\"489\" height=\"381\" alt=\"34.png/image-size:489×381\"></div><ul><li class=\"lia\">正しい。アクティビティ図の特徴です。</li><li class=\"lii\">コミュニケーション図の特徴です。</li><li class=\"liu\">クラス図の特徴です。</li><li class=\"lie\">コンポーネント図の特徴です。</li></ul>",
+      "answer": "ア",
+      "mondai": "UMLのアクティビティ図の特徴はどれか。"
+    },
+    "35": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">各工程での作業手順を定義することが容易になり，開発・保守時の作業のミスを防止することができる。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">各工程での作業予定と実績を関連付けて管理することが可能になり，作業の進捗管理が容易になる。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">各工程での成果物を一元管理することによって、開発・保守作業の効率が良くなり，用語を統一することができる。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">各工程での発生不良を管理することが可能になり，ソフトウェアの品質分析が容易になる。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; データベース &raquo; <a href=\"https://www.fe-siken.com/index_te.html#9_5\">データベース応用</a>",
+      "kaisetsu": "<strong>リポジトリ</strong>(Repository)は、ソフトウェア開発と保守における様々な情報を一元的に管理するデータベースです。開発者が効率的に共同作業を行うための基盤を提供します。<br><br>ソースコードに加えて仕様書・設計書・マニュアルなども管理することができ、それらのバージョン管理や変更管理、コンフリクトの管理などの機能が備わっています。近年ではGitやSubversionを使ってインターネット上にリポジトリを作成することが多くなっています。<br><br>したがって「ウ」が適切です。",
+      "answer": "ウ",
+      "mondai": "ソフトウェア開発・保守工程において，リポジトリを構築する理由はどれか。"
+    },
+    "36": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">オブジェクト指向では，抽象化の対象となるオブジェクトに対する操作をあらかじめ指定しなければならない。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">カプセル化によって，オブジェクト間の相互依存性を高めることができる。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">クラスの変更を行う場合には，そのクラスの上位にあるすべてのクラスの変更が必要となる。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">継承という概念によって，モデルの拡張や変更の際に変更箇所を局所化できる。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; システム開発技術 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#12_4\">ソフトウェア方式設計・詳細設計</a>",
+      "kaisetsu": "<strong>オブジェクト指向プログラミング</strong>は、システムの構築や設計において、処理や対象の対象となるもの（オブジェクト）同士のやり取りの関係としてシステムをとらえる考え方です。データと手続きをひとまとめにしてカプセル化することで実現します。オブジェクト指向の考え方を取り入れたプログラム言語（オブジェクト指向言語）にはC++やJavaなどがあり、カプセル化、継承、多態性などの特徴をもっています。<dl><dt>カプセル化（情報隠ぺい）</dt><dd>オブジェクトの内部を外部から見えないようにして、ブラックボックス化すること。オブジェクトのデータとそれに対する操作をセットで定義し、外部には特定の手続きだけを公開することで実現する。使う人は内部の情報を知らなくともオブジェクトを扱うことができる</dd><dt>継承（インヘリタンス）</dt><dd>あるクラスが上位クラスの特性を引き継いでいる関係のこと。例えば、自動車クラスに対して、それを特化させた乗用車クラスやトラッククラスなどとの関係がこれに当たる。上位の特性を引き継げることで差分プログラミングが可能となる</dd><dt>多態性（ポリモルフィズム）</dt><dd>オブジェクトへの操作呼び出しが、呼び出し側でなく受け手側の特性で決まること。例えば、犬クラスの「鳴く」という手続きを呼び出せば「ワン」、猫クラスの「鳴く」呼び出せば「ニャー」というように、同じメッセージを送っても受け手のオブジェクトによって行われる操作が異なる様子を表す</dd></dl><ul><li class=\"lia\">抽象クラスでは、複数のクラスに共通するメソッドの名前や引数などのみ（実際の処理内容を含まない）を定義できます。これを抽象メソッドといいます。</li><li class=\"lii\">カプセル化によってデータと手続きをオブジェクト内部にまとめることで独立性が高くなります。その結果、オブジェクト間の相互依存性を低くすることができます。</li><li class=\"liu\">下位クラスが独自に定義した変数や手続きは上位クラスに影響を与えないので、上位クラスを変更する必要がありません。</li><li class=\"lie\">正しい。下位クラスを作成するときに、継承によって上位クラスの機能や性質を引き継ぐことができます。上位クラスでの変更は自動的に下位クラスに適用されるので、継承を使わずにそれぞれの別個のクラスを定義する場合と比較して、変更の際に変更する箇所を少なくすることができます。</li></ul>",
+      "answer": "エ",
+      "mondai": "オブジェクト指向の特徴はどれか。"
+    },
+    "37": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">a＝2b</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">2a＝b</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">2a＝3b</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">3a＝2b</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; システム開発技術 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#12_5\">ソフトウェア構築</a>",
+      "kaisetsu": "指定の順序通りに進むと次のように処理されていきます。<ol><li>m ← a，n ← b</li><li>m＜n で&#9316;の処理に進む<br>n ← n－m</li><li>m＞n で&#9315;の処理に進む<br>m ← m－n</li><li>m＝nとなり処理終了</li></ol>&#9316;でnを1回更新、&#9315;でmを1回更新して、&#9317;の段階でm＝nとなります。<br><br>まず直前の&#9315;の処理について考えます。<br>「m ← m－n」という処理をしているので、\"更新前のm\"の値は、\"更新後のm\"と\"n\"の和です。&#9315;の処理後は m＝n になっていますから、\"更新前のm\"の値は 2n で表すことができます。<br><br>次に&#9316;の処理について考えます。<br>「n ← n－m」という処理をしているので、\"更新前のn\"の値は、\"更新後のn\"と\"m\"の和です。m＝2n ですから、\"更新前のn\"の値は 3n で表すことができます。<br><br>これより前にはm及びnを更新する処理はないので、処理開始時に m：n＝2：3 であれば最終的に m＝n となることがわかります。mはa、nはbが代入される変数なので初期値aとbの関係は a：b＝2：3、これを式に変換した「3a＝2b」が正解です。<br><br>【別解】<br>&#9312; m←a、n←b<br>&#9313;→&#9314;→&#9316; m&lt;n(⇔a&lt;b)より n←(n-m)=b-a<br>この時点で m=a、n=b-a<br>&#9313;→&#9314;→&#9315; m&gt;n(⇔a&gt;b-a)より m←m-n=a-(b-a)=2a-b<br>この時点で m=2a-b、n=b-a<br>&#9313;→&#9317; m=n⇔2a-b=b-a⇔3a=2b",
+      "answer": "エ",
+      "mondai": "次の流れ図において，<br>　&#9312;→&#9313;→&#9314;→&#9316;→&#9313;→&#9314;→&#9315;→&#9313;→&#9317; <br>の順に実行させるために，&#9312;においてmとnに与えるべき初期値aとbの関係はどれか。ここで，a，bはともに正の整数とする。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/37.png\" width=\"419\" height=\"293\" alt=\"37.png/image-size:419×293\"></div>"
+    },
+    "38": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">開発支援ツールなどを用いて，設計情報からソースコードを自動生成する。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">外部から見たときの振る舞いを変えずに，ソフトウェアの内部構造を変える。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">既存のソフトウェアを解析し，その仕様や構造を明らかにする。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">既存のソフトウェアを分析し理解した上で，ソフトウェア全体を新しく構築し直す。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ソフトウェア開発管理技術 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#13_1\">開発プロセス・手法</a>",
+      "kaisetsu": "<strong>リバースエンジニアリング</strong>(Reverse Engineering)は、既存の製品やソフトウェアの動作を分解・解析して、構造や機能・動作を明らかにし、それに基づいて製造方法や動作原理、設計図、ソースコードなどを得る技法です。<ul><li class=\"lia\">フォワードエンジニアリングの説明です。</li><li class=\"lii\">リファクタリングの説明です。</li><li class=\"liu\">正しい。リバースエンジニアリングの説明です。</li><li class=\"lie\">リエンジニアリングの説明です。</li></ul>",
+      "answer": "ウ",
+      "mondai": "ソフトウェアのリバースエンジニアリングの説明はどれか。"
+    },
+    "39": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">スプリントプランニング</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">スプリントレビュー</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">デイリースクラム</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">レトロスペクティブ</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ソフトウェア開発管理技術 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#13_1\">開発プロセス・手法</a>",
+      "kaisetsu": "<strong>スクラム</strong>は、アジャイル開発の方法論のひとつで、開発プロジェクトを数週間程度の短期間ごとに区切り、その期間内に分析、設計、実装、テストの一連の活動を行い、一部分の機能を完成させるという作業を繰り返しながら、段階的に動作可能なシステムを作り上げるフレームワークです。<br><br>スクラム開発では開発反復の単位を「スプリント」といい、スプリント実施の際に行う各イベントが定義されています。<dl><dt>スプリントプランニング</dt><dd>スプリントの起点となるミーティング。プロダクトバックログの中から、そのスプリントで開発する機能を決定し、作業の計画を立てる</dd><dt>デイリースクラム</dt><dd>開発チーム全員の活動の共有とコミュ二ケーションの促進を目的として、スプリント実施中に毎日10～15分程度行われる確認・調整のための会議。昨日やったこと、今日やること、障害になっていることを各人が話す</dd><dt>スプリントレビュー</dt><dd>スプリントの終了時にスプリントの成果を検査し、今後の適応を決定する活動。主要なステークホルダーに成果物をプレゼンテーションし、プロダクトゴールに対する進捗について話し合う</dd><dt>スプリントレトロスペクティブ</dt><dd>スプリントの最後に実施したスプリント全体を振り返る活動。次のスプリントを見据えて、上手くいったこと、上手くいかなかったこと、それに対する改善法・解決法を話し合う</dd></dl>スクラム開発において、開発チーム全員が毎日顔を合わせて行う短時間の会議は「デイリースクラム（日次スクラム）」と呼ばれます。したがって「ウ」が正解です。",
+      "answer": "ウ",
+      "mondai": "アジャイル開発手法のスクラムにおいて，開発チームの全員が1人ずつ\"昨日やったこと\"，\"今日やること\"，\"障害になっていること\"などを話し，全員でプロジェクトの状況を共有するイベントはどれか。"
+    },
+    "40": {
+      "selects": [
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_a\">生み出されるプロダクトの価値を最大化するために，プロダクトバックログのアイテムを作成し，並び替える。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">完成の定義を忠実に守ることにより品質を作りこみ，利用可能なインクリメントを完成させる。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">スプリントの計画を作成する。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">チームのリーダーとして，自己管理型で機能横断型のチームのメンバーをコーチする。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> テクノロジ系 &raquo; ソフトウェア開発管理技術 &raquo; <a href=\"https://www.fe-siken.com/index_te.html#13_1\">開発プロセス・手法</a>",
+      "kaisetsu": "<strong>スクラム</strong>は、アジャイル開発の方法論の1つで、開発プロジェクトを数週間程度の短期間ごとに区切り、その期間内に分析、設計、実装、テストの一連の活動を行い、一部分の機能を完成させるという作業を繰り返しながら、段階的に動作可能なシステムを作り上げるフレームワークです。スクラム開発では開発反復の単位を「スプリント」といいます。<br><br>スクラムでは、スクラムチームを構成するプロダクトオーナー・開発チーム・スクラムマスターの役割、並びに5つのイベントと3つの作成物が定義されています。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/40.png\" width=\"513\" height=\"194\" alt=\"40.png/image-size:513×194\"></div>各役割（ロール）については次の通りです。スクラムの用語についてはIPAの「アジャイル開発の進め方」に一覧があるので一部参考にしています。<dl><dt>プロダクトオーナー</dt><dd>チームに最も価値の高いソフトウェアを開発してもらうために、プロダクトに必要な機能を定義し、プロダクトバックログの追加・削除・順位付けを行う。開発への投資に対する効果を最大にすることに責任をもつ</dd><dt>開発チーム</dt><dd>実際に開発を行うチームのことで、開発者たちを指す。ビジネスアナリスト、プログラマー、テスター、アーキテクト、デザイナーなどの機能横断的な様々な技能を持った人がプロダクトを中心に集まり、自律的に行動する。開発チームはバックログに入っている項目を完了状態にし、プロダクトの価値を高めていくことに責任を持つ</dd><dt>スクラムマスター</dt><dd>スクラムチーム全体が自律的に協働できるように、場作りをするファシリテーター的な役割を担う。ときにはコーチとなってメンバーの相談に乗ったり、開発チームが抱えている問題を取り除いたりする。スクラム全体をうまく回すことに責任を持つ</dd></dl>したがって、プロダクトオーナーの役割を説明したものは「ア」となります。<ul><li class=\"lia\">正しい。プロダクトオーナーの役割です。</li><li class=\"lii\">開発チームの役割です。</li><li class=\"liu\">開発チームの役割です。</li><li class=\"lie\">スクラムマスターの役割です。</li></ul>",
+      "answer": "ア",
+      "mondai": "スクラムチームにおけるプロダクトオーナーの役割はどれか。"
+    },
+    "41": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">B</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">C</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">D</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">E</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> マネジメント系 &raquo; プロジェクトマネジメント &raquo; <a href=\"https://www.fe-siken.com/index_ma.html#14_6\">プロジェクトの時間</a>",
+      "kaisetsu": "アローダイアグラムの問題なので、まずは当初計画のスケジュールにおけるクリティカルパスを求めます。<dl><dt>A→B→E→G</dt><dd>4＋6＋5＋5＝20日</dd><dt>A→C→G</dt><dd>4＋8＋5＝17日</dd><dt>A→D→F→G</dt><dd>4＋4＋4＋5＝＝17日</dd></dl>以上より、クリティカルパスは「A→B→E→G」、プロジェクト全体の最短完了日数は20日であったことがわかります。<br><br>設問では作業Aが1日遅れたとあります。作業Aはクリティカルパス上の作業ですから、このままだとプロジェクト全体でも1日遅れてしまうことになります。この遅れを取り戻すには、同じくクリティカルパス上の作業を1日短縮する必要があります。<br><br>残るクリティカルパス上の作業はB、E、Gなので、この3つの作業の費用増加率を比べると、費用増加率はB=6、E=2.5、G=5と、作業Eが最も少ないです。したがって、増加費用を最も少なくするためには作業<em class=\"r\">E</em>を短縮することになります。",
+      "answer": "エ",
+      "mondai": "図に示すとおりに作業を実施する予定であったが，作業Aで1日の遅れが生じた。各作業の費用増加率を表の値とするとき，当初の予定日数で終了するために掛かる増加費用を最も少なくするには，どの作業を短縮すべきか。ここで，費用増加率とは，作業を1日短縮するのに要する増加費用のことである。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/41.png\" width=\"533\" height=\"154\" alt=\"41.png/image-size:533×154\"></div>"
+    },
+    "42": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">ソースプログラムの行数を基準に，アルゴリズムの複雑さを加味して，ソフトウェアの開発期間を見積もる。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">ソフトウェアの規模を基準に，影響要因を表す補正係数を使って，ソフトウェアの開発工数を見積もる。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">単位規模当たりの潜在バグ数を予測することによって，ソフトウェアの品質を見積もる。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">帳票数，画面数，ファイル数などのデータを基に，システム特性を考慮して，ソフトウェアの規模を見積もる。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> マネジメント系 &raquo; プロジェクトマネジメント &raquo; <a href=\"https://www.fe-siken.com/index_ma.html#14_7\">プロジェクトのコスト</a>",
+      "kaisetsu": "<strong>ファンクションポイント法</strong>は、システムやプログラムの機能に基づいて全体の開発規模を見積もる手法で、外部入出力や内部ファイルの数と難易度の高さから論理的にファンクションポイントを算出して規模や工数見積りを行います。利用者側に見える入出力画面や帳票を基準に見積りを行うため、依頼者側とのコンセンサス（合意）が取りやすいという特徴があります。<ul><li class=\"lia\">プログラムステップ法(LOC法)の説明です。</li><li class=\"lii\">COCOMOの説明です。</li><li class=\"liu\">バグ埋込み法についての説明です。</li><li class=\"lie\">正しい。ファンクションポイント法の説明です。</li></ul>",
+      "answer": "エ",
+      "mondai": "ソフトウェア開発の見積りに使われるファンクションポイント法に関する記述として，適切なものはどれか。"
+    },
+    "43": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">システムを一斉に停止させるのではなく，あらかじめ決められた手順で段階的に停止させること</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">実行中のジョブが異常終了したとき，他のジョブに影響を与えないように，システムの運用を続行すること</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">障害箇所を切り離し，機能又は性能が低下してもシステムを稼働させ続けること</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">障害が発生した時点で，その後に実行する予定のジョブのスケジュールを変更すること</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> マネジメント系 &raquo; サービスマネジメント &raquo; <a href=\"https://www.fe-siken.com/index_ma.html#15_4\">サービスの運用</a>",
+      "kaisetsu": "<strong>縮退運用</strong>は、システムの一部に障害が発生したときに、その障害部分を切り離し、処理速度や一部機能の制限をしてもシステム全体としては停止することなく稼働させ続ける方式です。フォールバック(fall back)ともいいます。<br><br>例えば2台のサーバで構成される負荷分散システムにおいて、片方のサーバが故障したときに、処理能力の低下を許容して残った片方のサーバのみで処理を続けることが縮退運用に該当します。<br><br>したがって「ウ」が適切な記述です。<ul><li class=\"lia\">グレースフルシャットダウンの説明です。</li><li class=\"lii\">パーティショニングの説明です。</li><li class=\"liu\">正しい。縮退運転(フォールバック)の説明です。</li><li class=\"lie\">リカバリージョブに関する説明です。</li></ul>",
+      "answer": "ウ",
+      "mondai": "情報システムの障害対策の一つである縮退運用の説明はどれか。"
+    },
+    "44": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">AVR</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">CVCF</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">UPS</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">自家発電装置</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> マネジメント系 &raquo; サービスマネジメント &raquo; <a href=\"https://www.fe-siken.com/index_ma.html#15_5\">ファシリティマネジメント</a>",
+      "kaisetsu": "<strong>UPS</strong>(Uninterruptible Power Supply)は、落雷などによる突発的な停電が発生したときに自家発電装置が電源を供給し始めるまでの間、サーバに電源を供給する役目をもつ機器です。機器内部に電気を蓄えていて、電源の瞬断時にシステムを安全に終了する時間を与えてくれたり、自家発電装置による電源供給までの間つなぎの役目を果たしたりします。<ul><li class=\"lia\">Automatic Voltage Regulatorの略で、自動電圧調整器のこと。電圧を安定させるための装置です。</li><li class=\"lii\">Constant Voltage Constant Frequencyの略で、定電圧定周波数のこと。電圧と周波数を安定させる装置、またはその機能のことです。</li><li class=\"liu\">正しい。</li><li class=\"lie\">自家発電装置には、停電や電源の瞬断に対処する機能はありません。</li></ul>",
+      "answer": "ウ",
+      "mondai": "電源の瞬断に対処したり，停電時にシステムを終了させるのに必要な時間だけ電力を供給することを目的とした装置はどれか。"
+    },
+    "45": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">テレワーキング運用規程に従うことを条件に，全ての従業員が利用できる。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">テレワーキングで従業員が使用するPCは，A社から支給されたものに限定する。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">テレワーキングで使用するPCへのマルウェア対策ソフト導入の要不要は，従業員それぞれが判断する。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">テレワーキングで使用するPCを，従業員の家族に使用させない。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> マネジメント系 &raquo; システム監査 &raquo; <a href=\"https://www.fe-siken.com/index_ma.html#16_1\">システム監査</a>",
+      "kaisetsu": "<ul><li class=\"lia\">テレワーキング活動を許可する組織は、テレワーキングを行う場合の条件および制限を定めた方針を発行しなければなりません。よって、運用規程を定めて従業員に順守させることは問題ありません。</li><li class=\"lii\">テレワーキングにおいて個人が所有する機器の使用を許さない場合、テレワークのための適切な装置および保管用具の用意に関する事項を指針・取り決めに含めることとされています。よって、使用するPCを支給されたものに限定することは問題ありません。</li><li class=\"liu\">正しい。テレワーキングを行う場合、マルウェアに対する保護及びファイアウォールの要件を条件・制限として定めることとされています。よって、セキュリティ対策は組織が基準を定め、従業員に対して順守させなければならないので、指摘事項に該当します。</li><li class=\"lie\">テレワーキングを行う場合、家族や訪問者による装置および情報へのアクセスに関する規則・手引を定めることとされています。よって、家族の使用を禁止する定めは問題ありません。</li></ul>",
+      "answer": "ウ",
+      "mondai": "A社では，従業員が自宅のPCからインターネット経由で自社のネットワークに接続して仕事を行うテレワーキングの実施を計画している。A社が定めたテレワーキング運用規程について，情報セキュリティ管理基準(平成28年)に従って監査を実施した。判明した事項のうち，監査人が，指摘事項として監査報告書に記載すべきものはどれか。"
+    },
+    "46": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">IT投資の効果をキャッシュフローから求めた正味現在価値を用いて評価することによって，他の投資案件との比較を容易にする。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">IT投資をその性質やリスクの共通性によってカテゴリに分類し，カテゴリ単位での投資割合を評価することによって，経営戦略とIT投資の整合性を確保する。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">財務，顧客，内部業務プロセスなど複数の視点ごとにIT投資の業績評価指標を設定し，経営戦略との適合性を評価することによって，IT投資効果を多面的に把握する。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">初期投資に対する価値に加えて，将来において選択可能な収益やリスクの期待値を，金融市場で使われるオプション価格付け理論に基づいて評価する。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 経営戦略マネジメント &raquo; <a href=\"https://www.fe-siken.com/index_st.html#19_3\">ビジネス戦略と目標・評価</a>",
+      "kaisetsu": "<strong>バランススコアカード</strong>は、企業のビジョンと戦略を実現するために、「財務」「顧客」「業務プロセス」「学習と成長」という4つの視点から業績を評価・分析する手法です。<br><br>バランススコアカードの考え方を応用して、財務面での効果だけでなく多面的にIT投資を評価する手法を<strong>ITバランススコアカード</strong>といい、IT投資と事業戦略の整合性を図ることなどができます。またバランススコアカードでは業績管理のための指標が定量的に決められているので、これらの指標と比較することで投資対効果の具体的な把握が期待できます。<ul><li class=\"lia\">NPV法などの財務指標的評価の説明です。</li><li class=\"lii\">ITポートフォリオ分析の説明です。</li><li class=\"liu\">正しい。バランススコアカードを用いた評価手法の説明です。</li><li class=\"lie\">金融工学を応用した評価手法の説明です。</li></ul>",
+      "answer": "ウ",
+      "mondai": "IT投資の評価手法のうち，バランススコアカードを用いた手法を説明したものはどれか。"
+    },
+    "47": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">クラウドサービスが提供している機能の一部を，自社用にカスタマイズして利用すること</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">クラウドサービスのサービス内容を，消費者向けと法人向けの両方を対象とするように構成して提供すること</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">クラウドサービスのサービス内容を，有償サービスと無償サービスとに区分して提供すること</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">自社専用に使用するクラウドサービスと，汎用のクラウドサービスとの間でデータ及びアプリケーションソフトウェアの連携や相互運用が可能となる環境を提供すること</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; システム戦略 &raquo; <a href=\"https://www.fe-siken.com/index_st.html#17_3\">ソリューションビジネス</a>",
+      "kaisetsu": "<strong>ハイブリッドクラウド</strong>は、複数の異なるクラウド環境（パブリッククラウド・プライベートクラウド）やオンプレミス環境（自社運用システム）を組み合わせてひとつのシステムとして利用する形態です。<br><br>クラウドサービスはその利用形態により、不特定多数が共同で利用する「パブリッククラウド」と、ある利用者が専有して利用する「プライベートクラウド」に分けることができます。パブリッククラウドはコストが低く抑えられる反面、多くの利用者で共用するためカスタマイズ性やセキュリティ面で劣ります。一方、プライベートクラウドはカスタマイズ性やセキュリティに優れる反面、導入や利用にかかるコストが高いことやリソースを柔軟に増減させることが難しいといったことがデメリットです。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/47.png\" width=\"470\" height=\"224\" alt=\"47.png/image-size:470×224\"></div>ハイブリッドクラウドは、機密性の高い情報はプライベートクラウドやオンプレミスに、そうでない情報はパブリッククラウドに配置するなど、データやアプリケーションごとの要件に応じて適切なクラウドを使い分けることで、セキュリティ、コンプライアンス、パフォーマンス、コストの最適化を図ろうとするアプローチです。クラウド上で運用できないデータやアプリケーションがある場合には、部分的にクラウドを使うなどオンプレミスとクラウドの良さを掛け合わせた運用も可能です。ただ複数のシステムを相互運用する関係から、システムが複雑になって運用が難しくなるという課題もあります。<br><br>したがって、プライベートクラウドとパブリッククラウド間の連携や相互運用について記述している「エ」が正しい説明です。",
+      "answer": "エ",
+      "mondai": "ハイブリッドクラウドの説明はどれか。"
+    },
+    "48": {
+      "selects": [
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_a\">AIなどの情報技術の動向を調査し，顧客対応における省力化と品質向上など，競争優位を生み出すための情報技術の利用方法について分析する。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">AIなどを利用した自動応答システムを構築する上でのソフトウェア製品又はシステムの信頼性，効率性など品質に関する要件を定義する。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">自動応答に必要なシステム機能及び能力などのシステム要件を定義し，システム要件を，AIなどを利用した製品又はサービスなどのシステム要素に割り当てる。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">自動応答を実現するソフトウェア製品又はシステムの要件定義を行い，AIなどを利用した実現方式やインタフェース設計を行う。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; システム企画 &raquo; <a href=\"https://www.fe-siken.com/index_st.html#18_1\">システム化計画</a>",
+      "kaisetsu": "共通フレーム2013では、テクニカルプロセスとして、企画、要件定義、システム開発、ソフトウェア実装、ハードウェア実装、保守の各プロセスが規定されています。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/48.png\" width=\"540\" height=\"221\" alt=\"48.png/image-size:540×221\"></div>\"システム化構想の立案\"は、企画プロセスを構成するプロセスの1つで、経営上のニーズ、課題を実現、解決するために、置かれた経営環境を踏まえて、新たな業務の全体像とそれを実現するためのシステム化構想及び推進体制を得ることを目的とするプロセスです。<br>システム化構想の立案プロセスには以下の7つのタスクが含まれており、情報技術に関する動向の調査や分析は、このプロセスで行うことになっています。<ol><li>経営上のニーズ、課題の確認</li><li>事業環境、業務環境の調査分析</li><li>現行業務、システムの調査分析</li><li><em class=\"r\">情報技術動向の調査分析</em></li><li>対象となる業務の明確化</li><li>業務の新全体像の作成</li><li>対象の選定と投資目標の策定</li></ol><ul><li class=\"lia\">正しい。システム化構想の立案プロセスの作業です。</li><li class=\"lii\">要件定義プロセスの作業です。</li><li class=\"liu\">システム方式設計での作業です。</li><li class=\"lie\">システム要件定義やソフトウェア要件定義の作業です。</li></ul>",
+      "answer": "ア",
+      "mondai": "ある企業が，AIなどの情報技術を利用した自動応答システムを導入して，コールセンターにおける顧客対応を無人化しようとしている。この企業が，システム化構想の立案プロセスで行うべきことはどれか。"
+    },
+    "49": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">従業員が仕事と生活の調和を図り，やりがいをもって業務に取り組み，組織の活力を向上させることである。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_i\">性別や年齢，国籍などの面で従業員の多様性を尊重することによって，組織の活力を向上させることである。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">自ら設定した目標の達成を目指して従業員が主体的に業務に取り組み，その達成度に応じて評価が行われることである。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">労使双方が労働条件についての合意を形成し，協調して収益の増大を目指すことである。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 経営戦略マネジメント &raquo; <a href=\"https://www.fe-siken.com/index_st.html#19_1\">経営戦略手法</a>",
+      "kaisetsu": "ダイバーシティ(Diversity)は「多様性」という意味であり、人々は、性別、年齢、人種、民族、信仰、障がい、性的指向、経験など、様々な背景の違いからそれぞれ異なる特性を有していることを指します。<br><br><strong>ダイバーシティマネジメント</strong>は、企業や組織の活動に、多様な人材を取り込んで積極的に活用することによって、新たな価値の創造や競争力の強化を図ろうとする経営手法です。女性の活躍の場の拡大、国際化の推進、障がい者・高齢者・若年者を積極的に雇用することなどがダイバーシティマネジメントの事例と言えます。<ul><li class=\"lia\">ワークライフバランスの説明です。</li><li class=\"lii\">正しい。ダイバーシティマネジメントの説明です。</li><li class=\"liu\">MBO(Management by Objectives：目標による管理)の説明です。</li><li class=\"lie\">労使協調の説明です。</li></ul>",
+      "answer": "イ",
+      "mondai": "ダイバーシティマネジメントの説明はどれか。"
+    },
+    "50": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">顧客市場をある基準で細分化し，その中から最も競争優位に立てる市場を選定すること</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">市場の成長率と自社の相対的市場シェアの組合せから，各事業の位置づけを明確にし，それぞれの事業の今後の施策を検討すること</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">製品戦略，価格戦略，チャネル戦略，プロモーション戦略などを適切に組み合わせて，自社製品を効果的に販売していくこと</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">導入期，成長期，成熟期，衰退期のそれぞれにおいて，市場や競合商品などとの関係を意識した，適切な施策を採っていくこと</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 経営戦略マネジメント &raquo; <a href=\"https://www.fe-siken.com/index_st.html#19_2\">マーケティング</a>",
+      "kaisetsu": "<strong>マーケティングミックス</strong>は、企業がマーケティング戦略において目標とする市場から期待する反応を得るために、複数のマーケティング要素を組み合わせることです。売り手側の視点である「4P理論」と、買い手側の視点である「4C理論」がよく知られていて、4Pと4Cの項目はそれぞれ以下のように対応しています。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/50.png\" width=\"439\" height=\"215\" alt=\"50.png/image-size:439×215\"></div><ul><li class=\"lia\">セグメンテーションの説明です。</li><li class=\"lii\">PPM(Products Portfolio Management)分析の説明です。</li><li class=\"liu\">正しい。マーケティングミックスの説明です。</li><li class=\"lie\">プロダクトライフサイクルの説明です。</li></ul>",
+      "answer": "ウ",
+      "mondai": "マーケティングミックスの説明はどれか。"
+    },
+    "51": {
+      "selects": [
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_a\">営業活動にITを活用して営業の効率と品質を高め，売上・利益の大幅な増加や，顧客満足度の向上を目指す手法・概念である。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">卸売業・メーカーが小売店の経営活動を支援することによって，自社との取引量の拡大につなげる手法・概念である。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">企業全体の経営資源を有効かつ総合的に計画して管理し，経営の効率向上を図るための手法・概念である。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">消費者向けや企業間の商取引を，インターネットなどの電子的なネットワークを活用して行う手法・概念である。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 経営戦略マネジメント &raquo; <a href=\"https://www.fe-siken.com/index_st.html#19_4\">経営管理システム</a>",
+      "kaisetsu": "<strong>SFA</strong>(Sales Force Automation)は、営業活動にモバイル技術やインターネット技術といったITを活用して、営業の質と効率を高め売上や利益の増加につなげようとする仕組み、またはそのシステムのことです。営業日報の管理に加えて商談管理機能(コンタクト管理、行動管理、評価・実績管理)があり、営業担当者個人の支援に加えて営業グループ内で情報の共有を促進するなど、営業活動全体を支援する機能が備わっています。<ul><li class=\"lia\">正しい。SFAの説明です。</li><li class=\"lii\">リテールサポートの説明です。</li><li class=\"liu\">ERP(Enterprise Resource Planning，企業資源計画)の説明です。</li><li class=\"lie\">EC(Electronic Commerce，電子商取引)の説明です。</li></ul>",
+      "answer": "ア",
+      "mondai": "SFAを説明したものはどれか。"
+    },
+    "52": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">営業活動にITを活用して営業の効率と品質を高め，売上・利益の大幅な増加や，顧客満足度の向上を目指す手法・概念である。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">卸売業・メーカーが小売店の経営活動を支援することによって，自社との取引量の拡大につなげる手法・概念である。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">企業全体の経営資源を有効かつ総合的に計画して管理し，経営の効率向上を図るための手法・概念である。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">消費者向けや企業間の商取引を，インターネットなどの電子的なネットワークを活用して行う手法・概念である。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 経営戦略マネジメント &raquo; <a href=\"https://www.fe-siken.com/index_st.html#19_4\">経営管理システム</a>",
+      "kaisetsu": "<strong>ERP</strong>(Enterprise Resource Planning)は、組織全体の経営資源(人・モノ・金・情報)と業務プロセスを統合して、計画的に管理する手法や概念です。企業全体の様々な部門や機能（財務、人事、製造、在庫管理、販売、購買など）にわたるデータを一元化することでビジネスの透明性を高め、リアルタイムで情報を共有・分析することで、意思決定の迅速化や業務プロセスの最適化を実現します。ERPを実現するための統合型ソフトウェアを「ERPパッケージ」と呼びます。<br><br>したがって「ウ」が正解です。<ul><li class=\"lia\">SFA(Sales Force Automation)の説明です。</li><li class=\"lii\">リテールサポートの説明です。</li><li class=\"liu\">正しい。ERPの説明です。</li><li class=\"lie\">電子商取引(EC：Electronic commerce)の説明です。</li></ul>",
+      "answer": "ウ",
+      "mondai": "ERPを説明したものはどれか。"
+    },
+    "53": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">購買，生産，販売及び物流の一連の業務を，企業間で全体最適の視点から見直し，納期短縮や在庫削減を図る。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">資材の調達から生産，保管，販売に至るまでの物流全体を，費用対効果が最適になるように総合的に管理し，合理化する。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">電子・電機メーカーから，製品の設計や資材の調達，生産，物流，修理を一括して受託する。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">物流業務に加え，流通加工なども含めたアウトソーシングサービスを行い，また荷主企業の物流企画も代行する。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; ビジネスインダストリ &raquo; <a href=\"https://www.fe-siken.com/index_st.html#21_2\">エンジニアリングシステム</a>",
+      "kaisetsu": "<b>3PL</b>(3rd Party Logistics)は、ある企業の物流の全部または一部を第三者企業が受託することで実現する物流業務形態の一つです。<br><br>荷主側からみると、物流のための設備や資源を整備する必要なく、外部の資源を有効利用して効率的な物流が期待できる点がメリットです。逆に3PL事業者とすれば、既に自社で保有している資源を外部の企業に開放することで少ない投資で増益を期待できる点がメリットです。この双方の利益の一致により、このような業務形態が実現しています。<ul><li class=\"lia\">SCM(Supply Chain Management)の説明です。</li><li class=\"lii\">物流管理システムの説明です。</li><li class=\"liu\">EMS(Electronics Manufacturing Service)の説明です。</li><li class=\"lie\">正しい。3PLの説明です。</li></ul>",
+      "answer": "エ",
+      "mondai": "3PL(3rd Party Logistics)を説明したものはどれか。"
+    },
+    "54": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">新しい製品及び新技術の採用には懐疑的で，周囲の大多数が採用している場面を見てから採用する層</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">新商品，サービスなどを，リスクを恐れず最も早い段階で受容する層</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">新商品，サービスなどを早期に受け入れ，消費者に大きな影響を与える層であり，流行に敏感で，自ら情報収集を行い判断する層</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">世の中の動きに関心が薄く，流行が一般化してからそれを採用することが多い層であり，場合によっては不採用を貫く，最も保守的な層</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 経営戦略マネジメント &raquo; <a href=\"https://www.fe-siken.com/index_st.html#19_2\">マーケティング</a>",
+      "kaisetsu": "革新的な商品・サービスなどのイノベーションの普及に関する理論に「イノベーター理論」というものがあります。この理論では、商品購入の態度を新商品購入の早い順に5つの層に分類しています。<dl><dt>イノベーター（Innovators：革新者）</dt><dd>冒険心にあふれ、新しいものを進んで採用する人</dd><dt>アーリーアダプター（Early Adopters：初期採用者）</dt><dd>流行に敏感で、情報収集を自ら行い、判断する人。他の消費層への影響力が大きく、オピニオンリーダーとも呼ばれる</dd><dt>アーリーマジョリティ（Early Majority：前期追随者）</dt><dd>比較的慎重派な人。平均より早くに新しいものを取り入れる。ブリッジピープルとも呼ばれる</dd><dt>レイトマジョリティ（Late Majority：後期追随者）</dt><dd>比較的懐疑的な人。周囲の大多数が試している場面を見てから同じ選択をする。フォロワーズとも呼ばれる</dd><dt>ラガード（Laggards：遅滞者）</dt><dd>最も保守的な人。流行や世の中の動きに関心が薄い。イノベーションが伝統になるまで採用しない。伝統主義者とも呼ばれる</dd></dl>アーリーアダプターは、早い順から2番目に位置し、発言した意見や感想が顧客の購買行動に重要な影響を与えるとされる人々です。医薬品業界における著名教授、ファッション業界におけるモデルや芸能人、最近だとYouTuberなどが挙げられます。<ul><li class=\"lia\">レイトマジョリティの説明です。</li><li class=\"lii\">イノベーターの説明です。</li><li class=\"liu\">正しい。アーリーアダプターの説明です。</li><li class=\"lie\">ラガードの説明です。</li></ul>",
+      "answer": "ウ",
+      "mondai": "イノベーター理論では，消費者を新製品の購入時期によって，イノベーター，アーリーアダプター，アーリーマジョリティ，レイトマジョリティ，ラガードの五つに分類する。アーリーアダプターの説明として，適切なものはどれか。"
+    },
+    "55": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">15</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">20</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">25</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">30</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 企業活動 &raquo; <a href=\"https://www.fe-siken.com/index_st.html#22_2\">業務分析・データ利活用</a>",
+      "kaisetsu": "問題文と図の条件を整理します。<ul><li>製品Aを1つ生産するためには、部品Bが2つ、部品Cが1つ必要となる</li><li>部品Bを1つ生産するためには、部品C、部品D、部品Eがぞれぞれ1つ必要となる</li><li>部品Bの在庫は0個、部品Cの在庫は5個</li></ul>まず製品Aを10個生産するためには、部品Bが20個、部品Cが10個必要であるとわかります。部品Bの在庫は0個なので全20個生産するために、部品C、D、Eがそれぞれ20個必要になります。この関係を視覚化したものが以下の図です。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/55a.png\" width=\"270\" height=\"142\" alt=\"55a.png/image-size:270×142\"></div>生産に必要となる部品Cの数量は、製品Aの生産に必要な10個と部品Bの生産に必要な20個を合わせた30個です。部品Cの在庫は5個なので、発注数は所要数30個から在庫5個を差し引いた「30－5＝<em class=\"r\">25個</em>」になります。",
+      "answer": "ウ",
+      "mondai": "図は，製品Aの構成部品を示し，括弧内の数字は上位の製品・部品1個当たりの所要数量である。この製品Aを10個生産する場合，部品Cは，少なくとも何個発注する必要があるか。ここで，現在の部品Bの在庫は0個，部品Cの在庫は5個である。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/55.png\" width=\"244\" height=\"88\" alt=\"55.png/image-size:244×88\"></div>"
+    },
+    "56": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">経営戦略の立案及び業務執行を統括する最高責任者</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">資金調達，財務報告などの財務面での戦略策定及び執行を統括する最高責任者</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">自社の技術戦略や研究開発計画の立案及び執行を統括する最高責任者</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">情報管理，情報システムに関する戦略立案及び執行を統括する最高責任者</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 企業活動 &raquo; <a href=\"https://www.fe-siken.com/index_st.html#22_1\">経営・組織論</a>",
+      "kaisetsu": "<strong>CIO</strong>は、Chief Information Officerの略で最高<em class=\"r\">情報</em>責任者のことです。企業や組織において、経営戦略を達成するためにどのようなIT化を図ればよいかを考えて情報戦略を立案し、具体的なIT投資計画を策定しその実現に最終的な責任を持つ役職です。<br><br>CIOは、情報化戦略を立案するに当って、経営戦略との整合性をとりながら、全社的な観点から企業全体の情報資源への投資効果を最適化するプランを策定する役割を持ちます。 <br><br>したがって「エ」が正解です。<ul><li class=\"lia\">CEO(Chief Executive Officer：最高経営責任者)の説明です。</li><li class=\"lii\">CFO(Chief Financial Officer：最高財務責任者)の説明です。</li><li class=\"liu\">CTO(Chief Technology Officer：最高技術責任者)の説明です。</li><li class=\"lie\">正しい。CIOの説明です。</li></ul>",
+      "answer": "エ",
+      "mondai": "CIOの説明はどれか。"
+    },
+    "57": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">220</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">250</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">280</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">300</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 企業活動 &raquo; <a href=\"https://www.fe-siken.com/index_st.html#22_2\">業務分析・データ利活用</a>",
+      "kaisetsu": "<strong>定量発注方式</strong>とは、発注時期をあらかじめ決めずに、在庫が基準数を下回った時点で最適発注量(経済的発注量)ずつを発注する方式です。定量発注方式における適切な発注点とは、常時保管している在庫数をできるだけ少なくし、かつ、安全在庫を下回らないような時点のことです。<br><br>保管在庫を最も少なくするためには、納入日の前日終業後に安全在庫である30個が最低限残っていればよいため、それと発注から納入までの5日間に消費する(50×5=)250個を足した<em class=\"r\">280個</em>が発注点になります。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/57.png\" width=\"479\" height=\"166\" alt=\"57.png/image-size:479×166\"></div>",
+      "answer": "ウ",
+      "mondai": "定量発注方式における経済的発注量を計算したところ，600個であった。発注から納入までの調達期間は5日であり，安全在庫量が30個である場合，この購買品目の発注点は何個か。ここで，1日の平均消費量は50個であるとする。"
+    },
+    "58": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">抜取り検査において，横軸にロットの不良率，縦軸にロットの合格率をとると，ある不良率のロットが合格する確率を知ることができる。不良率が高くなると合格率は下がる。</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">プログラムのテストにおいて，横軸にテスト時間，縦軸に障害累積数をとると，その形状は時間の経過に伴って増加率が次第に高くなり，ある時点以降は増加率が次第に鈍化し，一定の値に漸近していく。</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_u\">横軸に時間，縦軸に故障率をとって経過を記録すると，使用初期は故障が多く，徐々に減少して一定の故障率に落ち着く。更に時間が経過すると再び故障率は増加する。</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">横軸に累積生産量，縦軸に生産量1単位当たりのコストをとると，同一製品の累積生産量が増加するにつれて生産量1単位当たりのコストが逓減していくという経験則を表す。</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 企業活動 &raquo; <a href=\"https://www.fe-siken.com/index_st.html#22_2\">業務分析・データ利活用</a>",
+      "kaisetsu": "<strong>バスタブ曲線</strong>は、故障率曲線とも呼ばれ、機械や装置の時間経過に伴う故障率の変化を表示した曲線のことです。<br>一般的な機械や装置は初期故障期間では故障率は高くなり、その後の偶発故障期間での故障率は低く、製品寿命に近づく摩耗故障期間では故障率は高くなります。縦軸に故障率、横軸に時間をとってグラフにすると、曲線がバスタブ(浴槽)のようになることからこう呼ばれています。<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/58.png\" width=\"360\" height=\"161\" alt=\"58.png/image-size:360×161\"></div><ul><li class=\"lia\">OC曲線の説明です。</li><li class=\"lii\">信頼度曲線の説明です。</li><li class=\"liu\">正しい。バスタブ曲線の説明です。</li><li class=\"lie\">経験曲線の説明です。</li></ul>",
+      "answer": "ウ",
+      "mondai": "バスタブ曲線を説明したものはどれか。"
+    },
+    "59": {
+      "selects": [
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_a\">1,000</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">1,200</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">1,400</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_e\">1,600</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 企業活動 &raquo; <a href=\"https://www.fe-siken.com/index_st.html#22_3\">会計・財務</a>",
+      "kaisetsu": "利益は\"売上－費用\"で計算できます。<br><br>この問題では、固定費と変動費が決められているので、<br><br>　利益＝価格×販売個数－固定費－変動費×販売個数<br><br>の式でそれぞれの場合の利益額を計算します。<ul><li class=\"lia\">　1000×80,000－1,000,000－600×80,000<br>＝80,000,000－1,000,000－48,000,000<br>＝31,000,000</li><li class=\"lii\">　1200×70,000－1,000,000－600×70,000<br>＝84,000,000－1,000,000－42,000,000<br>＝41,000,000</li><li class=\"liu\">　1400×60,000－1,000,000－600×60,000<br>＝84,000,000－1,000,000－36,000,000<br>＝47,000,000</li><li class=\"lie\">　1600×50,000－1,000,000－600×50,000<br>＝80,000,000－1,000,000－30,000,000<br>＝<b>49,000,000</b></li></ul>よって、最も利益額が大きいのは「エ」の設定価格で販売した場合です。",
+      "answer": "エ",
+      "mondai": "新製品の設定価格とその価格での予測需要との関係を表にした。最大利益が見込める新製品の設定価格はどれか。ここで，いずれの場合にも，次の費用が発生するものとする。<br>　　固定費：1,000,000円<br>　　変動費：600円／個<div class=\"img_margin\"><img src=\"https://www.fe-siken.com/kakomon/05_menjo/img/59.png\" width=\"289\" height=\"128\" alt=\"59.png/image-size:289×128\"></div>"
+    },
+    "60": {
+      "selects": [
+        {
+          "isCorrect": true,
+          "text": "<span id=\"select_a\">企業などソフトウェアの大量購入者向けに，インストールできる台数をあらかじめ取り決め，ソフトウェアの使用を認める契約</span>",
+          "label": "ア"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_i\">使用場所を限定した契約であり，特定の施設の中であれば台数や人数に制限なく使用が許される契約</span>",
+          "label": "イ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_u\">ソフトウェアをインターネットからダウンロードしたとき画面に表示される契約内容に同意するを選択することによって，使用が許される契約</span>",
+          "label": "ウ"
+        },
+        {
+          "isCorrect": false,
+          "text": "<span id=\"select_e\">標準の使用許諾条件を定め，その範囲で一定量のパッケージの包装を解いたときに，権利者と購入者との間に使用許諾契約が自動的に成立したとみなす契約</span>",
+          "label": "エ"
+        }
+      ],
+      "info": "<strong>分類:</strong> ストラテジ系 &raquo; 法務 &raquo; <a href=\"https://www.fe-siken.com/index_st.html#23_3\">労働関連・取引関連法規</a>",
+      "kaisetsu": "<strong>ボリュームライセンス契約</strong>は、ソフトウェアに個別のライセンスをするのではなく、特定のコンピュータ群や一定数のコンピュータでの使用権を一括して認めるライセンス契約の形態です。同じソフトウェアを大量に使用する組織にとってはライセンス管理や契約の手間が省け、かつ大量購入による割引価格が適用される利点があります。このため、一定規模以上の企業及び教育機関や官庁のように、多数のコンピュータを同一環境で使用する場合に購入が検討されることがあります。<br><br>したがって「ア」の説明が適切です。<ul><li class=\"lia\">正しい。ボリュームライセンス契約の説明です。</li><li class=\"lii\">サイトライセンス契約の説明です。</li><li class=\"liu\">クリックラップ契約・オンクリック契約の説明です。</li><li class=\"lie\">シュリンクラップ契約の説明です。</li></ul>",
+      "answer": "ア",
+      "mondai": "ボリュームライセンス契約を説明したものはどれか。"
+    }
+  },
+  "version": 3,
+  "marks": {},
+  "type": "full"
+}

@@ -489,12 +489,13 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 
 <script>
 // ===================== CONFIG =====================
-const TOTAL = 80;
+let TOTAL = 80;
 const YEAR_CONFIGS = {
-  2022: { title: '令和4年度', base: '04_menjo', json: 'fe_siken_viewer_2022.json' },
-  2021: { title: '令和3年度', base: '03_menjo', json: 'fe_siken_viewer_2021.json' },
-  2020: { title: '令和2年度', base: '02_menjo', json: 'fe_siken_viewer_2020.json' },
-  2019: { title: '令和元年度', base: '01_aki', json: 'fe_siken_viewer_2019.json' },
+  2023: { title: '令和5年度', base: '05_menjo', json: 'fe_siken_viewer_2023.json', total: 60 },
+  2022: { title: '令和4年度', base: '04_menjo', json: 'fe_siken_viewer_2022.json', total: 80 },
+  2021: { title: '令和3年度', base: '03_menjo', json: 'fe_siken_viewer_2021.json', total: 80 },
+  2020: { title: '令和2年度', base: '02_menjo', json: 'fe_siken_viewer_2020.json', total: 80 },
+  2019: { title: '令和元年度', base: '01_aki', json: 'fe_siken_viewer_2019.json', total: 80 },
 };
 let currentYear = parseInt(localStorage.getItem('fe_current_year')) || 2020;
 let BASE_URL = '';
@@ -511,6 +512,7 @@ function setYear(year) {
   localStorage.setItem('fe_current_year', year);
 
   const cfg = YEAR_CONFIGS[year];
+  TOTAL = cfg.total || 80;
   BASE_URL = 'https://www.fe-siken.com/kakomon/' + cfg.base + '/q';
   PAGE_NAME = 'fe_siken_viewer_' + year;
   LOCAL_PAGES_DIR = './' + PAGE_NAME + '/';
