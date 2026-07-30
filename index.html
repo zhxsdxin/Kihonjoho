@@ -117,6 +117,7 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
   display: flex; align-items: center; justify-content: center; transition: all .15s;
 }
 .q-status button:hover { transform: scale(1.1); }
+.btn-group { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--border); border-radius: 20px; padding: 2px 4px; margin: 0 2px; }
 .q-status button.force-ready { position: relative; }
 .q-status button.force-ready::after {
   content: '⟳'; position: absolute; bottom: -12px; font-size: 10px; color: #e65100;
@@ -408,12 +409,15 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <a class="q-number" id="qNumber" href="#" target="_blank" title="原題を開く">問1</a>
       <div class="q-status">
         <button id="markBookmark" title="ブックマーク (B)">★</button>
+        <span class="btn-group">
         <button id="selExplainBtn" title="AI解释选中词 (O)" style="font-size:13px">💡</button>
         <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px">🤖</button>
-        <span style="width:1px;height:20px;background:var(--border);margin:0 4px;display:inline-block;vertical-align:middle"></span>
+        <button id="keyMgrBtn" title="API Key管理 (K)" style="font-size:13px">🔑</button>
+        </span>
+        <span class="btn-group">
         <button id="selTransBtn" title="翻译选中文字 (V)" style="font-size:13px">📝</button>
         <button id="translateBtn" title="日中切替 (T)" style="font-size:13px">中</button>
-        <button id="keyMgrBtn" title="API Key管理 (K)" style="font-size:13px">🔑</button>
+        </span>
       </div>
     </div>
     <div class="loading" id="loadingIndicator">
