@@ -1182,7 +1182,7 @@ async function callAIWithProvider(providerId, num, buildBody) {
     body: JSON.stringify(buildBody())
   });
   if (!res.ok) {
-    localStorage.removeItem(getProviderKey(providerId)); // 清除无效key
+    if (res.status === 401) localStorage.removeItem(getProviderKey(providerId)); // 仅key无效时清除
     return null;
   }
   const data = await res.json();
