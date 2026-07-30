@@ -1118,12 +1118,16 @@ async function callAIWithProvider(providerId, num, buildBody) {
     body: JSON.stringify(buildBody())
   });
   if (!res.ok) {
-    const err = await res.text();
+    const err = await res.text().catch(() => '');
     if (res.status === 429 || res.status === 402) {
       localStorage.removeItem(getProviderKey(providerId));
-      throw new Error(provider.name + ' 额度不足，请换服务');
+      return null; // 静默跳过
     }
-    throw new Error(provider.name + ' API 错误: ' + res.status);
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem(getProviderKey(providerId));
+      return null; // key 无效，静默跳过
+    }
+    return null; // 其他错误也静默跳过
   }
   const data = await res.json();
   return data.choices?.[0]?.message?.content || null;
@@ -1144,13 +1148,21 @@ async function callAIExplain() {
   // Determine providers to try: vision-capable first if images, otherwise cheapest first
   const order = imgURLs.length > 0 ? ['qwen', 'deepseek'] : ['deepseek', 'qwen'];
 
+  // 只对第一个有 key 的 provider 弹窗，其余静默跳过
+  let hasKey = false;
+  for (const pid of order) {
+    if (localStorage.getItem(getProviderKey(pid))) { hasKey = true; break; }
+  }
+
   for (const pid of order) {
     const provider = AI_PROVIDERS[pid];
+    if (imgURLs.length > 0 && !provider.hasVision) continue;
+    // 如果没有任何 key 且是第一个 → 弹窗；否则只尝试已有 key 的
+    if (!hasKey && pid !== order[0]) continue;
+    if (hasKey && !localStorage.getItem(getProviderKey(pid))) continue;
     try {
-      if (imgURLs.length > 0 && !provider.hasVision) continue; // skip text-only for image questions
       const imgParts = [];
       if (provider.hasVision && imgURLs.length) {
-        aiMondaiPanel.textContent = 'AI 正在解析中（' + provider.name + ' 含图片）...';
         for (const url of imgURLs.slice(0, 4)) {
           const dataURL = await fetchImgAsDataURL(url);
           if (dataURL) imgParts.push({ type: 'image_url', image_url: { url: dataURL } });
@@ -1167,13 +1179,9 @@ async function callAIExplain() {
         response_format: { type: 'json_object' },
         temperature: 0.7, max_tokens: 4096
       }));
-      if (text) { usedProvider = provider.name; break; }
+      if (text) { usedProvider = provider.name; aiMondaiPanel.textContent = provider.name + ' 解析中...'; break; }
     } catch (e) {
-      aiMondaiPanel.textContent = provider.name + ' 失败: ' + e.message + '  尝试换服务...';
-      if (e.message.includes('额度不足')) {
-        if (pid === 'deepseek') aiMondaiPanel.textContent = 'DeepSeek 额度不足，切换通义千问...';
-        else aiMondaiPanel.textContent += '\n请手动提供可用的 API Key';
-      }
+      // 静默重试下一个
     }
   }
 
