@@ -1101,7 +1101,8 @@ function stripHTML(s) { return htmlToText(s); }
 async function getProviderKeyPrompt(id) {
   let key = localStorage.getItem(getProviderKey(id));
   if (!key) {
-    key = prompt('请输入' + AI_PROVIDERS[id].name + ' API Key（获取: ' + AI_PROVIDERS[id].keyHelp + '）:');
+    const p = AI_PROVIDERS[id];
+    key = prompt('请输入 ' + p.name + ' API Key\n（获取: ' + p.keyHelp + '）\n\n两个都有的话，优先用 DeepSeek，遇到图片自动切通义千问');
     if (!key) return null;
     localStorage.setItem(getProviderKey(id), key);
   }
@@ -1118,16 +1119,8 @@ async function callAIWithProvider(providerId, num, buildBody) {
     body: JSON.stringify(buildBody())
   });
   if (!res.ok) {
-    const err = await res.text().catch(() => '');
-    if (res.status === 429 || res.status === 402) {
-      localStorage.removeItem(getProviderKey(providerId));
-      return null; // 静默跳过
-    }
-    if (res.status === 401 || res.status === 403) {
-      localStorage.removeItem(getProviderKey(providerId));
-      return null; // key 无效，静默跳过
-    }
-    return null; // 其他错误也静默跳过
+    localStorage.removeItem(getProviderKey(providerId)); // 清除无效key
+    return null;
   }
   const data = await res.json();
   return data.choices?.[0]?.message?.content || null;
@@ -1145,21 +1138,12 @@ async function callAIExplain() {
   const imgURLs = [...extractImgURLs(d.mondai || ''), ...extractImgURLs(d.kaisetsu || '')];
   let text = null, usedProvider = '';
 
-  // Determine providers to try: vision-capable first if images, otherwise cheapest first
+  // 有图的优先 Qwen，纯文字优先 DeepSeek
   const order = imgURLs.length > 0 ? ['qwen', 'deepseek'] : ['deepseek', 'qwen'];
-
-  // 只对第一个有 key 的 provider 弹窗，其余静默跳过
-  let hasKey = false;
-  for (const pid of order) {
-    if (localStorage.getItem(getProviderKey(pid))) { hasKey = true; break; }
-  }
 
   for (const pid of order) {
     const provider = AI_PROVIDERS[pid];
     if (imgURLs.length > 0 && !provider.hasVision) continue;
-    // 如果没有任何 key 且是第一个 → 弹窗；否则只尝试已有 key 的
-    if (!hasKey && pid !== order[0]) continue;
-    if (hasKey && !localStorage.getItem(getProviderKey(pid))) continue;
     try {
       const imgParts = [];
       if (provider.hasVision && imgURLs.length) {
@@ -1168,6 +1152,7 @@ async function callAIExplain() {
           if (dataURL) imgParts.push({ type: 'image_url', image_url: { url: dataURL } });
         }
       }
+      aiMondaiPanel.textContent = pid === 'qwen' && imgURLs.length ? 'AI 解析中（通义千问 + 图片）...' : 'AI 正在解析中...';
       text = await callAIWithProvider(pid, num, () => ({
         model: provider.model,
         messages: [{
@@ -1179,9 +1164,26 @@ async function callAIExplain() {
         response_format: { type: 'json_object' },
         temperature: 0.7, max_tokens: 4096
       }));
-      if (text) { usedProvider = provider.name; aiMondaiPanel.textContent = provider.name + ' 解析中...'; break; }
-    } catch (e) {
-      // 静默重试下一个
+      if (text) { usedProvider = provider.name; break; }
+    } catch (e) { /* 静默重试下一个 */ }
+  }
+
+  // 两个都失败了 → 清除 key 重新问
+  if (!text) {
+    for (const pid of order) { localStorage.removeItem(getProviderKey(pid)); }
+    text = await callAIWithProvider(order[0], num, () => ({
+      model: AI_PROVIDERS[order[0]].model,
+      messages: [{ role: 'user', content: buildAIPrompt(num) }],
+      response_format: { type: 'json_object' },
+      temperature: 0.7, max_tokens: 4096
+    }));
+    if (!text) {
+      text = await callAIWithProvider(order[1], num, () => ({
+        model: AI_PROVIDERS[order[1]].model,
+        messages: [{ role: 'user', content: buildAIPrompt(num) }],
+        response_format: { type: 'json_object' },
+        temperature: 0.7, max_tokens: 4096
+      }));
     }
   }
 
