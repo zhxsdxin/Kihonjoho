@@ -375,7 +375,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <kbd>X</kbd> AI講解　<kbd>長押X</kbd> 解析強制再取得　<kbd>F</kbd> 強制再取得<br>
     <kbd>D</kbd> 草稿　<kbd>M</kbd> 暗記モード　<kbd>N</kbd> 自動送り<br>
     <kbd>Space</kbd> 正解表示/非表示　<kbd>A</kbd> 全問 <kbd>U</kbd> 未回答 <kbd>C</kbd> 正解 <kbd>W</kbd> 不正解<br>
-    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択翻訳　<kbd>K</kbd> AI用語解説　<kbd>O</kbd> API Key管理
+    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択翻訳　<kbd>O</kbd> AI用語解説　<kbd>K</kbd> API Key管理
   </div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
@@ -408,11 +408,12 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <a class="q-number" id="qNumber" href="#" target="_blank" title="原題を開く">問1</a>
       <div class="q-status">
         <button id="markBookmark" title="ブックマーク (B)">★</button>
+        <button id="selExplainBtn" title="AI解释选中词 (O)" style="font-size:13px">💡</button>
         <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px">🤖</button>
+        <span style="width:1px;height:20px;background:var(--border);margin:0 4px;display:inline-block;vertical-align:middle"></span>
         <button id="selTransBtn" title="翻译选中文字 (V)" style="font-size:13px">📝</button>
-        <button id="selExplainBtn" title="AI解释选中词 (K)" style="font-size:13px">💡</button>
         <button id="translateBtn" title="日中切替 (T)" style="font-size:13px">中</button>
-        <button id="keyMgrBtn" title="API Key管理 (O)" style="font-size:13px">🔑</button>
+        <button id="keyMgrBtn" title="API Key管理 (K)" style="font-size:13px">🔑</button>
       </div>
     </div>
     <div class="loading" id="loadingIndicator">
@@ -1533,9 +1534,9 @@ document.addEventListener('keydown', e => {
   }
   else if (e.key === 'x' || e.key === 'X') aiExplainBtn.click();
   else if (e.key === 'v' || e.key === 'V') { e.preventDefault(); doSelTranslate(); }
-  else if (e.key === 'k' || e.key === 'K') { e.preventDefault(); doSelExplain(); }
+  else if (e.key === 'k' || e.key === 'K') keyMgrBtn.click();
   else if (e.key === 'h' || e.key === 'H') toggleSidebar();
-  else if (e.key === 'o' || e.key === 'O') keyMgrBtn.click();
+  else if (e.key === 'o' || e.key === 'O') { e.preventDefault(); doSelExplain(); }
 });
 
 // ===================== LOAD FULL DATA =====================
