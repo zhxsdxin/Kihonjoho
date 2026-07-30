@@ -350,6 +350,10 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 #shortcutPanel.visible { display: block; }
 #shortcutPanel kbd { display: inline-block; background: var(--header-bg); color: var(--header-text); border-radius: 3px; padding: 0 5px; font-size: 11px; margin: 0 2px; font-family: inherit; }
 #shortcutBtn { font-size: 15px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text-secondary); cursor: pointer; font-family: inherit; vertical-align: middle; }
+#keyMgrBtn { font-size: 15px; padding: 2px 8px; cursor: pointer; }
+#keyMgrPanel button { font-size: 11px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); color: var(--text); cursor: pointer; margin-left: 6px; font-family: inherit; }
+#keyMgrPanel .key-ok { color: #34a853; }
+#keyMgrPanel .key-missing { color: var(--text-secondary); }
 #selTransResult { position: fixed; z-index: 200; top: 50%; left: 50%; transform: translate(-50%,-50%); background: var(--surface); border: 1px solid var(--primary); border-radius: 8px; padding: 12px 16px; font-size: 14px; line-height: 1.7; box-shadow: 0 4px 20px rgba(0,0,0,.2); display: none; max-width: 380px; transition: opacity .8s; }
 #selTransResult.show { display: block; }
 #selTransResult.hide { opacity: 0; }
@@ -391,7 +395,10 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <span class="progress-text" id="progressText">0/80</span>
     <button id="exportBtn" title="导出数据 (E)">📤</button>
     <button id="importBtn" title="导入数据 (I)">📥</button>
+    <button id="keyMgrBtn" title="API Key管理">🔑</button>
     <input type="file" id="importFile" accept=".json" style="display:none">
+  </div>
+  <div id="keyMgrPanel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:8px;font-size:12px;line-height:2">
   </div>
   <div id="questionGrid" style="display:none"></div>
 </header>
@@ -591,6 +598,42 @@ shortcutBtn.addEventListener('click', () => {
   localStorage.setItem('fe_shortcut_visible', shortcutPanel.classList.contains('visible') ? '1' : '0');
 });
 if (localStorage.getItem('fe_shortcut_visible') === '1') shortcutPanel.classList.add('visible');
+
+// ===================== KEY MANAGER =====================
+const keyMgrBtn = $('keyMgrBtn');
+const keyMgrPanel = $('keyMgrPanel');
+
+function maskKey(k) { return k ? '••••' + k.slice(-4) : ''; }
+
+function renderKeyPanel() {
+  let html = '';
+  for (const [id, p] of Object.entries(AI_PROVIDERS)) {
+    const k = localStorage.getItem(getProviderKey(id));
+    html += '<div style="display:flex;align-items:center;gap:8px">';
+    html += '<span>' + p.name + ':</span>';
+    if (k) {
+      html += '<span class="key-ok">✓ ' + maskKey(k) + '</span>';
+      html += '<button onclick="localStorage.removeItem(\'' + getProviderKey(id) + '\');renderKeyPanel()">删除</button>';
+      html += '<button onclick="replaceKey(\'' + id + '\')">更换</button>';
+    } else {
+      html += '<span class="key-missing">✗ 未設定</span>';
+      html += '<button onclick="replaceKey(\'' + id + '\')">設定</button>';
+    }
+    html += '</div>';
+  }
+  keyMgrPanel.innerHTML = html;
+}
+
+function replaceKey(id) {
+  const p = AI_PROVIDERS[id];
+  const k = prompt('请输入新的 ' + p.name + ' API Key\n获取: ' + p.keyHelp);
+  if (k) { localStorage.setItem(getProviderKey(id), k); renderKeyPanel(); }
+}
+
+keyMgrBtn.addEventListener('click', () => {
+  keyMgrPanel.style.display = keyMgrPanel.style.display === 'none' ? 'block' : 'none';
+  renderKeyPanel();
+});
 
 // ===================== TRANSLATION CACHE =====================
 function getTransKey(num) { return LS_TRANS + num; }
