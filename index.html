@@ -354,6 +354,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 #keyMgrPanel button { font-size: 11px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); color: var(--text); cursor: pointer; margin-left: 6px; font-family: inherit; }
 #keyMgrPanel .key-ok { color: #34a853; font-weight: 600; }
 #keyMgrPanel .key-missing { color: var(--text-secondary); }
+#keyMgrPanel .km-focused { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 3px; }
 #selTransResult { position: fixed; z-index: 200; top: 50%; left: 50%; transform: translate(-50%,-50%); background: var(--surface); border: 1px solid var(--primary); border-radius: 8px; padding: 12px 16px; font-size: 14px; line-height: 1.7; box-shadow: 0 4px 20px rgba(0,0,0,.2); display: none; max-width: 380px; transition: opacity .8s; }
 #selTransResult.show { display: block; }
 #selTransResult.hide { opacity: 0; }
@@ -613,16 +614,19 @@ function renderKeyPanel() {
     html += '<span>' + p.name + ':</span>';
     if (k) {
       html += '<span class="key-ok">✓ ' + maskKey(k) + '</span>';
-      html += '<button onclick="localStorage.removeItem(\'' + getProviderKey(id) + '\');renderKeyPanel()">删除</button>';
-      html += '<button onclick="replaceKey(\'' + id + '\')">更换</button>';
+      html += '<button class="km-del" data-kid="' + id + '" onclick="deleteKey(\'' + id + '\')">删除</button>';
+      html += '<button class="km-set" data-kid="' + id + '" onclick="replaceKey(\'' + id + '\')">更换</button>';
     } else {
       html += '<span class="key-missing">✗ 未設定</span>';
-      html += '<button onclick="replaceKey(\'' + id + '\')">設定</button>';
+      html += '<button class="km-set" data-kid="' + id + '" onclick="replaceKey(\'' + id + '\')">設定</button>';
     }
     html += '</div>';
   }
   keyMgrPanel.innerHTML = html;
+  keyMgrFocused = null;
 }
+
+function deleteKey(id) { localStorage.removeItem(getProviderKey(id)); renderKeyPanel(); }
 
 function replaceKey(id) {
   const p = AI_PROVIDERS[id];
@@ -630,9 +634,25 @@ function replaceKey(id) {
   if (k) { localStorage.setItem(getProviderKey(id), k); renderKeyPanel(); }
 }
 
+let keyMgrFocused = null;
+function keyMgrFocus(selector) {
+  const btns = keyMgrPanel.querySelectorAll(selector);
+  if (!btns.length) return;
+  keyMgrPanel.querySelectorAll('.km-focused').forEach(b => b.classList.remove('km-focused'));
+  const oldIdx = keyMgrFocused instanceof HTMLElement ? Array.from(btns).indexOf(keyMgrFocused) : -1;
+  const next = btns[(oldIdx + 1) % btns.length];
+  next.classList.add('km-focused');
+  keyMgrFocused = next;
+}
+
+function keyMgrEnter() {
+  if (keyMgrFocused instanceof HTMLElement) { keyMgrFocused.click(); keyMgrFocused = null; }
+}
+
 keyMgrBtn.addEventListener('click', () => {
-  keyMgrPanel.style.display = keyMgrPanel.style.display === 'none' ? 'block' : 'none';
-  renderKeyPanel();
+  const vis = keyMgrPanel.style.display !== 'block';
+  keyMgrPanel.style.display = vis ? 'block' : 'none';
+  if (vis) renderKeyPanel(); else keyMgrFocused = null;
 });
 
 // ===================== TRANSLATION CACHE =====================
@@ -1518,7 +1538,16 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'g' || e.key === 'G') gridToggle.click();
   else if (e.key === 'b' || e.key === 'B') markBookmark.click();
   else if (e.key === 't' || e.key === 'T') translateBtn.click();
-  else if (e.key === 'd' || e.key === 'D') draftToggle.click();
+  else if (e.key === 'd' || e.key === 'D') {
+    if (keyMgrPanel.style.display === 'block') keyMgrFocus('.km-del');
+    else draftToggle.click();
+  }
+  else if (e.key === 'r' || e.key === 'R') {
+    if (keyMgrPanel.style.display === 'block') keyMgrFocus('.km-set');
+  }
+  else if (e.key === 'Enter') {
+    if (keyMgrPanel.style.display === 'block') { e.preventDefault(); keyMgrEnter(); }
+  }
   else if (e.key === 'e' || e.key === 'E') exportBtn.click();
   else if (e.key === 'i' || e.key === 'I') importBtn.click();
   else if (e.key === 'a' || e.key === 'A') { filterSelect.value = 'all'; filterSelect.dispatchEvent(new Event('change')); }
