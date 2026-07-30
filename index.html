@@ -350,9 +350,9 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 #shortcutPanel.visible { display: block; }
 #shortcutPanel kbd { display: inline-block; background: var(--header-bg); color: var(--header-text); border-radius: 3px; padding: 0 5px; font-size: 11px; margin: 0 2px; font-family: inherit; }
 #shortcutBtn { font-size: 15px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text-secondary); cursor: pointer; font-family: inherit; vertical-align: middle; }
-#keyMgrBtn { font-size: 15px; padding: 2px 8px; cursor: pointer; }
+#keyMgrPanel { font-size: 12px; line-height: 2; color: var(--text); }
 #keyMgrPanel button { font-size: 11px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); color: var(--text); cursor: pointer; margin-left: 6px; font-family: inherit; }
-#keyMgrPanel .key-ok { color: #34a853; }
+#keyMgrPanel .key-ok { color: #34a853; font-weight: 600; }
 #keyMgrPanel .key-missing { color: var(--text-secondary); }
 #selTransResult { position: fixed; z-index: 200; top: 50%; left: 50%; transform: translate(-50%,-50%); background: var(--surface); border: 1px solid var(--primary); border-radius: 8px; padding: 12px 16px; font-size: 14px; line-height: 1.7; box-shadow: 0 4px 20px rgba(0,0,0,.2); display: none; max-width: 380px; transition: opacity .8s; }
 #selTransResult.show { display: block; }
@@ -375,7 +375,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <kbd>X</kbd> AI講解　<kbd>長押X</kbd> 解析強制再取得　<kbd>F</kbd> 強制再取得<br>
     <kbd>D</kbd> 草稿　<kbd>M</kbd> 暗記モード　<kbd>N</kbd> 自動送り<br>
     <kbd>Space</kbd> 正解表示/非表示　<kbd>A</kbd> 全問 <kbd>U</kbd> 未回答 <kbd>C</kbd> 正解 <kbd>W</kbd> 不正解<br>
-    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択テキスト翻訳　<kbd>K</kbd> AI用語解説
+    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択翻訳　<kbd>K</kbd> AI用語解説　<kbd>O</kbd> API Key管理
   </div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
@@ -395,7 +395,6 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <span class="progress-text" id="progressText">0/80</span>
     <button id="exportBtn" title="导出数据 (E)">📤</button>
     <button id="importBtn" title="导入数据 (I)">📥</button>
-    <button id="keyMgrBtn" title="API Key管理">🔑</button>
     <input type="file" id="importFile" accept=".json" style="display:none">
   </div>
   <div id="keyMgrPanel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:8px;font-size:12px;line-height:2">
@@ -413,6 +412,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
         <button id="selTransBtn" title="翻译选中文字 (V)" style="font-size:13px">📝</button>
         <button id="selExplainBtn" title="AI解释选中词 (K)" style="font-size:13px">💡</button>
         <button id="translateBtn" title="日中切替 (T)" style="font-size:13px">中</button>
+        <button id="keyMgrBtn" title="API Key管理 (O)" style="font-size:13px">🔑</button>
       </div>
     </div>
     <div class="loading" id="loadingIndicator">
@@ -1084,7 +1084,7 @@ const AI_PROVIDERS = {
     keyHelp: 'https://platform.deepseek.com/api_keys'
   },
   qwen: {
-    name: '通义千问', api: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    name: 'Qwen', api: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
     model: 'qwen-vl-max', hasVision: true,
     keyHelp: 'https://dashscope.aliyun.com'
   }
@@ -1535,6 +1535,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'v' || e.key === 'V') { e.preventDefault(); doSelTranslate(); }
   else if (e.key === 'k' || e.key === 'K') { e.preventDefault(); doSelExplain(); }
   else if (e.key === 'h' || e.key === 'H') toggleSidebar();
+  else if (e.key === 'o' || e.key === 'O') keyMgrBtn.click();
 });
 
 // ===================== LOAD FULL DATA =====================
