@@ -2017,15 +2017,11 @@ if ('speechSynthesis' in window) {
   speechSynthesis.onvoiceschanged = () => {};
   speechSynthesis.getVoices();
 }
+let ttsPlaying = false;
 function speakExplain() {
   if (!('speechSynthesis' in window)) { alert('当前浏览器不支持语音朗读'); return; }
   const btn = document.getElementById('selTransSpeak');
-  speechSynthesis.cancel();
-  if (speechSynthesis.pending) {
-    btn.classList.remove('speaking');
-    setTimeout(() => { speechSynthesis.cancel(); }, 100);
-    return;
-  }
+  if (ttsPlaying) { speechSynthesis.cancel(); ttsPlaying = false; btn.classList.remove('speaking'); return; }
   let word = lastExplainTTS.word;
   let english = lastExplainTTS.english;
   if (!word && !english) {
@@ -2039,13 +2035,18 @@ function speakExplain() {
   const parts = [];
   if (word) parts.push({ text: word, lang: 'ja-JP' });
   if (english) parts.push({ text: english, lang: 'en-US' });
-  parts.forEach(p => {
-    const u = new SpeechSynthesisUtterance(p.text);
-    u.lang = p.lang; u.rate = 0.85;
-    u.onend = u.onerror = () => { if (!speechSynthesis.speaking && !speechSynthesis.pending) btn.classList.remove('speaking'); };
-    speechSynthesis.speak(u);
-  });
-  btn.classList.add('speaking');
+  speechSynthesis.cancel();
+  setTimeout(() => {
+    let done = 0;
+    parts.forEach(p => {
+      const u = new SpeechSynthesisUtterance(p.text);
+      u.lang = p.lang; u.rate = 0.85;
+      u.onend = u.onerror = () => { if (++done === parts.length) { ttsPlaying = false; btn.classList.remove('speaking'); } };
+      speechSynthesis.speak(u);
+    });
+    ttsPlaying = true;
+    btn.classList.add('speaking');
+  }, 60);
 }
 document.getElementById('selTransSpeak').addEventListener('click', speakExplain);
 
