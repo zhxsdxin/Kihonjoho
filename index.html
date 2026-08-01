@@ -361,6 +361,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 #selTransSpeak { position: absolute; top: 4px; right: 4px; border: none; background: none; font-size: 15px; cursor: pointer; opacity: .6; color: var(--text); }
 #selTransSpeak:hover { opacity: 1; }
 #selTransSpeak.speaking { opacity: 1; color: var(--primary); animation: pulse 1s infinite; }
+#selSpeakBtn.speaking { opacity: 1; color: var(--primary); animation: pulse 1s infinite; }
 @keyframes pulse { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
 </style>
 </head>
@@ -380,7 +381,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <kbd>X</kbd> AI講解　<kbd>長押X</kbd> 解析強制再取得　<kbd>F</kbd> 強制再取得<br>
     <kbd>D</kbd> 草稿　<kbd>M</kbd> 暗記モード　<kbd>N</kbd> 自動送り<br>
     <kbd>Space</kbd> 正解表示/非表示　<kbd>A</kbd> 全問 <kbd>U</kbd> 未回答 <kbd>C</kbd> 正解 <kbd>W</kbd> 不正解<br>
-    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択翻訳　<kbd>O</kbd> AI用語解説　<kbd>L</kbd> 朗読　<kbd>K</kbd> API Key管理
+    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択翻訳　<kbd>P</kbd> 選択朗読　<kbd>O</kbd> AI用語解説　<kbd>L</kbd> 朗読　<kbd>K</kbd> API Key管理
   </div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
@@ -416,6 +417,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
         <button id="selExplainBtn" title="AI解释选中词 (O)" style="font-size:13px">💡</button>
         <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px">🤖</button>
         <button id="keyMgrBtn" title="API Key管理 (K)" style="font-size:13px">🔑</button>
+        <button id="selSpeakBtn" title="朗读选中文字 (P)" style="font-size:13px">🔊</button>
         <button id="selTransBtn" title="翻译选中文字 (V)" style="font-size:13px">📝</button>
         <button id="translateBtn" title="日中切替 (T)" style="font-size:13px">中</button>
       </div>
@@ -1574,6 +1576,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'h' || e.key === 'H') toggleSidebar();
   else if (e.key === 'o' || e.key === 'O') { e.preventDefault(); doSelExplain(); }
   else if (e.key === 'l' || e.key === 'L') { e.preventDefault(); speakExplain(); }
+  else if (e.key === 'p' || e.key === 'P') { e.preventDefault(); speakSelection(); }
 });
 
 // ===================== LOAD FULL DATA =====================
@@ -2029,6 +2032,21 @@ if ('speechSynthesis' in window) {
   speechSynthesis.getVoices();
 }
 let ttsPlaying = false;
+function playTTS(parts, btn) {
+  if (!parts.length) return;
+  speechSynthesis.cancel();
+  setTimeout(() => {
+    let done = 0;
+    parts.forEach(p => {
+      const u = new SpeechSynthesisUtterance(p.text);
+      u.lang = p.lang; u.rate = 0.85;
+      u.onend = u.onerror = () => { if (++done === parts.length) { ttsPlaying = false; btn.classList.remove('speaking'); } };
+      speechSynthesis.speak(u);
+    });
+    ttsPlaying = true;
+    btn.classList.add('speaking');
+  }, 60);
+}
 function speakExplain() {
   if (!('speechSynthesis' in window)) { alert('当前浏览器不支持语音朗读'); return; }
   const btn = document.getElementById('selTransSpeak');
@@ -2058,19 +2076,28 @@ function speakExplain() {
     // 情况2：日语非片假名 → 只念日语原文
     parts.push({ text: word, lang: 'ja-JP' });
   }
-  speechSynthesis.cancel();
-  setTimeout(() => {
-    let done = 0;
-    parts.forEach(p => {
-      const u = new SpeechSynthesisUtterance(p.text);
-      u.lang = p.lang; u.rate = 0.85;
-      u.onend = u.onerror = () => { if (++done === parts.length) { ttsPlaying = false; btn.classList.remove('speaking'); } };
-      speechSynthesis.speak(u);
-    });
-    ttsPlaying = true;
-    btn.classList.add('speaking');
-  }, 60);
+  playTTS(parts, btn);
 }
+function speakSelection() {
+  if (!('speechSynthesis' in window)) { alert('当前浏览器不支持语音朗读'); return; }
+  const btn = document.getElementById('selSpeakBtn');
+  if (ttsPlaying) { speechSynthesis.cancel(); ttsPlaying = false; btn.classList.remove('speaking'); return; }
+  const sel = window.getSelection();
+  const text = (lastSelText || sel.toString()).trim();
+  if (!text || text.length > 1000) { alert('请先选中要朗读的文字'); return; }
+  // 只念日语和英语部分，跳过中文等
+  const parts = [];
+  const re = /([\u3040-\u30ff\u4e00-\u9faf\u3000-\u303f]+)|([A-Za-z][A-Za-z0-9'\-]*(?:\s+[A-Za-z][A-Za-z0-9'\-]*)*)/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    if (m[1]) parts.push({ text: m[1], lang: 'ja-JP' });
+    else if (m[2]) parts.push({ text: m[2], lang: 'en-US' });
+  }
+  if (!parts.length) { alert('选中内容不包含日语或英语'); return; }
+  playTTS(parts, btn);
+}
+document.getElementById('selTransSpeak').addEventListener('click', speakExplain);
+document.getElementById('selSpeakBtn').addEventListener('click', speakSelection);
 document.getElementById('selTransSpeak').addEventListener('click', speakExplain);
 
 // 选中后点击选中区域触发翻译
