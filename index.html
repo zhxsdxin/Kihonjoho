@@ -1966,7 +1966,7 @@ async function doSelExplain() {
     textEl.textContent = '💡 ' + text + '：' + cached;
     resultEl.className = 'show';
     lastSelText = ''; lastSelRect = null;
-    lastExplainTTS = { word: text, lang: isAsciiWord(text) ? 'en-US' : 'ja-JP' };
+    lastExplainTTS = { word: text, answer: cached };
     return;
   }
   selExplainBtn.textContent = '…';
@@ -1983,6 +1983,7 @@ async function doSelExplain() {
           content: '你是一个日语IT词汇解说工具。按以下规则回答：\n'
             + '— 如果是片假名外来语（如スタック），先写 → 英语原文，再用1-2句通俗中文解释\n'
             + '— 如果是含汉字的日语词（如行う、処理），先写 → 假名读音与声调，再用1-2句通俗中文解释\n'
+            + '— 如果是英语或英语缩写（如SLA、CPU），先写 → 英语全称，再用1-2句通俗中文解释\n'
             + '词汇：' + text
         }],
         temperature: 0.3, max_tokens: 512
@@ -1991,7 +1992,7 @@ async function doSelExplain() {
         localStorage.setItem(k, answer);
         textEl.textContent = '💡 ' + text + '：' + answer;
         resultEl.className = 'show';
-        lastExplainTTS = { word: text, lang: isAsciiWord(text) ? 'en-US' : 'ja-JP' };
+        lastExplainTTS = { word: text, answer: answer };
         ok = true; break;
       }
     } catch (e) {
@@ -2007,9 +2008,20 @@ async function doSelExplain() {
 }
 
 // ===================== TTS 朗读 =====================
-let lastExplainTTS = { word: '', lang: 'ja-JP' };
+let lastExplainTTS = { word: '', answer: '' };
 function isAsciiWord(s) {
   return /^[A-Za-z][A-Za-z0-9_-]*$/.test((s || '').trim());
+}
+function isKatakanaWord(s) {
+  return /[\u30a0-\u30ff]/.test(s);
+}
+// 从 AI 答案提取 → 后面的英语原文/全称（不含中文解释部分）
+function extractArrowEnglish(answer) {
+  const m = (answer || '').match(/→\s*([^，。;；\n]+)/);
+  if (!m) return '';
+  const seg = m[1];
+  const w = seg.match(/[A-Za-z][A-Za-z0-9\s.,-]{1,60}/);
+  return w ? w[0].trim() : '';
 }
 // 预热语音引擎（修复 Chrome 首次无声 bug）
 if ('speechSynthesis' in window) {
@@ -2022,15 +2034,30 @@ function speakExplain() {
   const btn = document.getElementById('selTransSpeak');
   if (ttsPlaying) { speechSynthesis.cancel(); ttsPlaying = false; btn.classList.remove('speaking'); return; }
   let word = lastExplainTTS.word;
-  let lang = lastExplainTTS.lang;
+  let answer = lastExplainTTS.answer;
   if (!word) {
     const t = document.getElementById('selTransText').textContent;
     const m = t.match(/💡\s*([^：:]+)/);
     if (m) word = m[1].trim();
-    lang = isAsciiWord(word) ? 'en-US' : 'ja-JP';
+    const am = t.match(/💡\s*[^：:]+[：:]\s*(.+)$/);
+    if (am) answer = am[1];
   }
   if (!word) { alert('没有可朗读的内容'); return; }
-  const parts = [{ text: word, lang }];
+  const parts = [];
+  if (isAsciiWord(word)) {
+    // 情况3：英语或缩写 → 念原文 + 全称
+    parts.push({ text: word, lang: 'en-US' });
+    const full = extractArrowEnglish(answer);
+    if (full && full !== word) parts.push({ text: full, lang: 'en-US' });
+  } else if (isKatakanaWord(word)) {
+    // 情况1：片假名 → 念日语 + 英语原文
+    parts.push({ text: word, lang: 'ja-JP' });
+    const en = extractArrowEnglish(answer);
+    if (en) parts.push({ text: en, lang: 'en-US' });
+  } else {
+    // 情况2：日语非片假名 → 只念日语原文
+    parts.push({ text: word, lang: 'ja-JP' });
+  }
   speechSynthesis.cancel();
   setTimeout(() => {
     let done = 0;
