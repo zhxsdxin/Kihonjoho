@@ -1360,7 +1360,7 @@ function buildAIPrompt(num) {
   p += '- "selects": {"ア": "选项ア的分析", "イ": "选项イ的分析", ...} key对应选项的日语标识\n';
   p += '- "summary": 整体解题思路与知识点总结\n';
   p += '数学公式用 \\(...\\) 或 \\[...\\] 包裹。只返回 JSON，不要额外文字。\n';
-  p += '【重要：片假名标注】日文题干和选项中出现的所有片假名术语，在mondai和selects的解析文字中必须标注日文原文和英文源词，格式：中文（日文片假名：英文）。例如：客户端服务器（クライアントサーバ：client-server）、表示层（プレゼンテーション層：presentation layer）、功能层（ファンクション層：function layer）、数据库访问层（データベースアクセス層：database access layer）。每个片假名术语首次出现时都要标注，不可遗漏。mondai字段和selects字段都必须执行此规则。\n\n';
+  p += '【重要：片假名标注】所有中文解析文字中，必须用中文作为主文字，后面紧跟括号标注日文原文和英文源词。格式：中文（日文片假名：英文）。例如：功能层（ファンクション層：function layer）、表示层（プレゼンテーション層：presentation layer）。不要直接在正文中写日文片假名再括号标中文，所有正文必须是中文。mondai和selects字段都必须执行。\n\n';
   p += '【题目】\n' + stripHTML(d.mondai) + '\n\n【选项】\n';
   d.selects.forEach(s => { p += s.label + ': ' + stripHTML(s.text) + '\n'; });
   p += '\n【解説】\n' + stripHTML(d.kaisetsu) + '\n';
