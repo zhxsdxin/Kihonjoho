@@ -2032,25 +2032,37 @@ if ('speechSynthesis' in window) {
   speechSynthesis.getVoices();
 }
 let ttsPlaying = false;
+let ttsTimer = null;
+function stopTTS(btn) {
+  speechSynthesis.cancel();
+  ttsPlaying = false;
+  if (btn) btn.classList.remove('speaking');
+  if (ttsTimer) { clearTimeout(ttsTimer); ttsTimer = null; }
+}
 function playTTS(parts, btn) {
   if (!parts.length) return;
-  speechSynthesis.cancel();
+  stopTTS();
+  // 估算朗读时长（约90ms/字符），作为看门狗防止状态卡死
+  const estMs = parts.reduce((s, p) => s + Math.max(800, p.text.length * 90), 0) + 1500;
+  ttsPlaying = true;
+  btn.classList.add('speaking');
   setTimeout(() => {
     let done = 0;
+    const finish = () => { if (++done >= parts.length) { stopTTS(btn); } };
     parts.forEach(p => {
       const u = new SpeechSynthesisUtterance(p.text);
       u.lang = p.lang; u.rate = 0.85;
-      u.onend = u.onerror = () => { if (++done === parts.length) { ttsPlaying = false; btn.classList.remove('speaking'); } };
+      u.onend = finish;
+      u.onerror = finish;
       speechSynthesis.speak(u);
     });
-    ttsPlaying = true;
-    btn.classList.add('speaking');
+    ttsTimer = setTimeout(() => { stopTTS(btn); }, estMs);
   }, 60);
 }
 function speakExplain() {
   if (!('speechSynthesis' in window)) { alert('当前浏览器不支持语音朗读'); return; }
   const btn = document.getElementById('selTransSpeak');
-  if (ttsPlaying) { speechSynthesis.cancel(); ttsPlaying = false; btn.classList.remove('speaking'); return; }
+  if (ttsPlaying) { stopTTS(btn); return; }
   let word = lastExplainTTS.word;
   let answer = lastExplainTTS.answer;
   if (!word) {
@@ -2081,7 +2093,7 @@ function speakExplain() {
 function speakSelection() {
   if (!('speechSynthesis' in window)) { alert('当前浏览器不支持语音朗读'); return; }
   const btn = document.getElementById('selSpeakBtn');
-  if (ttsPlaying) { speechSynthesis.cancel(); ttsPlaying = false; btn.classList.remove('speaking'); return; }
+  if (ttsPlaying) { stopTTS(btn); return; }
   const sel = window.getSelection();
   const text = (lastSelText || sel.toString()).trim();
   if (!text || text.length > 1000) { alert('请先选中要朗读的文字'); return; }
@@ -2111,7 +2123,7 @@ document.addEventListener('click', (e) => {
   const textEl = document.getElementById('selTransText');
   // AI用语解说结果：点击空白处才消失
   if (el && textEl.textContent.includes('💡') && el.className === 'show') {
-    if (!el.contains(e.target)) { el.className = 'hide'; setTimeout(() => { el.className = ''; textEl.textContent = ''; }, 800); speechSynthesis.cancel(); }
+    if (!el.contains(e.target)) { el.className = 'hide'; setTimeout(() => { el.className = ''; textEl.textContent = ''; }, 800); stopTTS(); }
     return;
   }
   if (!lastSelText || !lastSelRect) {
