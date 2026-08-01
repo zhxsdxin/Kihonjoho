@@ -358,6 +358,10 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 #selTransResult { position: fixed; z-index: 200; top: 50%; left: 50%; transform: translate(-50%,-50%); background: var(--surface); border: 1px solid var(--primary); border-radius: 8px; padding: 12px 16px; font-size: 14px; line-height: 1.7; box-shadow: 0 4px 20px rgba(0,0,0,.2); display: none; max-width: 380px; transition: opacity .8s; }
 #selTransResult.show { display: block; }
 #selTransResult.hide { opacity: 0; }
+#selTransSpeak { position: absolute; top: 4px; right: 4px; border: none; background: none; font-size: 15px; cursor: pointer; opacity: .6; color: var(--text); }
+#selTransSpeak:hover { opacity: 1; }
+#selTransSpeak.speaking { opacity: 1; color: var(--primary); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
 </style>
 </head>
 <body>
@@ -376,7 +380,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <kbd>X</kbd> AI講解　<kbd>長押X</kbd> 解析強制再取得　<kbd>F</kbd> 強制再取得<br>
     <kbd>D</kbd> 草稿　<kbd>M</kbd> 暗記モード　<kbd>N</kbd> 自動送り<br>
     <kbd>Space</kbd> 正解表示/非表示　<kbd>A</kbd> 全問 <kbd>U</kbd> 未回答 <kbd>C</kbd> 正解 <kbd>W</kbd> 不正解<br>
-    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択翻訳　<kbd>O</kbd> AI用語解説　<kbd>K</kbd> API Key管理
+    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択翻訳　<kbd>O</kbd> AI用語解説　<kbd>L</kbd> 朗読　<kbd>K</kbd> API Key管理
   </div>
   <div class="toolbar">
     <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
@@ -494,6 +498,8 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   <button class="side-btn" id="sideImportBtn" title="导入 (I)">📥</button>
 </div>
 <button id="fabBtn" title="菜单">☰</button>
+
+<div id="selTransResult"><span id="selTransText"></span><button id="selTransSpeak" title="朗读 (L)">🔊</button></div>
 
 <script>
 // ===================== CONFIG =====================
@@ -1567,6 +1573,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'k' || e.key === 'K') keyMgrBtn.click();
   else if (e.key === 'h' || e.key === 'H') toggleSidebar();
   else if (e.key === 'o' || e.key === 'O') { e.preventDefault(); doSelExplain(); }
+  else if (e.key === 'l' || e.key === 'L') { e.preventDefault(); speakExplain(); }
 });
 
 // ===================== LOAD FULL DATA =====================
@@ -1914,16 +1921,17 @@ async function doSelTranslate() {
   const k = cacheKey('fe_seltrans_', text);
   const cached = localStorage.getItem(k);
   if (cached) {
-    const resultEl = document.getElementById('selTransResult');
-    resultEl.textContent = cached;
-    resultEl.className = 'show';
+    const textEl = document.getElementById('selTransText');
+    textEl.textContent = cached;
+    document.getElementById('selTransResult').className = 'show';
     lastSelText = ''; lastSelRect = null;
-    setTimeout(() => { resultEl.className = 'hide'; }, 3000);
-    setTimeout(() => { resultEl.className = ''; }, 3800);
+    setTimeout(() => { document.getElementById('selTransResult').className = 'hide'; }, 3000);
+    setTimeout(() => { document.getElementById('selTransResult').className = ''; }, 3800);
     return;
   }
   selTransBtn.textContent = '…';
   const resultEl = document.getElementById('selTransResult');
+  const textEl = document.getElementById('selTransText');
   try {
     const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ja&tl=zh-CN&dt=t&q=' + encodeURIComponent(text);
     const res = await fetch(url);
@@ -1931,7 +1939,7 @@ async function doSelTranslate() {
     const data = await res.json();
     const result = (data?.[0]?.[0]?.[0]) || '翻译失败';
     localStorage.setItem(k, result);
-    resultEl.textContent = result;
+    textEl.textContent = result;
     resultEl.className = 'show';
     lastSelText = ''; lastSelRect = null;
     setTimeout(() => { resultEl.className = 'hide'; }, 3000);
@@ -1953,10 +1961,12 @@ async function doSelExplain() {
   const k = cacheKey('fe_explain_', text);
   const cached = localStorage.getItem(k);
   const resultEl = document.getElementById('selTransResult');
+  const textEl = document.getElementById('selTransText');
   if (cached) {
-    resultEl.textContent = '💡 ' + text + '：' + cached;
+    textEl.textContent = '💡 ' + text + '：' + cached;
     resultEl.className = 'show';
     lastSelText = ''; lastSelRect = null;
+    lastExplainTTS = { word: text, english: extractEnglish(cached) };
     return;
   }
   selExplainBtn.textContent = '…';
@@ -1964,7 +1974,7 @@ async function doSelExplain() {
   let ok = false;
   for (const pid of order) {
     try {
-      resultEl.textContent = 'AI 解析中（' + AI_PROVIDERS[pid].name + '）...';
+      textEl.textContent = 'AI 解析中（' + AI_PROVIDERS[pid].name + '）...';
       resultEl.className = 'show';
       const answer = await callAIWithProvider(pid, state.current, () => ({
         model: AI_PROVIDERS[pid].model,
@@ -1979,28 +1989,73 @@ async function doSelExplain() {
       }));
       if (answer) {
         localStorage.setItem(k, answer);
-        resultEl.textContent = '💡 ' + text + '：' + answer;
+        textEl.textContent = '💡 ' + text + '：' + answer;
         resultEl.className = 'show';
+        lastExplainTTS = { word: text, english: extractEnglish(answer) };
         ok = true; break;
       }
     } catch (e) {
-      resultEl.textContent = AI_PROVIDERS[pid].name + ' 失败: ' + e.message;
+      textEl.textContent = AI_PROVIDERS[pid].name + ' 失败: ' + e.message;
     }
   }
   if (!ok) {
-    resultEl.textContent = '所有AI服务均失败，请检查API Key';
+    textEl.textContent = '所有AI服务均失败，请检查API Key';
     setTimeout(() => { resultEl.className = 'hide'; setTimeout(() => { resultEl.className = ''; }, 800); }, 3000);
   }
   lastSelText = ''; lastSelRect = null;
   selExplainBtn.textContent = '💡';
 }
 
+// ===================== TTS 朗读 =====================
+let lastExplainTTS = { word: '', english: '' };
+function extractEnglish(s) {
+  const m = (s || '').match(/[A-Za-z][A-Za-z-]{0,30}/g);
+  return m ? [...new Set(m)].join(', ') : '';
+}
+// 预热语音引擎（修复 Chrome 首次无声 bug）
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = () => {};
+  speechSynthesis.getVoices();
+}
+function speakExplain() {
+  if (!('speechSynthesis' in window)) { alert('当前浏览器不支持语音朗读'); return; }
+  const btn = document.getElementById('selTransSpeak');
+  speechSynthesis.cancel();
+  if (speechSynthesis.pending) {
+    btn.classList.remove('speaking');
+    setTimeout(() => { speechSynthesis.cancel(); }, 100);
+    return;
+  }
+  let word = lastExplainTTS.word;
+  let english = lastExplainTTS.english;
+  if (!word && !english) {
+    const t = document.getElementById('selTransText').textContent;
+    const katakana = (t.match(/[\u30a0-\u30ff]{2,}/g) || []).join('、');
+    if (katakana) word = katakana;
+    const afterColon = t.split('：').slice(1).join('：');
+    english = extractEnglish(afterColon || t);
+  }
+  if (!word && !english) { alert('没有可朗读的内容'); return; }
+  const parts = [];
+  if (word) parts.push({ text: word, lang: 'ja-JP' });
+  if (english) parts.push({ text: english, lang: 'en-US' });
+  parts.forEach(p => {
+    const u = new SpeechSynthesisUtterance(p.text);
+    u.lang = p.lang; u.rate = 0.85;
+    u.onend = u.onerror = () => { if (!speechSynthesis.speaking && !speechSynthesis.pending) btn.classList.remove('speaking'); };
+    speechSynthesis.speak(u);
+  });
+  btn.classList.add('speaking');
+}
+document.getElementById('selTransSpeak').addEventListener('click', speakExplain);
+
 // 选中后点击选中区域触发翻译
 document.addEventListener('click', (e) => {
   const el = document.getElementById('selTransResult');
+  const textEl = document.getElementById('selTransText');
   // AI用语解说结果：点击空白处才消失
-  if (el && el.textContent.includes('💡') && el.className === 'show') {
-    if (!el.contains(e.target)) { el.className = 'hide'; setTimeout(() => { el.className = ''; el.textContent = ''; }, 800); }
+  if (el && textEl.textContent.includes('💡') && el.className === 'show') {
+    if (!el.contains(e.target)) { el.className = 'hide'; setTimeout(() => { el.className = ''; textEl.textContent = ''; }, 800); speechSynthesis.cancel(); }
     return;
   }
   if (!lastSelText || !lastSelRect) {
@@ -2018,6 +2073,5 @@ document.addEventListener('click', (e) => {
 });
 </script>
 
-<div id="selTransResult"></div>
 </body>
 </html>
