@@ -1966,7 +1966,7 @@ async function doSelExplain() {
     textEl.textContent = '💡 ' + text + '：' + cached;
     resultEl.className = 'show';
     lastSelText = ''; lastSelRect = null;
-    lastExplainTTS = { word: text, english: extractEnglish(cached) };
+    lastExplainTTS = { word: text, lang: isAsciiWord(text) ? 'en-US' : 'ja-JP' };
     return;
   }
   selExplainBtn.textContent = '…';
@@ -1991,7 +1991,7 @@ async function doSelExplain() {
         localStorage.setItem(k, answer);
         textEl.textContent = '💡 ' + text + '：' + answer;
         resultEl.className = 'show';
-        lastExplainTTS = { word: text, english: extractEnglish(answer) };
+        lastExplainTTS = { word: text, lang: isAsciiWord(text) ? 'en-US' : 'ja-JP' };
         ok = true; break;
       }
     } catch (e) {
@@ -2007,10 +2007,9 @@ async function doSelExplain() {
 }
 
 // ===================== TTS 朗读 =====================
-let lastExplainTTS = { word: '', english: '' };
-function extractEnglish(s) {
-  const m = (s || '').match(/[A-Za-z][A-Za-z-]{0,30}/g);
-  return m ? [...new Set(m)].join(', ') : '';
+let lastExplainTTS = { word: '', lang: 'ja-JP' };
+function isAsciiWord(s) {
+  return /^[A-Za-z][A-Za-z0-9_-]*$/.test((s || '').trim());
 }
 // 预热语音引擎（修复 Chrome 首次无声 bug）
 if ('speechSynthesis' in window) {
@@ -2023,18 +2022,15 @@ function speakExplain() {
   const btn = document.getElementById('selTransSpeak');
   if (ttsPlaying) { speechSynthesis.cancel(); ttsPlaying = false; btn.classList.remove('speaking'); return; }
   let word = lastExplainTTS.word;
-  let english = lastExplainTTS.english;
-  if (!word && !english) {
+  let lang = lastExplainTTS.lang;
+  if (!word) {
     const t = document.getElementById('selTransText').textContent;
-    const katakana = (t.match(/[\u30a0-\u30ff]{2,}/g) || []).join('、');
-    if (katakana) word = katakana;
-    const afterColon = t.split('：').slice(1).join('：');
-    english = extractEnglish(afterColon || t);
+    const m = t.match(/💡\s*([^：:]+)/);
+    if (m) word = m[1].trim();
+    lang = isAsciiWord(word) ? 'en-US' : 'ja-JP';
   }
-  if (!word && !english) { alert('没有可朗读的内容'); return; }
-  const parts = [];
-  if (word) parts.push({ text: word, lang: 'ja-JP' });
-  if (english) parts.push({ text: english, lang: 'en-US' });
+  if (!word) { alert('没有可朗读的内容'); return; }
+  const parts = [{ text: word, lang }];
   speechSynthesis.cancel();
   setTimeout(() => {
     let done = 0;
