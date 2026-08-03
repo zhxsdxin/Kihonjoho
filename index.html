@@ -1235,14 +1235,15 @@ function validateKeyFormat(raw) {
   let s = String(raw || '').trim();
   s = s.replace(/^["'‘’“”]+|["'‘’“”]+$/g, '');
   // 扫描到第一个 "sk-"（后跟至少15个键字符）并从其开始截取，
-  // 自动清理 "deepseek:"/"api_key="/"Bearer"/中文说明文字等无关前缀
-  const m = s.match(/sk-([A-Za-z0-9_-]{15,})/i);
+  // 自动清理 "deepseek:"/"api_key="/"Bearer"/中文说明文字等无关前缀。
+  // 允许 - . _（DashScope/百炼 新老 key 都含这些字符，如 sk-ws-… / sk-sp-…）
+  const m = s.match(/sk-([A-Za-z0-9._-]{15,})/i);
   if (m) s = 'sk-' + m[1];
   if (!s) return { ok: false, msg: 'API キーが入力されていません' };
   if (!/^sk-/i.test(s)) return { ok: false, msg: 'キーの形式をご確認ください。API キーは通常「sk-」で始まります。' };
   if (s.length < 20) return { ok: false, msg: 'キーが短すぎます。正しい API キーをご確認ください。' };
   if (s.length > 200) return { ok: false, msg: 'キーが長すぎます。正しい API キーをご確認ください。' };
-  if (/[^A-Za-z0-9_\-]/.test(s)) return { ok: false, msg: 'キーに余計な文字（空白・記号）が含まれています。' };
+  if (/[^A-Za-z0-9._\-]/.test(s)) return { ok: false, msg: 'キーに余計な文字（空白・記号）が含まれています。' };
   return { ok: true, value: s };
 }
 
@@ -1280,7 +1281,7 @@ function promptForKey(title, desc, current, inputType, validate) {
     input.oninput = () => {
       if (validate === validateKeyFormat) {
         // API キー入力時：粘贴/输入时实时扫描 "sk-" 并从其开始截取，自动清掉 deepseek: 等前缀
-        const m = input.value.match(/sk-([A-Za-z0-9_-]*)/i);
+        const m = input.value.match(/sk-([A-Za-z0-9._-]*)/i);
         if (m && m.index > 0) input.value = 'sk-' + m[1];
         // 复用 replaceKey 同一套校验：太短/格式不对实时报错
         if (input.value.trim()) {
