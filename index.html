@@ -363,6 +363,30 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 #selTransSpeak.speaking { opacity: 1; color: var(--primary); animation: pulse 1s infinite; }
 #selSpeakBtn.speaking { opacity: 1; color: var(--primary); animation: pulse 1s infinite; }
 @keyframes pulse { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
+/* ===== API Key 输入弹窗（兼容移动端，替代 iOS 不支持的 prompt） ===== */
+#keyModal { display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; }
+#keyModal.show { display: flex; }
+#keyModal .km-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+#keyModal .km-dialog {
+  position: relative; width: min(90vw, 400px); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 12px; padding: 20px 18px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.25);
+}
+#keyModal .km-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+#keyModal .km-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; word-break: break-all; }
+#keyModal input {
+  width: 100%; box-sizing: border-box; padding: 10px 12px; font-size: 14px;
+  border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text);
+  font-family: inherit; outline: none;
+}
+#keyModal input:focus { border-color: var(--primary); }
+#keyModal .km-err { color: var(--incorrect-text, #e53935); font-size: 12px; margin-top: 8px; line-height: 1.5; display: none; word-break: break-all; }
+#keyModal .km-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+#keyModal .km-actions button {
+  padding: 8px 18px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); font-size: 13px; cursor: pointer; font-family: inherit;
+}
+#keyModal .km-actions button.km-ok { background: var(--primary); color: #fff; border-color: var(--primary); }
 </style>
 </head>
 <body>
@@ -392,15 +416,15 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <option value="incorrect">不正解</option>
       <option value="bookmark">ブックマーク</option>
     </select>
-    <button id="randomBtn" title="随机 (R)" style="display:none">🎲 ランダム</button>
-    <button id="shuffleToggle" title="打乱 (S)">🔀 打順</button>
+    <button id="randomBtn" title="ランダム (R)" style="display:none">🎲 ランダム</button>
+    <button id="shuffleToggle" title="シャッフル (S)">🔀 打順</button>
     <button id="gridToggle" title="一覧 (G)">📋 一覧</button>
-    <button id="draftToggle" title="草稿 (D)">✏ 草稿</button>
-    <button id="memorizeBtn" title="背题模式 (M)">📖 暗記</button>
+    <button id="draftToggle" title="メモ (D)">✏ メモ</button>
+    <button id="memorizeBtn" title="暗記モード (M)">📖 暗記</button>
     <span class="spacer"></span>
     <span class="progress-text" id="progressText">0/80</span>
-    <button id="exportBtn" title="导出数据 (E)">📤</button>
-    <button id="importBtn" title="导入数据 (I)">📥</button>
+    <button id="exportBtn" title="データ書き出し (E)">📤</button>
+    <button id="importBtn" title="データ読み込み (I)">📥</button>
     <input type="file" id="importFile" accept=".json" style="display:none">
   </div>
   <div id="keyMgrPanel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:8px;font-size:12px;line-height:2">
@@ -414,11 +438,11 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <a class="q-number" id="qNumber" href="#" target="_blank" title="原題を開く">問1</a>
       <div class="q-status">
         <button id="markBookmark" title="ブックマーク (B)">★</button>
-        <button id="selExplainBtn" title="AI解释选中词 (O)" style="font-size:13px">💡</button>
-        <button id="aiExplainBtn" title="AI中文讲解 (X)" style="font-size:13px">🤖</button>
+        <button id="selExplainBtn" title="選択語をAI解説 (O)" style="font-size:13px">💡</button>
+        <button id="aiExplainBtn" title="AI中国語解説 (X)" style="font-size:13px">🤖</button>
         <button id="keyMgrBtn" title="API Key管理 (K)" style="font-size:13px">🔑</button>
-        <button id="selSpeakBtn" title="朗读选中文字 (P)" style="font-size:13px">🔊</button>
-        <button id="selTransBtn" title="翻译选中文字 (V)" style="font-size:13px">📝</button>
+        <button id="selSpeakBtn" title="選択文字を読み上げ (P)" style="font-size:13px">🔊</button>
+        <button id="selTransBtn" title="選択文字を翻訳 (V)" style="font-size:13px">📝</button>
         <button id="translateBtn" title="日中切替 (T)" style="font-size:13px">中</button>
       </div>
     </div>
@@ -434,7 +458,7 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <div class="answer-section" id="answerSection">
         <h3>正解</h3>
         <span id="answerChar"></span>
-        <button id="showAnswerBtn" title="表示/收起 (Space)">正解を表示する</button>
+        <button id="showAnswerBtn" title="表示/非表示 (Space)">正解を表示する</button>
       </div>
       <div class="explanation-section" id="explanationSection">
         <h3>解説</h3>
@@ -461,8 +485,8 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 <div id="scratchpad">
   <div class="sp-drag-handle" id="spDragHandle"></div>
   <div class="sp-header">
-    <span class="sp-title">✏ 草稿</span>
-    <button id="spClear">🗑 清除</button>
+    <span class="sp-title">✏ メモ</span>
+    <button id="spClear">🗑 消去</button>
     <button id="spClose">✕</button>
   </div>
   <canvas id="spCanvas"></canvas>
@@ -473,9 +497,9 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <button class="color-dot" data-color="#34a853" style="background:#34a853"></button>
     <button class="color-dot" data-color="#f9ab00" style="background:#f9ab00"></button>
     <span style="margin:0 4px;color:var(--text-secondary)">|</span>
-    <button data-size="2" class="active">细</button>
+    <button data-size="2" class="active">細</button>
     <button data-size="5">中</button>
-    <button data-size="10">粗</button>
+    <button data-size="10">太</button>
   </div>
 </div>
 
@@ -496,12 +520,27 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   <button class="side-btn" id="sideDraftBtn" title="草稿 (D)">✏</button>
   <button class="side-btn" id="sideMemorizeBtn" title="暗記 (M)">📖</button>
   <div class="side-div"></div>
-  <button class="side-btn" id="sideExportBtn" title="导出 (E)">📤</button>
-  <button class="side-btn" id="sideImportBtn" title="导入 (I)">📥</button>
+  <button class="side-btn" id="sideExportBtn" title="データ書き出し (E)">📤</button>
+  <button class="side-btn" id="sideImportBtn" title="データ読み込み (I)">📥</button>
 </div>
-<button id="fabBtn" title="菜单">☰</button>
+<button id="fabBtn" title="メニュー">☰</button>
 
-<div id="selTransResult"><span id="selTransText"></span><button id="selTransSpeak" title="朗读 (L)">🔊</button></div>
+<div id="selTransResult"><span id="selTransText"></span><button id="selTransSpeak" title="読み上げ (L)">🔊</button></div>
+
+<!-- API Key 输入弹窗（移动端代替 prompt） -->
+<div id="keyModal">
+  <div class="km-overlay" id="kmOverlay"></div>
+  <div class="km-dialog">
+    <div class="km-title" id="kmTitle">API Key</div>
+    <div class="km-desc" id="kmDesc"></div>
+    <input type="password" id="kmInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <div class="km-err" id="kmErr"></div>
+    <div class="km-actions">
+      <button id="kmCancel">キャンセル</button>
+      <button class="km-ok" id="kmOk">保存</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ===================== CONFIG =====================
@@ -623,8 +662,8 @@ function renderKeyPanel() {
     html += '<span>' + p.name + ':</span>';
     if (k) {
       html += '<span class="key-ok">✓ ' + maskKey(k) + '</span>';
-      html += '<button class="km-del" data-kid="' + id + '" onclick="deleteKey(\'' + id + '\')">删除</button>';
-      html += '<button class="km-set" data-kid="' + id + '" onclick="replaceKey(\'' + id + '\')">更换</button>';
+      html += '<button class="km-del" data-kid="' + id + '" onclick="deleteKey(\'' + id + '\')">削除</button>';
+      html += '<button class="km-set" data-kid="' + id + '" onclick="replaceKey(\'' + id + '\')">置換</button>';
     } else {
       html += '<span class="key-missing">✗ 未設定</span>';
       html += '<button class="km-set" data-kid="' + id + '" onclick="replaceKey(\'' + id + '\')">設定</button>';
@@ -639,8 +678,8 @@ function deleteKey(id) { localStorage.removeItem(getProviderKey(id)); renderKeyP
 
 function replaceKey(id) {
   const p = AI_PROVIDERS[id];
-  const k = prompt('请输入新的 ' + p.name + ' API Key\n获取: ' + p.keyHelp);
-  if (k) { localStorage.setItem(getProviderKey(id), k); renderKeyPanel(); }
+  promptForKey('置換 ' + p.name + ' API キー', '取得: ' + p.keyHelp, localStorage.getItem(getProviderKey(id)) || '', 'password', validateKeyFormat)
+    .then(k => { if (k) { localStorage.setItem(getProviderKey(id), k); renderKeyPanel(); } });
 }
 
 let keyMgrFocused = null;
@@ -713,10 +752,20 @@ function updateGrid() {
   }
 }
 
+// 兼容旧版 WebView（国内安卓浏览器常见，无 AbortSignal.timeout）
+function timeoutSignal(ms) {
+  if (window.AbortSignal && typeof AbortSignal.timeout === 'function') return AbortSignal.timeout(ms);
+  return null;
+}
+function fetchOpts(ms) {
+  const sig = timeoutSignal(ms);
+  return sig ? { signal: sig } : {};
+}
+
 // ===================== LOCAL FILE LOADER =====================
 async function tryLocalFile(num) {
   try {
-    const res = await fetch(LOCAL_PAGES_DIR + 'q' + num + '.html', { signal: AbortSignal.timeout(2000) });
+    const res = await fetch(LOCAL_PAGES_DIR + 'q' + num + '.html', fetchOpts(3000));
     if (res.ok) return await res.text();
   } catch (e) { /* 不存在 */ }
   return null;
@@ -997,7 +1046,7 @@ function applyTr() {
   translateBtn.textContent = '日';
   translateBtn.classList.add('active');
   translateBtn.classList.add('force-ready');
-  translateBtn.title = '×收起 长按强制重译';
+  translateBtn.title = '×閉じる 長押しで強制再翻訳';
   localStorage.setItem('lastTranslated', '1');
 }
 
@@ -1031,7 +1080,7 @@ async function loadQuestion(num) {
   loadingEl.innerHTML =
     '<div class="error-msg">' +
     '<div>問' + num + ' の読み込みに失敗しました</div>' +
-    '<div style="font-size:13px;margin-top:6px;color:var(--text-secondary)">本地文件 ' + LOCAL_PAGES_DIR + 'q' + num + '.html 不存在</div>' +
+    '<div style="font-size:13px;margin-top:6px;color:var(--text-secondary)">ローカルファイル ' + LOCAL_PAGES_DIR + 'q' + num + '.html が存在しません</div>' +
     '</div>';
 }
 
@@ -1174,24 +1223,104 @@ async function getProviderKeyPrompt(id) {
   let key = localStorage.getItem(getProviderKey(id));
   if (!key) {
     const p = AI_PROVIDERS[id];
-    key = prompt('请输入 ' + p.name + ' API Key\n（获取: ' + p.keyHelp + '）\n\n两个都有的话，优先用 DeepSeek，遇到图片自动切通义千问');
+    key = await promptForKey(p.name + ' API キーを入力', '取得: ' + p.keyHelp + '\n両方あれば DeepSeek 優先、画像があると自動で通義千問', '', 'password', validateKeyFormat);
     if (!key) return null;
     localStorage.setItem(getProviderKey(id), key);
   }
   return key;
 }
 
+// 校验 API Key 格式（DeepSeek / DashScope 都以 sk- 开头）
+function validateKeyFormat(raw) {
+  let s = String(raw || '').trim();
+  s = s.replace(/^["'‘’“”]+|["'‘’“”]+$/g, '');
+  // 扫描到第一个 "sk-"（后跟至少15个键字符）并从其开始截取，
+  // 自动清理 "deepseek:"/"api_key="/"Bearer"/中文说明文字等无关前缀
+  const m = s.match(/sk-([A-Za-z0-9_-]{15,})/i);
+  if (m) s = 'sk-' + m[1];
+  if (!s) return { ok: false, msg: 'API キーが入力されていません' };
+  if (!/^sk-/i.test(s)) return { ok: false, msg: 'キーの形式をご確認ください。API キーは通常「sk-」で始まります。' };
+  if (s.length < 20) return { ok: false, msg: 'キーが短すぎます。正しい API キーをご確認ください。' };
+  if (s.length > 200) return { ok: false, msg: 'キーが長すぎます。正しい API キーをご確認ください。' };
+  if (/[^A-Za-z0-9_\-]/.test(s)) return { ok: false, msg: 'キーに余計な文字（空白・記号）が含まれています。' };
+  return { ok: true, value: s };
+}
+
+// 页面内 API Key 输入弹窗（iOS Safari 不支持 prompt()，会导致按钮点了没反应）
+function promptForKey(title, desc, current, inputType, validate) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('keyModal');
+    document.getElementById('kmTitle').textContent = title;
+    document.getElementById('kmDesc').textContent = desc || '';
+    const input = document.getElementById('kmInput');
+    const errEl = document.getElementById('kmErr');
+    input.type = inputType || 'password';
+    input.value = current || '';
+    modal.classList.add('show');
+    errEl.style.display = 'none';
+    setTimeout(() => input.focus(), 50);
+    let done = false;
+    const finish = (val) => { if (done) return; done = true; modal.classList.remove('show'); errEl.style.display = 'none'; resolve(val); };
+    const submit = () => {
+      if (validate) {
+        const r = validate(input.value);
+        if (!r.ok) { errEl.textContent = r.msg; errEl.style.display = 'block'; return; }
+        finish(r.value);
+        return;
+      }
+      finish(input.value.trim() || null);
+    };
+    document.getElementById('kmOk').onclick = submit;
+    document.getElementById('kmCancel').onclick = () => finish(null);
+    document.getElementById('kmOverlay').onclick = () => finish(null);
+    input.onkeydown = (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); submit(); }
+      else if (e.key === 'Escape') finish(null);
+    };
+    input.oninput = () => {
+      if (validate === validateKeyFormat) {
+        // API キー入力時：粘贴/输入时实时扫描 "sk-" 并从其开始截取，自动清掉 deepseek: 等前缀
+        const m = input.value.match(/sk-([A-Za-z0-9_-]*)/i);
+        if (m && m.index > 0) input.value = 'sk-' + m[1];
+        // 复用 replaceKey 同一套校验：太短/格式不对实时报错
+        if (input.value.trim()) {
+          const r = validateKeyFormat(input.value);
+          if (!r.ok) { errEl.textContent = r.msg; errEl.style.display = 'block'; }
+          else errEl.style.display = 'none';
+        } else {
+          errEl.style.display = 'none';
+        }
+      } else {
+        errEl.style.display = 'none';
+      }
+    };
+  });
+}
+
 async function callAIWithProvider(providerId, num, buildBody) {
   const provider = AI_PROVIDERS[providerId];
   const key = await getProviderKeyPrompt(providerId);
   if (!key) return null;
-  const res = await fetch(provider.api, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-    body: JSON.stringify(buildBody())
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 45000); // 防止无限"解析中"
+  let res;
+  try {
+    res = await fetch(provider.api, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify(buildBody()),
+      signal: controller.signal
+    });
+  } catch (e) {
+    clearTimeout(timer);
+    if (e.name === 'AbortError') throw new Error('リクエストがタイムアウトしました（45秒）。ネットワークを確認してください');
+    throw new Error('ネットワークエラー: ' + e.message);
+  }
+  clearTimeout(timer);
   if (!res.ok) {
-    if (res.status === 401) localStorage.removeItem(getProviderKey(providerId)); // 仅key无效时清除
+    // 不自动删除 key：刚输入的 key 若因无效被 401，会被误认为"没保存成功"。
+    // 改为抛出明确错误，由用户决定是否在 🔑 里删除/更换。
+    if (res.status === 401) throw new Error('API キーが無効です（401）。🔑 でキーをご確認ください');
     return null;
   }
   const data = await res.json();
@@ -1203,7 +1332,7 @@ async function callAIExplain() {
   const d = state.data[num];
   if (!d) return;
   clearAI();
-  aiMondaiPanel.textContent = 'AI 正在解析中...';
+  aiMondaiPanel.textContent = 'AI 解析中...';
   aiMondaiPanel.classList.add('ai-visible', 'loading-ai');
   explanationSection.classList.add('visible');
 
@@ -1224,7 +1353,7 @@ async function callAIExplain() {
           if (dataURL) imgParts.push({ type: 'image_url', image_url: { url: dataURL } });
         }
       }
-      aiMondaiPanel.textContent = pid === 'qwen' && imgURLs.length ? 'AI 解析中（通义千问 + 图片）...' : 'AI 正在解析中...';
+      aiMondaiPanel.textContent = pid === 'qwen' && imgURLs.length ? 'AI 解析中（通義千問 + 画像）...' : 'AI 解析中...';
       text = await callAIWithProvider(pid, num, () => ({
         model: provider.model,
         messages: [{
@@ -1237,30 +1366,40 @@ async function callAIExplain() {
         temperature: 0.7, max_tokens: 4096
       }));
       if (text) { usedProvider = provider.name; break; }
-    } catch (e) { /* 静默重试下一个 */ }
+    } catch (e) {
+      // 不静默：告诉用户当前服务失败，正在切换重试
+      aiMondaiPanel.textContent = provider.name + ' 失敗。自動で切り替えて再試行... ' + e.message;
+    }
   }
 
-  // 两个都失败了 → 清除 key 重新问
+  // 两个都失败了 → 重新问一次（key 不再自动清除，仅在用户操作时删除）
   if (!text) {
-    for (const pid of order) { localStorage.removeItem(getProviderKey(pid)); }
-    text = await callAIWithProvider(order[0], num, () => ({
-      model: AI_PROVIDERS[order[0]].model,
-      messages: [{ role: 'user', content: buildAIPrompt(num) }],
-      response_format: { type: 'json_object' },
-      temperature: 0.7, max_tokens: 4096
-    }));
-    if (!text) {
-      text = await callAIWithProvider(order[1], num, () => ({
-        model: AI_PROVIDERS[order[1]].model,
+    try {
+      text = await callAIWithProvider(order[0], num, () => ({
+        model: AI_PROVIDERS[order[0]].model,
         messages: [{ role: 'user', content: buildAIPrompt(num) }],
         response_format: { type: 'json_object' },
         temperature: 0.7, max_tokens: 4096
       }));
+    } catch (e) {
+      aiMondaiPanel.textContent = AI_PROVIDERS[order[0]].name + ' 失敗: ' + e.message;
+    }
+    if (!text) {
+      try {
+        text = await callAIWithProvider(order[1], num, () => ({
+          model: AI_PROVIDERS[order[1]].model,
+          messages: [{ role: 'user', content: buildAIPrompt(num) }],
+          response_format: { type: 'json_object' },
+          temperature: 0.7, max_tokens: 4096
+        }));
+      } catch (e) {
+        aiMondaiPanel.textContent = AI_PROVIDERS[order[1]].name + ' 失敗: ' + e.message;
+      }
     }
   }
 
   if (!text) {
-    aiMondaiPanel.textContent = '所有 AI 服务均失败，请检查 API Key 或稍后重试';
+    aiMondaiPanel.textContent = 'すべての AI サービスが失敗しました。API キーを確認するか、しばらくして再試行してください';
     aiMondaiPanel.classList.remove('loading-ai');
     return;
   }
@@ -1283,7 +1422,7 @@ function clearAI() {
   aiSummaryPanel.innerHTML = '';
   aiSummaryPanel.classList.remove('ai-visible');
   aiExplainBtn.classList.remove('force-ready');
-  aiExplainBtn.title = 'AI中文讲解 (X)';
+  aiExplainBtn.title = 'AI中国語解説 (X)';
   selectList.querySelectorAll('.ai-select-panel').forEach(p => { p.innerHTML = ''; p.classList.remove('ai-visible'); });
 }
 
@@ -1334,7 +1473,7 @@ function renderAIData(aiData) {
   if (aiData.mondai || aiData.selects || aiData.summary) {
     explanationSection.classList.add('visible');
     aiExplainBtn.classList.add('force-ready');
-    aiExplainBtn.title = '×收起 长按强制重解析';
+    aiExplainBtn.title = '×閉じる 長押しで強制再解析';
   }
   if (window.MathJax) {
     const els = document.querySelectorAll('.ai-panel.ai-visible, .ai-select-panel.ai-visible');
@@ -1347,7 +1486,7 @@ function renderAIFallback(text) {
   aiMondaiPanel.classList.add('ai-visible');
   explanationSection.classList.add('visible');
   aiExplainBtn.classList.add('force-ready');
-  aiExplainBtn.title = '×收起 长按强制重解析';
+  aiExplainBtn.title = '×閉じる 長押しで強制再解析';
   if (window.MathJax) MathJax.typesetPromise([aiMondaiPanel]);
 }
 
@@ -1452,7 +1591,7 @@ exportBtn.addEventListener('click', () => {
 importBtn.addEventListener('click', () => importFile.click());
 
 function importFromData(data) {
-  if (!data.marks && !data.translations) { alert('无效的备份文件'); return false; }
+  if (!data.marks && !data.translations) { alert('無効なバックアップファイルです'); return false; }
   if (data.marks) {
     Object.assign(state.marks, data.marks);
     saveMarks();
@@ -1464,7 +1603,7 @@ function importFromData(data) {
   }
   updateProgress();
   if (state.data[state.current]) displayQuestion(state.current, state.data[state.current]);
-  alert('导入完成！已恢复 ' + Object.keys(data.marks || {}).filter(k => data.marks[k]).length + ' 条答题记录 + ' + Object.keys(data.translations || {}).length + ' 条翻译缓存');
+  alert('インポート完了！解答記録 ' + Object.keys(data.marks || {}).filter(k => data.marks[k]).length + ' 件 + 翻訳キャッシュ ' + Object.keys(data.translations || {}).length + ' 件を復元しました');
   return true;
 }
 
@@ -1477,7 +1616,7 @@ importFile.addEventListener('change', (e) => {
       const data = JSON.parse(ev.target.result);
       importFromData(data);
     } catch (err) {
-      alert('导入失败: ' + err.message);
+      alert('インポート失敗: ' + err.message);
     }
   };
   reader.readAsText(file);
@@ -1500,19 +1639,19 @@ document.addEventListener('paste', (e) => {
 let dragCounter = 0;
 const dropOverlay = document.createElement('div');
 dropOverlay.id = 'dropOverlay';
-dropOverlay.innerHTML = '<div class="dropText">📥 松开导入备份文件</div>';
+dropOverlay.innerHTML = '<div class="dropText">📥 放してインポート</div>';
 document.body.appendChild(dropOverlay);
 
 function handleDropFile(file) {
-  if (!file || !file.name.endsWith('.json')) { alert('请拖入 .json 备份文件'); return; }
+  if (!file || !file.name.endsWith('.json')) { alert('.json バックアップファイルをドロップしてください'); return; }
   const reader = new FileReader();
   reader.onload = (ev) => {
     try {
       const data = JSON.parse(ev.target.result);
-      if (!data.marks && !data.translations) { alert('无效的备份文件'); return; }
+      if (!data.marks && !data.translations) { alert('無効なバックアップファイルです'); return; }
       importFromData(data);
     } catch (err) {
-      alert('导入失败: ' + err.message);
+      alert('インポート失敗: ' + err.message);
     }
   };
   reader.readAsText(file);
@@ -1582,7 +1721,7 @@ document.addEventListener('keydown', e => {
 // ===================== LOAD FULL DATA =====================
 async function loadFullData() {
   try {
-    const res = await fetch(JSON_FILE, { signal: AbortSignal.timeout(2000) });
+    const res = await fetch(JSON_FILE, fetchOpts(10000));
     if (!res.ok) return false;
     const data = await res.json();
     if (data.type === 'full' && data.questions) {
@@ -1666,12 +1805,13 @@ timerEl.addEventListener('click', () => {
   timerClicks++;
   if (timerClicks === 7) {
     timerClicks = 0; clearTimeout(clickTimer);
-    const input = prompt('分钟数（例：90 = 1時間30分）:');
-    const m = parseInt(input);
-    if (!isNaN(m) && m > 0 && m <= 600) {
-      clearInterval(timerId); timerRemain = m * 60; showTimer(); saveTimer();
-      timerId = setInterval(timerTick, 1000); updateTimerColor();
-    }
+    promptForKey('タイマー設定', '分数（例：90 = 1時間30分）', '', 'number').then(input => {
+      const m = parseInt(input);
+      if (!isNaN(m) && m > 0 && m <= 600) {
+        clearInterval(timerId); timerRemain = m * 60; showTimer(); saveTimer();
+        timerId = setInterval(timerTick, 1000); updateTimerColor();
+      }
+    });
     return;
   }
   if (timerClicks === 6) {
@@ -1697,7 +1837,7 @@ Object.entries(YEAR_CONFIGS).forEach(([y, cfg]) => {
 });
 yearSelect.addEventListener('change', () => {
   const newYear = parseInt(yearSelect.value);
-  if (confirm('切换到' + YEAR_CONFIGS[newYear].title + '？')) {
+  if (confirm('「' + YEAR_CONFIGS[newYear].title + '」に切り替えますか？')) {
     setYear(newYear);
     state.data = {};
     state.current = 1;
@@ -1904,10 +2044,12 @@ document.addEventListener('touchend', captureSel);
 document.addEventListener('selectionchange', captureSel);
 function captureSel() {
   const sel = window.getSelection();
+  if (!sel) return;
   const text = sel.toString().trim();
-  if (!sel || sel.isCollapsed || !text || text.length < 2 || text.length > 500 || !/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) {
-    if (lastSelText && Date.now() - selCapturedAt < 800) return;
-    lastSelText = ''; lastSelRect = null; return;
+  if (sel.isCollapsed || !text || text.length < 2 || text.length > 500 || !/[\u3040-\u30ff\u4e00-\u9faf]/.test(text)) {
+    // 不在这里清空 lastSelText：点击按钮/选项会让选区塌缩，若立即清空会导致
+    // 💡/📝 按钮拿不到刚选中的词（移动端尤其明显）。由外部点击处理器统一清理。
+    return;
   }
   lastSelText = text; selCapturedAt = Date.now();
   try { lastSelRect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e) { lastSelText = ''; }
@@ -1920,7 +2062,8 @@ function cacheKey(prefix, text) { return prefix + text; }
 async function doSelTranslate() {
   const sel = window.getSelection();
   const text = (lastSelText || sel.toString()).trim();
-  if (!text || text.length < 2 || text.length > 500) { alert('请先选中要翻译的文字（2-500字）'); return; }
+  if (!text || text.length < 2 || text.length > 500) { alert('翻訳する文字を選択してください（2〜500字）'); return; }
+  document.getElementById('selTransSpeak').style.display = 'none';
   const k = cacheKey('fe_seltrans_', text);
   const cached = localStorage.getItem(k);
   if (cached) {
@@ -1940,7 +2083,7 @@ async function doSelTranslate() {
     const res = await fetch(url);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    const result = (data?.[0]?.[0]?.[0]) || '翻译失败';
+    const result = (data?.[0]?.[0]?.[0]) || '翻訳失敗';
     localStorage.setItem(k, result);
     textEl.textContent = result;
     resultEl.className = 'show';
@@ -1948,7 +2091,7 @@ async function doSelTranslate() {
     setTimeout(() => { resultEl.className = 'hide'; }, 3000);
     setTimeout(() => { resultEl.className = ''; }, 3800);
   } catch (e) {
-    alert('翻译失败: ' + e.message);
+    alert('翻訳失敗: ' + e.message);
   }
   selTransBtn.textContent = '📝';
 }
@@ -1960,7 +2103,8 @@ selExplainBtn.addEventListener('click', async () => { await doSelExplain(); });
 async function doSelExplain() {
   const sel = window.getSelection();
   const text = (lastSelText || sel.toString()).trim();
-  if (!text || text.length < 1 || text.length > 100) { alert('请选中一个词或短语（1-100字）'); return; }
+  if (!text || text.length < 1 || text.length > 100) { alert('単語または語句を選択してください（1〜100字）'); return; }
+  document.getElementById('selTransSpeak').style.display = 'inline';
   const k = cacheKey('fe_explain_', text);
   const cached = localStorage.getItem(k);
   const resultEl = document.getElementById('selTransResult');
@@ -1975,6 +2119,18 @@ async function doSelExplain() {
   selExplainBtn.textContent = '…';
   const order = ['deepseek', 'qwen'];
   let ok = false;
+  // 一个 key 都没有时只弹一次输入框，避免两个 provider 连弹两次
+  if (!order.some(pid => localStorage.getItem(getProviderKey(pid)))) {
+    const k = await getProviderKeyPrompt(order[0]);
+    if (!k) {
+      textEl.textContent = 'API キーが未設定です。🔑 で設定してから再度お試しください';
+      resultEl.className = 'show';
+      setTimeout(() => { resultEl.className = 'hide'; setTimeout(() => { resultEl.className = ''; }, 800); }, 4000);
+      lastSelText = ''; lastSelRect = null;
+      selExplainBtn.textContent = '💡';
+      return;
+    }
+  }
   for (const pid of order) {
     try {
       textEl.textContent = 'AI 解析中（' + AI_PROVIDERS[pid].name + '）...';
@@ -1999,12 +2155,12 @@ async function doSelExplain() {
         ok = true; break;
       }
     } catch (e) {
-      textEl.textContent = AI_PROVIDERS[pid].name + ' 失败: ' + e.message;
+      textEl.textContent = AI_PROVIDERS[pid].name + ' 失敗: ' + e.message;
     }
   }
   if (!ok) {
-    textEl.textContent = '所有AI服务均失败，请检查API Key';
-    setTimeout(() => { resultEl.className = 'hide'; setTimeout(() => { resultEl.className = ''; }, 800); }, 3000);
+    textEl.textContent = 'すべての AI サービスが失敗しました。API キーを確認してください';
+    setTimeout(() => { resultEl.className = 'hide'; setTimeout(() => { resultEl.className = ''; }, 800); }, 8000);
   }
   lastSelText = ''; lastSelRect = null;
   selExplainBtn.textContent = '💡';
@@ -2027,9 +2183,25 @@ function extractArrowEnglish(answer) {
   return w ? w[0].trim() : '';
 }
 // 预热语音引擎（修复 Chrome 首次无声 bug）
+let TTS_VOICES = [];
+function loadVoices() { TTS_VOICES = speechSynthesis.getVoices() || []; }
 if ('speechSynthesis' in window) {
-  speechSynthesis.onvoiceschanged = () => {};
-  speechSynthesis.getVoices();
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+// 按语言挑选音色；优先自然/增强类音色，避免默认（常是系统中文）音色导致英语发音怪异
+const VOICE_PREF = ['Enhanced', 'Premium', 'Neural', 'Online', 'Natural', 'Samantha', 'Daniel', 'Alex', 'Google', 'Microsoft'];
+function pickVoice(lang) {
+  const list = TTS_VOICES;
+  if (!list.length) return null;
+  let exact = list.filter(v => v.lang === lang);
+  if (!exact.length) exact = list.filter(v => v.lang.replace(/-.*/, '') === lang.replace(/-.*/, ''));
+  if (!exact.length) return null;
+  for (const p of VOICE_PREF) {
+    const v = exact.find(v => v.name.includes(p));
+    if (v) return v;
+  }
+  return exact[exact.length - 1];
 }
 let ttsPlaying = false;
 let ttsTimer = null;
@@ -2052,6 +2224,7 @@ function playTTS(parts, btn) {
     parts.forEach(p => {
       const u = new SpeechSynthesisUtterance(p.text);
       u.lang = p.lang; u.rate = 0.85;
+      u.voice = pickVoice(p.lang) || u.voice;
       u.onend = finish;
       u.onerror = finish;
       speechSynthesis.speak(u);
@@ -2060,7 +2233,7 @@ function playTTS(parts, btn) {
   }, 60);
 }
 function speakExplain() {
-  if (!('speechSynthesis' in window)) { alert('当前浏览器不支持语音朗读'); return; }
+  if (!('speechSynthesis' in window)) { alert('このブラウザは音声読み上げに対応していません'); return; }
   const btn = document.getElementById('selTransSpeak');
   if (ttsPlaying) { stopTTS(btn); return; }
   let word = lastExplainTTS.word;
@@ -2072,7 +2245,7 @@ function speakExplain() {
     const am = t.match(/💡\s*[^：:]+[：:]\s*(.+)$/);
     if (am) answer = am[1];
   }
-  if (!word) { alert('没有可朗读的内容'); return; }
+  if (!word) { alert('読み上げる内容がありません'); return; }
   const parts = [];
   if (isAsciiWord(word)) {
     // 情况3：英语或缩写 → 念原文 + 全称
@@ -2091,12 +2264,12 @@ function speakExplain() {
   playTTS(parts, btn);
 }
 function speakSelection() {
-  if (!('speechSynthesis' in window)) { alert('当前浏览器不支持语音朗读'); return; }
+  if (!('speechSynthesis' in window)) { alert('このブラウザは音声読み上げに対応していません'); return; }
   const btn = document.getElementById('selSpeakBtn');
   if (ttsPlaying) { stopTTS(btn); return; }
   const sel = window.getSelection();
   const text = (lastSelText || sel.toString()).trim();
-  if (!text || text.length > 1000) { alert('请先选中要朗读的文字'); return; }
+  if (!text || text.length > 1000) { alert('読み上げる文字を選択してください'); return; }
   // 只念日语和英语部分，跳过中文等
   const parts = [];
   const re = /([\u3040-\u30ff\u4e00-\u9faf\u3000-\u303f]+)|([A-Za-z][A-Za-z0-9'\-]*(?:\s+[A-Za-z][A-Za-z0-9'\-]*)*)/g;
@@ -2105,7 +2278,7 @@ function speakSelection() {
     if (m[1]) parts.push({ text: m[1], lang: 'ja-JP' });
     else if (m[2]) parts.push({ text: m[2], lang: 'en-US' });
   }
-  if (!parts.length) { alert('选中内容不包含日语或英语'); return; }
+  if (!parts.length) { alert('選択内容に日本語または英語が含まれていません'); return; }
   playTTS(parts, btn);
 }
 // 统一入口：有 AI 解析结果时念解析，否则念选中文字
@@ -2121,6 +2294,8 @@ document.getElementById('selSpeakBtn').addEventListener('click', speakSelection)
 document.addEventListener('click', (e) => {
   const el = document.getElementById('selTransResult');
   const textEl = document.getElementById('selTransText');
+  // 工具栏按钮（💡/🤖/📝/🔊 等）自己管理结果，点击时这里不插手
+  if (e.target.closest('.q-status, .btm-nav, .toolbar')) return;
   // AI用语解说结果：点击空白处才消失
   if (el && textEl.textContent.includes('💡') && el.className === 'show') {
     if (!el.contains(e.target)) { el.className = 'hide'; setTimeout(() => { el.className = ''; textEl.textContent = ''; }, 800); stopTTS(); }
