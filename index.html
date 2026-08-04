@@ -94,6 +94,25 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 .toolbar select option { color: #333; background: #fff; }
 .toolbar .spacer { flex: 1; }
 .toolbar .progress-text { font-size: 13px; opacity: .85; white-space: nowrap; }
+/* 快捷键 ⇧ 符号：强制用系统字体渲染，避免与 emoji/日文混排时变细长 */
+.mod { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, 'Segoe UI', 'Helvetica Neue', sans-serif; font-weight: 700; }
+/* 自定义筛选下拉 */
+.filter-wrap { position: relative; display: inline-block; }
+.filter-wrap .caret { font-size: 10px; margin-left: 2px; opacity: .85; }
+.filter-menu {
+  display: none; position: absolute; top: calc(100% + 4px); left: 0; z-index: 100;
+  min-width: 100%; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 4px; box-shadow: 0 8px 24px rgba(0,0,0,.22);
+  white-space: nowrap; max-height: 70vh; overflow-y: auto;
+}
+.filter-menu.show { display: block; }
+.filter-menu .filter-opt {
+  display: block; width: 100%; text-align: left; padding: 6px 10px; border: none;
+  background: none; color: var(--text); font-size: 13px; cursor: pointer;
+  border-radius: 5px; font-family: inherit;
+}
+.filter-menu .filter-opt:hover { background: var(--choice-hover); }
+.filter-menu .filter-opt.active { background: var(--choice-selected); color: var(--primary); font-weight: 700; }
 /* preload 相关样式已移除 */
 #app { max-width: 900px; margin: 0 auto; padding: 16px; }
 #questionArea {
@@ -117,6 +136,14 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
   display: flex; align-items: center; justify-content: center; transition: all .15s;
 }
 .q-status button:hover { transform: scale(1.1); }
+.q-status button { position: relative; }
+.q-status button::before {
+  content: attr(data-key); position: absolute; inset: 0; display: none;
+  align-items: center; justify-content: center; background: var(--surface);
+  border-radius: 50%; font-size: 14px; font-weight: 700; color: var(--text);
+  pointer-events: none;
+}
+.q-status button:hover::before { display: flex; }
 .q-status button.force-ready { position: relative; }
 .q-status button.force-ready::after {
   content: '⟳'; position: absolute; bottom: -12px; font-size: 10px; color: #e65100;
@@ -147,6 +174,8 @@ header .sub { font-size: 12px; opacity: .8; margin-top: 2px; }
 }
 .frac sup { font-size: 10px; }
 .answer-section, .explanation-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+#showAnswerBtn { padding: 6px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font-size: 13px; cursor: pointer; font-family: inherit; transition: all .15s; box-shadow: var(--shadow); white-space: nowrap; }
+#showAnswerBtn:hover { background: var(--choice-hover); }
 .answer-section h3, .explanation-section h3 { font-size: 14px; margin-bottom: 8px; color: var(--text-secondary); }
 #answerChar { font-size: 24px; font-weight: 800; color: var(--correct-text); display: none; }
 .answer-section.visible #answerChar { display: inline; }
@@ -337,6 +366,15 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   transition: all .12s; flex-shrink: 0;
 }
+#sideMenu .side-btn { position: relative; }
+#sideMenu .side-btn .kbd-hint {
+  display: none; position: absolute; inset: 0;
+  align-items: center; justify-content: center; background: var(--surface);
+  border-radius: 8px; font-size: 11px; font-weight: 700; color: var(--text);
+  pointer-events: none;
+}
+#sideMenu .side-btn:hover .kbd-hint { display: flex; }
+body.dark #sideMenu .side-btn .kbd-hint { background: #1e2a3a; }
 #sideMenu .side-btn:hover { background: var(--choice-hover); }
 #sideMenu .side-btn.active { background: var(--primary); color: #fff; }
 #sideMenu .side-btn.side-filter { font-size: 13px; font-weight: 700; }
@@ -349,7 +387,9 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 #shortcutPanel { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-top: 8px; font-size: 12px; line-height: 1.7; color: var(--text-secondary); }
 #shortcutPanel.visible { display: block; }
 #shortcutPanel kbd { display: inline-block; background: var(--header-bg); color: var(--header-text); border-radius: 3px; padding: 0 5px; font-size: 11px; margin: 0 2px; font-family: inherit; }
-#shortcutBtn { font-size: 15px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text-secondary); cursor: pointer; font-family: inherit; vertical-align: middle; }
+.sc-close-btn { display: inline-block; background: var(--choice-hover); color: var(--primary); border-radius: 3px; padding: 0 5px; font-size: 11px; margin: 0 2px; font-family: inherit; border: 1px solid var(--primary); cursor: pointer; }
+.sc-close-btn:hover { background: var(--primary); color: #fff; }
+#shortcutBtn { font-size: 13px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text-secondary); cursor: pointer; font-family: inherit; vertical-align: middle; }
 #keyMgrPanel { font-size: 12px; line-height: 2; color: var(--text); }
 #keyMgrPanel button { font-size: 11px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); color: var(--text); cursor: pointer; margin-left: 6px; font-family: inherit; }
 #keyMgrPanel .key-ok { color: #34a853; font-weight: 600; }
@@ -397,34 +437,32 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   <select id="yearSelect"></select>
   <span class="timer" id="timer">01:30:00</span>
   </div>
-  <div class="sub">全80問 — 解答・解説付き <button id="shortcutBtn" title="ショートカット一覧">⌨</button></div>
+  <div class="sub">全80問 — 解答・解説付き <button id="shortcutBtn" title="ショートカット一覧">⌨ <span class="mod">⇧L</span></button></div>
   <div id="shortcutPanel">
-    <kbd>←</kbd><kbd>→</kbd> 前問/次問<br>
-    <kbd>S</kbd> 選択肢順シャッフル　<kbd>R</kbd> ランダム　<kbd>G</kbd> 一覧<br>
-    <kbd>B</kbd> ブックマーク　<kbd>T</kbd> 日中翻訳切替　<kbd>長押T</kbd> 翻訳強制再取得<br>
-    <kbd>X</kbd> AI講解　<kbd>長押X</kbd> 解析強制再取得　<kbd>F</kbd> 強制再取得<br>
-    <kbd>D</kbd> 草稿　<kbd>M</kbd> 暗記モード　<kbd>N</kbd> 自動送り<br>
-    <kbd>Space</kbd> 正解表示/非表示　<kbd>A</kbd> 全問 <kbd>U</kbd> 未回答 <kbd>C</kbd> 正解 <kbd>W</kbd> 不正解<br>
-    <kbd>1</kbd>-<kbd>4</kbd> 選択肢直接選択　<kbd>V</kbd> 選択翻訳　<kbd>P</kbd>/<kbd>L</kbd> 朗読　<kbd>O</kbd> AI用語解説　<kbd>K</kbd> API Key管理
+    <kbd><span class="mod">⇧</span>Y</kbd> テーマ　<kbd><span class="mod">⇧</span>A</kbd> 全問　<kbd><span class="mod">⇧</span>U</kbd> 未回答　<kbd><span class="mod">⇧</span>C</kbd> 正解　<kbd><span class="mod">⇧</span>W</kbd> 不正解　<kbd><span class="mod">⇧</span>B</kbd> 絞込　<kbd><span class="mod">⇧</span>S</kbd> 打順　<kbd><span class="mod">⇧</span>G</kbd> 一覧　<kbd><span class="mod">⇧</span>D</kbd> メモ　<kbd><span class="mod">⇧</span>M</kbd> 暗記　<kbd><span class="mod">⇧</span>E</kbd> 書き出し　<kbd><span class="mod">⇧</span>I</kbd> 読み込み<br>
+    <kbd>B</kbd> ブックマーク(星)　<kbd>O</kbd> AI用語解説　<kbd>X</kbd> AI講解　<kbd>K</kbd> API Key管理　<kbd>P</kbd> 朗読　<kbd>V</kbd> 選択翻訳　<kbd>T</kbd> 日中翻訳　<kbd>長押T</kbd> 強制再翻訳　<kbd>長押X</kbd> 強制再解析　<kbd>F</kbd> 強制再取得<br>
+    <kbd>←</kbd><kbd>→</kbd> 前問/次問　<kbd><span class="mod">⇧</span>R</kbd> ランダム　<kbd><span class="mod">⇧</span>N</kbd> 自動送り　<kbd>Space</kbd> 正解表示　<kbd>1</kbd>-<kbd>4</kbd> 選択肢　<button id="shortcutCloseBtn" class="sc-close-btn"><span class="mod">⇧</span>L 閉じる</button>
   </div>
   <div class="toolbar">
-    <button id="themeToggle" title="テーマ切替">🌙 ダーク</button>
-    <select id="filterSelect">
-      <option value="all">すべて</option>
-      <option value="unanswered">未回答</option>
-      <option value="correct">正解</option>
-      <option value="incorrect">不正解</option>
-      <option value="bookmark">ブックマーク</option>
-    </select>
-    <button id="randomBtn" title="ランダム (R)" style="display:none">🎲 ランダム</button>
-    <button id="shuffleToggle" title="シャッフル (S)">🔀 打順</button>
-    <button id="gridToggle" title="一覧 (G)">📋 一覧</button>
-    <button id="draftToggle" title="メモ (D)">✏ メモ</button>
-    <button id="memorizeBtn" title="暗記モード (M)">📖 暗記</button>
+    <button id="themeToggle" title="テーマ切替 ⇧Y">🌙 ダーク <span class="mod">⇧Y</span></button>
+    <div class="filter-wrap">
+      <button id="filterSelect" class="filter-trigger" title="絞込（⇧A⇧U⇧C⇧W⇧B）">すべて <span class="mod">⇧A</span> <span class="caret">▾</span></button>
+      <div class="filter-menu" id="filterMenu">
+        <button type="button" class="filter-opt" data-filter="all">すべて <span class="mod">⇧A</span></button>
+        <button type="button" class="filter-opt" data-filter="unanswered">未回答 <span class="mod">⇧U</span></button>
+        <button type="button" class="filter-opt" data-filter="correct">正解 <span class="mod">⇧C</span></button>
+        <button type="button" class="filter-opt" data-filter="incorrect">不正解 <span class="mod">⇧W</span></button>
+        <button type="button" class="filter-opt" data-filter="bookmark">ブックマーク <span class="mod">⇧B</span></button>
+      </div>
+    </div>
+    <button id="shuffleToggle" title="シャッフル ⇧S">🔀 打順 <span class="mod">⇧S</span></button>
+    <button id="gridToggle" title="一覧 ⇧G">📋 一覧 <span class="mod">⇧G</span></button>
+    <button id="draftToggle" title="メモ ⇧D">✏ メモ <span class="mod">⇧D</span></button>
+    <button id="memorizeBtn" title="暗記モード ⇧M">📖 暗記 <span class="mod">⇧M</span></button>
     <span class="spacer"></span>
     <span class="progress-text" id="progressText">0/80</span>
-    <button id="exportBtn" title="データ書き出し (E)">📤</button>
-    <button id="importBtn" title="データ読み込み (I)">📥</button>
+    <button id="exportBtn" title="データ書き出し ⇧E">📤 <span class="mod">⇧E</span></button>
+    <button id="importBtn" title="データ読み込み ⇧I">📥 <span class="mod">⇧I</span></button>
     <input type="file" id="importFile" accept=".json" style="display:none">
   </div>
   <div id="keyMgrPanel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:8px;font-size:12px;line-height:2">
@@ -437,13 +475,13 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
     <div class="q-header">
       <a class="q-number" id="qNumber" href="#" target="_blank" title="原題を開く">問1</a>
       <div class="q-status">
-        <button id="markBookmark" title="ブックマーク (B)">★</button>
-        <button id="selExplainBtn" title="選択語をAI解説 (O)" style="font-size:13px">💡</button>
-        <button id="aiExplainBtn" title="AI中国語解説 (X)" style="font-size:13px">🤖</button>
-        <button id="keyMgrBtn" title="API Key管理 (K)" style="font-size:13px">🔑</button>
-        <button id="selSpeakBtn" title="選択文字を読み上げ (P)" style="font-size:13px">🔊</button>
-        <button id="selTransBtn" title="選択文字を翻訳 (V)" style="font-size:13px">📝</button>
-        <button id="translateBtn" title="日中切替 (T)" style="font-size:13px">中</button>
+        <button id="markBookmark" title="ブックマーク (B)" data-key="B">★</button>
+        <button id="selExplainBtn" title="選択語をAI解説 (O)" data-key="O" style="font-size:13px">💡</button>
+        <button id="aiExplainBtn" title="AI中国語解説 (X)" data-key="X" style="font-size:13px">🤖</button>
+        <button id="keyMgrBtn" title="API Key管理 (K)" data-key="K" style="font-size:13px">🔑</button>
+        <button id="selSpeakBtn" title="選択文字を読み上げ (P)" data-key="P" style="font-size:13px">🔊</button>
+        <button id="selTransBtn" title="選択文字を翻訳 (V)" data-key="V" style="font-size:13px">📝</button>
+        <button id="translateBtn" title="日中切替 (T)" data-key="T" style="font-size:13px">中</button>
       </div>
     </div>
     <div class="loading" id="loadingIndicator">
@@ -458,7 +496,8 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
       <div class="answer-section" id="answerSection">
         <h3>正解</h3>
         <span id="answerChar"></span>
-        <button id="showAnswerBtn" title="表示/非表示 (Space)">正解を表示する</button>
+        <button id="showAnswerBtn" title="表示/非表示 (Space)">正解を表示する ␣</button>
+        </div>
       </div>
       <div class="explanation-section" id="explanationSection">
         <h3>解説</h3>
@@ -472,7 +511,8 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
   <div class="btm-nav">
     <button id="prevBtn" title="← (←)">◀ 前</button>
     <button id="nextBtn" title="→ (→)">次 ▶</button>
-    <button id="autoNextBtn" title="自動送り (N)">▶ 自動</button>
+    <button id="randomBtn" title="ランダム ⇧R">🎲 ランダム <span class="mod">⇧R</span></button>
+    <button id="autoNextBtn" title="自動送り ⇧N">▶ 自動 <span class="mod">⇧N</span></button>
     <div class="page-jump">
       <span>問</span>
       <input type="number" id="jumpInput" min="1" max="80" value="1">
@@ -506,26 +546,26 @@ body.dark #scratchpad { background: #2d2d2d; box-shadow: -2px 0 12px rgba(0,0,0,
 <!-- 左侧栏（极窄，常驻） -->
 <div id="sideMenu">
   <button class="side-close" id="sideClose">✕</button>
-  <button class="side-btn" id="sideThemeToggle" title="テーマ">🌙</button>
+  <button class="side-btn" id="sideThemeToggle" data-key="⇧Y" title="テーマ ⇧Y">🌙<span class="kbd-hint"><span class="mod">⇧</span>Y</span></button>
   <div class="side-div"></div>
-  <button class="side-btn side-filter active" data-filter="all" title="すべて">A</button>
-  <button class="side-btn side-filter" data-filter="unanswered" title="未回答">U</button>
-  <button class="side-btn side-filter" data-filter="correct" title="正解">C</button>
-  <button class="side-btn side-filter" data-filter="incorrect" title="不正解">W</button>
-  <button class="side-btn side-filter" data-filter="bookmark" title="ブックマーク">★</button>
+  <button class="side-btn side-filter active" data-filter="all" data-key="⇧A" title="すべて ⇧A">A<span class="kbd-hint"><span class="mod">⇧</span>A</span></button>
+  <button class="side-btn side-filter" data-filter="unanswered" data-key="⇧U" title="未回答 ⇧U">U<span class="kbd-hint"><span class="mod">⇧</span>U</span></button>
+  <button class="side-btn side-filter" data-filter="correct" data-key="⇧C" title="正解 ⇧C">C<span class="kbd-hint"><span class="mod">⇧</span>C</span></button>
+  <button class="side-btn side-filter" data-filter="incorrect" data-key="⇧W" title="不正解 ⇧W">W<span class="kbd-hint"><span class="mod">⇧</span>W</span></button>
+  <button class="side-btn side-filter" data-filter="bookmark" data-key="⇧B" title="ブックマーク ⇧B">★<span class="kbd-hint"><span class="mod">⇧</span>B</span></button>
   <div class="side-div"></div>
-  <button class="side-btn" id="sideShuffleBtn" title="打順 (S)">🔀</button>
-  <button class="side-btn" id="sideRandomBtn" title="ランダム (R)">🎲</button>
-  <button class="side-btn" id="sideGridBtn" title="一覧 (G)">📋</button>
-  <button class="side-btn" id="sideDraftBtn" title="草稿 (D)">✏</button>
-  <button class="side-btn" id="sideMemorizeBtn" title="暗記 (M)">📖</button>
+  <button class="side-btn" id="sideShuffleBtn" data-key="⇧S" title="打順 ⇧S">🔀<span class="kbd-hint"><span class="mod">⇧</span>S</span></button>
+  <button class="side-btn" id="sideRandomBtn" data-key="⇧R" title="ランダム ⇧R">🎲<span class="kbd-hint"><span class="mod">⇧</span>R</span></button>
+  <button class="side-btn" id="sideGridBtn" data-key="⇧G" title="一覧 ⇧G">📋<span class="kbd-hint"><span class="mod">⇧</span>G</span></button>
+  <button class="side-btn" id="sideDraftBtn" data-key="⇧D" title="メモ ⇧D">✏<span class="kbd-hint"><span class="mod">⇧</span>D</span></button>
+  <button class="side-btn" id="sideMemorizeBtn" data-key="⇧M" title="暗記 ⇧M">📖<span class="kbd-hint"><span class="mod">⇧</span>M</span></button>
   <div class="side-div"></div>
-  <button class="side-btn" id="sideExportBtn" title="データ書き出し (E)">📤</button>
-  <button class="side-btn" id="sideImportBtn" title="データ読み込み (I)">📥</button>
+  <button class="side-btn" id="sideExportBtn" data-key="⇧E" title="データ書き出し ⇧E">📤<span class="kbd-hint"><span class="mod">⇧</span>E</span></button>
+  <button class="side-btn" id="sideImportBtn" data-key="⇧I" title="データ読み込み ⇧I">📥<span class="kbd-hint"><span class="mod">⇧</span>I</span></button>
 </div>
 <button id="fabBtn" title="メニュー">☰</button>
 
-<div id="selTransResult"><span id="selTransText"></span><button id="selTransSpeak" title="読み上げ (L)">🔊</button></div>
+<div id="selTransResult"><span id="selTransText"></span><button id="selTransSpeak" title="読み上げ (P)">🔊</button></div>
 
 <!-- API Key 输入弹窗（移动端代替 prompt） -->
 <div id="keyModal">
@@ -617,6 +657,34 @@ const jumpInput = $('jumpInput');
 const jumpBtn = $('jumpBtn');
 const themeToggle = $('themeToggle');
 const filterSelect = $('filterSelect');
+// 自定义筛选下拉（替代原生 select，让 ⇧ 快捷键可完全控制样式）
+const filterMenu = $('filterMenu');
+const FILTER_OPTS = { all: 'すべて', unanswered: '未回答', correct: '正解', incorrect: '不正解', bookmark: 'ブックマーク' };
+const FILTER_KEYS = { all: '⇧A', unanswered: '⇧U', correct: '⇧C', incorrect: '⇧W', bookmark: '⇧B' };
+let filterValue = 'all';
+function renderFilterTrigger() {
+  filterSelect.innerHTML = FILTER_OPTS[filterValue] + ' <span class="mod">' + FILTER_KEYS[filterValue] + '</span> <span class="caret">▾</span>';
+  filterMenu.querySelectorAll('.filter-opt').forEach(b => b.classList.toggle('active', b.dataset.filter === filterValue));
+  document.querySelectorAll('#sideMenu .side-filter').forEach(b => b.classList.toggle('active', b.dataset.filter === filterValue));
+}
+// 兼容旧代码 filterSelect.value / dispatchEvent('change')
+Object.defineProperty(filterSelect, 'value', {
+  get() { return filterValue; },
+  set(v) { filterValue = v; renderFilterTrigger(); }
+});
+filterSelect.addEventListener('click', (e) => {
+  e.stopPropagation();
+  filterMenu.classList.toggle('show');
+});
+filterMenu.querySelectorAll('.filter-opt').forEach(b => {
+  b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    filterSelect.value = b.dataset.filter;
+    filterSelect.dispatchEvent(new Event('change'));
+    filterMenu.classList.remove('show');
+  });
+});
+document.addEventListener('click', () => { filterMenu.classList.remove('show'); });
 const randomBtn = $('randomBtn');
 const gridToggle = $('gridToggle');
 const questionGrid = $('questionGrid');
@@ -633,7 +701,7 @@ const aiSummaryPanel = $('aiSummaryPanel');
 // ===================== THEME =====================
 function applyTheme() {
   document.body.classList.toggle('dark', state.dark);
-  themeToggle.textContent = state.dark ? '☀️ ライト' : '🌙 ダーク';
+  themeToggle.innerHTML = state.dark ? '☀️ ライト <span class="mod">⇧Y</span>' : '🌙 ダーク <span class="mod">⇧Y</span>';
   localStorage.setItem(LS_DARK, state.dark ? '1' : '0');
 }
 themeToggle.addEventListener('click', () => { state.dark = !state.dark; applyTheme(); });
@@ -645,6 +713,10 @@ const shortcutPanel = $('shortcutPanel');
 shortcutBtn.addEventListener('click', () => {
   shortcutPanel.classList.toggle('visible');
   localStorage.setItem('fe_shortcut_visible', shortcutPanel.classList.contains('visible') ? '1' : '0');
+});
+$('shortcutCloseBtn').addEventListener('click', () => {
+  shortcutPanel.classList.remove('visible');
+  localStorage.setItem('fe_shortcut_visible', '0');
 });
 if (localStorage.getItem('fe_shortcut_visible') === '1') shortcutPanel.classList.add('visible');
 
@@ -1124,7 +1196,9 @@ jumpInput.addEventListener('keydown', e => { if (e.key === 'Enter') jumpBtn.clic
 
 randomBtn.addEventListener('click', () => {
   const nums = getFilteredNums();
-  loadQuestion(nums[Math.floor(Math.random() * nums.length)]);
+  const un = nums.filter(n => !state.marks[n]);
+  const pool = un.length ? un : nums;
+  loadQuestion(pool[Math.floor(Math.random() * pool.length)]);
 });
 
 filterSelect.addEventListener('change', () => {
@@ -1135,7 +1209,7 @@ filterSelect.addEventListener('change', () => {
 gridToggle.addEventListener('click', () => {
   const g = questionGrid;
   g.style.display = g.style.display === 'none' ? 'grid' : 'none';
-  gridToggle.textContent = g.style.display === 'grid' ? '📋 閉じる' : '📋 一覧';
+  gridToggle.innerHTML = g.style.display === 'grid' ? '📋 閉じる <span class="mod">⇧G</span>' : '📋 一覧 <span class="mod">⇧G</span>';
   updateGrid();
 });
 
@@ -1677,20 +1751,34 @@ dropOverlay.addEventListener('drop', e => {
 // ===================== KEYBOARD =====================
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') return;
-  if (e.key === '1') { const li = selectList.querySelector('li:nth-child(1)'); if (li) li.click(); }
+  const sh = e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey;
+  // 横幅工具栏统一用 ⇧+字母，避免与其它按键及浏览器快捷键冲突
+  if (sh && (e.key === 'S' || e.key === 's')) shuffleToggle.click();
+  else if (sh && (e.key === 'R' || e.key === 'r')) randomBtn.click();
+  else if (sh && (e.key === 'G' || e.key === 'g')) gridToggle.click();
+  else if (sh && (e.key === 'D' || e.key === 'd')) draftToggle.click();
+  else if (sh && (e.key === 'M' || e.key === 'm')) memorizeBtn.click();
+  else if (sh && (e.key === 'E' || e.key === 'e')) exportBtn.click();
+  else if (sh && (e.key === 'I' || e.key === 'i')) importBtn.click();
+  else if (sh && (e.key === 'Y' || e.key === 'y')) themeToggle.click();
+  else if (sh && (e.key === 'A' || e.key === 'a')) { filterSelect.value = 'all'; filterSelect.dispatchEvent(new Event('change')); }
+  else if (sh && (e.key === 'U' || e.key === 'u')) { filterSelect.value = 'unanswered'; filterSelect.dispatchEvent(new Event('change')); }
+  else if (sh && (e.key === 'C' || e.key === 'c')) { filterSelect.value = 'correct'; filterSelect.dispatchEvent(new Event('change')); }
+  else if (sh && (e.key === 'W' || e.key === 'w')) { filterSelect.value = 'incorrect'; filterSelect.dispatchEvent(new Event('change')); }
+  else if (sh && (e.key === 'B' || e.key === 'b')) { filterSelect.value = 'bookmark'; filterSelect.dispatchEvent(new Event('change')); }
+  else if (sh && (e.key === 'L' || e.key === 'l')) { shortcutPanel.classList.toggle('visible'); localStorage.setItem('fe_shortcut_visible', shortcutPanel.classList.contains('visible') ? '1' : '0'); }
+  else if (sh && (e.key === 'N' || e.key === 'n')) autoNextBtn.click();
+  else if (e.key === '1') { const li = selectList.querySelector('li:nth-child(1)'); if (li) li.click(); }
   else if (e.key === '2') { const li = selectList.querySelector('li:nth-child(2)'); if (li) li.click(); }
   else if (e.key === '3') { const li = selectList.querySelector('li:nth-child(3)'); if (li) li.click(); }
   else if (e.key === '4') { const li = selectList.querySelector('li:nth-child(4)'); if (li) li.click(); }
   else if (e.key === 'ArrowLeft') prevBtn.click();
   else if (e.key === 'ArrowRight') nextBtn.click();
   else if (e.key === ' ') { e.preventDefault(); showAnswerBtn.click(); }
-  else if (e.key === 's' || e.key === 'S') shuffleToggle.click();
-  else if (e.key === 'g' || e.key === 'G') gridToggle.click();
   else if (e.key === 'b' || e.key === 'B') markBookmark.click();
   else if (e.key === 't' || e.key === 'T') translateBtn.click();
   else if (e.key === 'd' || e.key === 'D') {
     if (keyMgrPanel.style.display === 'block') keyMgrFocus('.km-del');
-    else draftToggle.click();
   }
   else if (e.key === 'r' || e.key === 'R') {
     if (keyMgrPanel.style.display === 'block') keyMgrFocus('.km-set');
@@ -1698,14 +1786,6 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Enter') {
     if (keyMgrPanel.style.display === 'block') { e.preventDefault(); keyMgrEnter(); }
   }
-  else if (e.key === 'e' || e.key === 'E') exportBtn.click();
-  else if (e.key === 'i' || e.key === 'I') importBtn.click();
-  else if (e.key === 'a' || e.key === 'A') { filterSelect.value = 'all'; filterSelect.dispatchEvent(new Event('change')); }
-  else if (e.key === 'u' || e.key === 'U') { filterSelect.value = 'unanswered'; filterSelect.dispatchEvent(new Event('change')); }
-  else if (e.key === 'c' || e.key === 'C') { filterSelect.value = 'correct'; filterSelect.dispatchEvent(new Event('change')); }
-  else if (e.key === 'w' || e.key === 'W') { filterSelect.value = 'incorrect'; filterSelect.dispatchEvent(new Event('change')); }
-  else if (e.key === 'm' || e.key === 'M') memorizeBtn.click();
-  else if (e.key === 'n' || e.key === 'N') autoNextBtn.click();
   else if (e.key === 'f' || e.key === 'F') {
     if (aiMondaiPanel.classList.contains('ai-visible')) { localStorage.removeItem(getAIKey(state.current)); callAIExplain(); }
     else if (state.translated) { localStorage.removeItem(getTransKey(state.current)); translateBtn.click(); }
@@ -1715,7 +1795,6 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'k' || e.key === 'K') keyMgrBtn.click();
   else if (e.key === 'h' || e.key === 'H') toggleSidebar();
   else if (e.key === 'o' || e.key === 'O') { e.preventDefault(); doSelExplain(); }
-  else if (e.key === 'l' || e.key === 'L') { e.preventDefault(); speakSmart(); }
   else if (e.key === 'p' || e.key === 'P') { e.preventDefault(); speakSmart(); }
 });
 
@@ -2105,7 +2184,8 @@ async function doSelExplain() {
   const sel = window.getSelection();
   const text = (lastSelText || sel.toString()).trim();
   if (!text || text.length < 1 || text.length > 100) { alert('単語または語句を選択してください（1〜100字）'); return; }
-  document.getElementById('selTransSpeak').style.display = 'inline';
+  const speakBtn = document.getElementById('selTransSpeak');
+  speakBtn.style.display = 'none';
   const k = cacheKey('fe_explain_', text);
   const cached = localStorage.getItem(k);
   const resultEl = document.getElementById('selTransResult');
@@ -2113,6 +2193,7 @@ async function doSelExplain() {
   if (cached) {
     textEl.textContent = '💡 ' + text + '：' + cached;
     resultEl.className = 'show';
+    speakBtn.style.display = 'inline';
     lastSelText = ''; lastSelRect = null;
     lastExplainTTS = { word: text, answer: cached };
     return;
@@ -2152,6 +2233,7 @@ async function doSelExplain() {
         localStorage.setItem(k, answer);
         textEl.textContent = '💡 ' + text + '：' + answer;
         resultEl.className = 'show';
+        speakBtn.style.display = 'inline';
         lastExplainTTS = { word: text, answer: answer };
         ok = true; break;
       }
@@ -2282,11 +2364,17 @@ function speakSelection() {
   if (!parts.length) { alert('選択内容に日本語または英語が含まれていません'); return; }
   playTTS(parts, btn);
 }
-// 统一入口：有 AI 解析结果时念解析，否则念选中文字
+// 统一入口：P。AI 解析有结果时念解析；加载/失败时弹窗无结果不念；否则念选中文字
 function speakSmart() {
   const el = document.getElementById('selTransResult');
-  if (el && el.className === 'show' && document.getElementById('selTransText').textContent.includes('💡')) speakExplain();
-  else speakSelection();
+  if (el && el.className === 'show') {
+    const t = document.getElementById('selTransText').textContent;
+    if (t.includes('💡')) speakExplain();
+    else if (t.startsWith('AI 解析中') || t.includes('失敗') || t.includes('すべての AI サービス')) { /* 加载中/错误：不念，避免与选中播放冲突 */ }
+    else speakSelection();
+  } else {
+    speakSelection();
+  }
 }
 document.getElementById('selTransSpeak').addEventListener('click', speakExplain);
 document.getElementById('selSpeakBtn').addEventListener('click', speakSelection);
