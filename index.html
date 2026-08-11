@@ -2156,8 +2156,6 @@ async function doSelTranslate() {
     textEl.textContent = cached;
     document.getElementById('selTransResult').className = 'show';
     lastSelText = ''; lastSelRect = null;
-    setTimeout(() => { document.getElementById('selTransResult').className = 'hide'; }, 3000);
-    setTimeout(() => { document.getElementById('selTransResult').className = ''; }, 3800);
     return;
   }
   selTransBtn.textContent = '…';
@@ -2173,8 +2171,6 @@ async function doSelTranslate() {
     textEl.textContent = result;
     resultEl.className = 'show';
     lastSelText = ''; lastSelRect = null;
-    setTimeout(() => { resultEl.className = 'hide'; }, 3000);
-    setTimeout(() => { resultEl.className = ''; }, 3800);
   } catch (e) {
     alert('翻訳失敗: ' + e.message);
   }
